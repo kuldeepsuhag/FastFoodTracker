@@ -1,10 +1,10 @@
 {
   "devToolsPort": 19003,
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 13439,
-  "expoServerNgrokUrl": "https://ik-ifj.anonymous.fastfoodvisitcounterapp.exp.direct",
-  "packagerNgrokUrl": "https://packager.ik-ifj.anonymous.fastfoodvisitcounterapp.exp.direct",
-  "ngrokPid": 13490,
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null,
   "webpackServerPort": null
 }
