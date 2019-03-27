@@ -1,6 +1,8 @@
 import React from 'react';
 import { Constants, MapView, Location, Permissions } from 'expo';
 import { StyleSheet, Text, View } from 'react-native';
+import { Card } from 'react-native-elements'
+// import StepCounter from './component/step-counter/stepCounter'
 
 export default class App extends React.Component {
   state = {
@@ -45,6 +47,8 @@ export default class App extends React.Component {
         <Text style={styles.paragraph}>
           Fast Food Visit Counter App
         </Text>
+
+        {/* <StepCounter/> */}
         
         {
           this.state.locationResult === null ?
@@ -54,16 +58,19 @@ export default class App extends React.Component {
             this.state.mapRegion === null ?
             <Text>Map region doesn't exist.</Text> :
             <MapView
-              style={{ alignSelf: 'stretch', height: 600 }}
+              style={{ alignSelf: 'stretch', height: 400 }}
               region={this.state.mapRegion}
               showsUserLocation={true}
               onRegionChange={this._handleMapRegionChange}
             />
         }
         
-        <Text>
+        <Card title="Location">
+          <Text>{this.state.locationResult}</Text>
+        </Card>
+        {/* <Text>
           Location: {this.state.locationResult}
-        </Text>
+        </Text> */}
       </View>
     );
   }

@@ -1,10 +1,10 @@
 {
-  "devToolsPort": 19004,
+  "devToolsPort": 19007,
   "expoServerPort": 19000,
-  "packagerPort": 19005,
-  "packagerPid": 9375,
+  "packagerPort": 19008,
+  "packagerPid": 82880,
   "expoServerNgrokUrl": "https://c9-k3s.rexvanderwell.fastfoodvisitcounterapp.exp.direct",
   "packagerNgrokUrl": "https://packager.c9-k3s.rexvanderwell.fastfoodvisitcounterapp.exp.direct",
-  "ngrokPid": 9398,
+  "ngrokPid": 82903,
   "webpackServerPort": null
 }
