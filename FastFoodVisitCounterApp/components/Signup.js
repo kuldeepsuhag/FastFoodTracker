@@ -4,6 +4,7 @@ import { Input, Text } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { View, StyleSheet } from 'react-native';
 import axios from "axios";
+import ip from "../config";
 
 export default class Signup extends React.Component {
     state = {
@@ -14,11 +15,10 @@ export default class Signup extends React.Component {
     };
 
     componentWillMount(){
-        console.log("TESSSSTTTTT");
-        axios.get("http://172.20.10.2:5000/test", {
+        var url = ip.ip.address;
+        axios.get(url+"/test", {
             params: {
-                q: "*:*",
-                filters: [{ "field": "info_type", "values": ["Work order"] }]
+                id: "akshay"
             }
         }).then((response) => {
             console.log(response.data);
