@@ -6,13 +6,17 @@
     "ios": "expo start --ios",
     "eject": "expo eject"
   },
+  "proxy": "http://localhost:5000",
   "dependencies": {
+    "axios": "^0.18.0",
     "expo": "^32.0.0",
+    "nodejs-mobile-react-native": "^0.4.0",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-elements": "^1.1.0",
     "react-native-maps": "^0.23.0",
-    "react-native-vector-icons": "^6.4.2"
+    "react-native-vector-icons": "^6.4.2",
+    "react-router-native": "^5.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"
