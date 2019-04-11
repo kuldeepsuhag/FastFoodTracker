@@ -1,18 +1,14 @@
 import React from 'react';
-import Map from './components/Map';
-import Signup from './components/Signup';
-import { View } from 'react-native';
-
-
+import Home from './components/Home';
+import { NativeRouter } from 'react-router-native'
 
 export default class App extends React.Component {
 
   render() {
     return (
-      <View>
-        <Signup />
-        {/* <Map /> */}
-      </View>
+        <NativeRouter>
+          <Home />
+        </NativeRouter>
         );
       }
     }

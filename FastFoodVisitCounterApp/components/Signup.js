@@ -7,24 +7,36 @@ import axios from "axios";
 import ip from "../config";
 
 export default class Signup extends React.Component {
-    state = {
-        email: "",
-        confirmEmail: "",
-        password: "",
-        confirmPassword: ""
-    };
+    constructor(props, { }) {
+        super(props);
+        this.signupUser = this.signupUser.bind(this);
+        this.state = {
+            email: "",
+            confirmEmail: "",
+            password: "",
+            confirmPassword: ""
+        };
+      }
 
     componentWillMount(){
         var url = ip.ip.address;
-        axios.get(url+"/test", {
-            params: {
-                id: "akshay"
+        axios({
+            method: 'post',
+            url: url+"/signup",
+            data: {
+                id: "akshay",
+                password: "akshay"
             }
-        }).then((response) => {
+          }).then((response) => {
             console.log(response.data);
         }).catch((error) => {
            console.log(error);
         });
+    }
+
+    signupUser(){
+        console.log("Pressed btn");
+        this.props.history.push("/map");
     }
 
     render() {
@@ -93,6 +105,7 @@ export default class Signup extends React.Component {
                 </View>
                 <Button
                     title="Submit"
+                    onPress={this.signupUser}
                 />
             </View >
         );
