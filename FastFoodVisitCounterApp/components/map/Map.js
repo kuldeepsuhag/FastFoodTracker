@@ -1,8 +1,8 @@
 import React from 'react';
 import { Constants, MapView, Location, Permissions } from 'expo';
 import { StyleSheet, Text, View } from 'react-native';
-import AppFooter  from '../components/footer/Footer';
-import StepCounter from '../components/step-counter/stepCounter';
+import AppFooter  from '../footer/Footer';
+import StepCounter from '../step-counter/stepCounter';
 export default class Map extends React.Component {
   state = {
     mapRegion: null,
@@ -55,7 +55,7 @@ export default class Map extends React.Component {
             this.state.mapRegion === null ?
             <Text>Map region doesn't exist.</Text> :
             <MapView
-              style={{ alignSelf: 'stretch', height: 600 }}
+              style={{ alignSelf: 'stretch', height: '50%' }}
               region={this.state.mapRegion}
               showsUserLocation={true}
               onRegionChange={this._handleMapRegionChange}
