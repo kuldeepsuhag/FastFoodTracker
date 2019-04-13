@@ -1,7 +1,7 @@
 import React from 'react';
 import { Constants, MapView, Location, Permissions } from 'expo';
 import { StyleSheet, Text, View } from 'react-native';
-
+import StepCounter from '../components/step-counter/stepCounter';
 export default class Map extends React.Component {
   state = {
     mapRegion: null,
@@ -61,6 +61,7 @@ export default class Map extends React.Component {
             />
         }
 
+        <StepCounter/>
         <Text>
           Location: {this.state.locationResult}
         </Text>
