@@ -6,7 +6,7 @@ import { Container, Header, Content, Item, Label, Input, Text, Card, CardItem } 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { View, StyleSheet } from 'react-native';
 import axios from "axios";
-import ip from "../config";
+import ip from "../../config";
 
 export default class Signup extends React.Component {
     constructor(props, { }) {

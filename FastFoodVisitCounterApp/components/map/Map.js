@@ -1,8 +1,9 @@
 import React from 'react';
 import { Constants, MapView, Location, Permissions } from 'expo';
-import { StyleSheet, Text, View } from 'react-native';
-import AppFooter  from '../footer/Footer';
+import { StyleSheet, View } from 'react-native';
+import AppFooter  from '../footer/AppFooter'
 import StepCounter from '../step-counter/stepCounter';
+import { Card, CardItem, Text, Body } from 'native-base';
 export default class Map extends React.Component {
   state = {
     mapRegion: null,
@@ -62,10 +63,16 @@ export default class Map extends React.Component {
             />
         }
 
-        <StepCounter/>
-        <Text>
-          Location: {this.state.locationResult}
-        </Text>
+        <Card style={styles.card}>
+                <StepCounter/>
+        </Card>
+
+
+        <Card style={styles.card}>
+              <CardItem>
+                <Text>Location Data: {this.state.locationResult}</Text>
+              </CardItem>
+        </Card>
         <AppFooter/>
       </View>
     );
@@ -87,4 +94,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#34495e',
   },
+  card:{
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginLeft: '5%',
+      marginRight: '5%',
+      maxWidth: '100%'
+  }
 });
