@@ -81,5 +81,3 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   }
 });
-
-Expo.registerRootComponent(StepCounter);
