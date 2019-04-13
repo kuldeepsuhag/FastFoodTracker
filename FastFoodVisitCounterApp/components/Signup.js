@@ -1,6 +1,8 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
-import { Input, Text } from 'react-native-elements';
+// import { Input, Text } from 'react-native-elements';
+// import { Card } from 'react-native-elements';
+import { Container, Header, Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { View, StyleSheet } from 'react-native';
 import axios from "axios";
@@ -43,70 +45,38 @@ export default class Signup extends React.Component {
       //  console.log(this.state.email);
         return (
             <View style={styles.container}>
-                <Text h3
-                    style={{ textAlign: 'center', color: '#fff' }}
-
-                >Register</Text>
-                <View style={styles.wrapper}>
-                    <Input
-                        style={styles.inputStyle}
-                        placeholder=' Email'
-                        value={this.state.email}
-                        onChangeText={(email) => this.setState({ email })}
-                        leftIcon={
-                            <Icon
-                                name='envelope-square'
-                                size={24}
-                                color='white'
-                            />
-
-                        }
-
-                    />
-                    <Input
-                        style={styles.inputStyle}
-                        placeholder='Confirm Email'
-                        value={this.state.confirmEmail}
-                        onChangeText={(confirmEmail) => this.setState({ confirmEmail })}
-                        leftIcon={
-                            <Icon
-                                name='envelope-square'
-                                size={24}
-                                color='white'
-                            />
-                        }
-                    />
-                    <Input
-                        style={styles.inputStyle}
-                        placeholder='Password'
-                        value={this.state.password}
-                        onChangeText={(password) => this.setState({ password })}
-                        leftIcon={
-                            <Icon
-                                name='lock'
-                                size={24}
-                                color='white'
-                            />
-                        }
-                    />
-                    <Input
-                        style={styles.inputStyle}
-                        placeholder='Confirm Password'
-                        value={this.state.confirmPassword}
-                        onChangeText={(confirmPassword) => this.setState({ confirmPassword })}
-                        leftIcon={
-                            <Icon
-                                name='lock'
-                                size={24}
-                                color='white'
-                            />
-                        }
-                    />
-                </View>
-                <Button
-                    title="Submit"
-                    onPress={this.signupUser}
-                />
+                <Card style={styles.card}>
+                    <CardItem header bordered>
+                        <Text>Sign Up</Text>
+                    </CardItem>
+                    <CardItem bordered>
+                        <Content>
+                            <Item floatingLabel style={styles.input}>
+                                <Label>Email</Label>
+                                <Input value={this.state.email}
+                                    onChangeText={(email) => this.setState({ email })}/>
+                            </Item>
+                            <Item floatingLabel style={styles.input}>
+                                <Label>Confirm Email</Label>
+                                <Input value={this.state.confirmEmail}
+                                    onChangeText={(confirmEmail) => this.setState({ confirmEmail })}/>
+                            </Item>
+                            <Item floatingLabel style={styles.input}>
+                                <Label>Password</Label>
+                                <Input value={this.state.password}
+                                    onChangeText={(password) => this.setState({ password })}/>
+                            </Item>
+                            <Item floatingLabel style={styles.input}>
+                                <Label>Confirm Password</Label>
+                                <Input value={this.state.confirmPassword}
+                                    onChangeText={(confirmPassword) => this.setState({ confirmPassword })}/>
+                            </Item>
+                        </Content>
+                    </CardItem>
+                    <CardItem bordered style={styles.card}>
+                        <Button title="Submit" onPress={this.signupUser}/>
+                    </CardItem>
+                </Card>
             </View >
         );
     }
@@ -117,10 +87,21 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'stretch',
-        paddingTop: 40,
+        // paddingTop: 40,
         backgroundColor: '#3066c9',
+        height: '100%'
     },
     wrapper: {
         alignItems: 'center', paddingBottom: 40, paddingTop: 40
+    },
+    card:{
+        flexDirection: 'column',
+        justifyContent: 'center',
+        marginLeft: '5%',
+        marginRight: '5%',
+        maxWidth: '100%'
+    },
+    input:{
+        marginBottom: '2%'
     }
 });

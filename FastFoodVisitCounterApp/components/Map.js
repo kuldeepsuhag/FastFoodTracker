@@ -1,6 +1,7 @@
 import React from 'react';
 import { Constants, MapView, Location, Permissions } from 'expo';
 import { StyleSheet, Text, View } from 'react-native';
+import AppFooter  from '../components/footer/Footer';
 import StepCounter from '../components/step-counter/stepCounter';
 export default class Map extends React.Component {
   state = {
@@ -65,6 +66,7 @@ export default class Map extends React.Component {
         <Text>
           Location: {this.state.locationResult}
         </Text>
+        <AppFooter/>
       </View>
     );
   }
