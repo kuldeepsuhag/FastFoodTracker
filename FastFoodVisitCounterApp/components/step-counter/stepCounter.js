@@ -2,6 +2,7 @@ import Expo from "expo";
 import React from "react";
 import { Pedometer } from "expo";
 import { StyleSheet, Text, View } from "react-native";
+import { BarChart, Grid } from 'react-native-svg-charts'
 
 export default class StepCounter extends React.Component {
   state = {
@@ -34,7 +35,7 @@ export default class StepCounter extends React.Component {
       },
       error => {
         this.setState({
-          isPedometerAvailable: "Could not get isPedometerAvailable: " + error
+          isPedometerAvailable: "Could not get is PedometerAvailable: " + error
         });
       }
     );
@@ -81,10 +82,13 @@ export default class StepCounter extends React.Component {
     }
     setTimeout(function(){
       console.log("------checking------")
+      let dataForGraph = [];
       stepCountHolder.forEach(element => {
-        // console.log(Object.keys(element) + element);
-        console.log(element);
+        dataForGraph.push(element['steps']);
       });
+      console.log("test")
+      console.log(dataForGraph)
+      console.log("test 1")
     }, 5000);
   };
   
@@ -96,13 +100,20 @@ export default class StepCounter extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>
+        {/* <Text>
           Pedometer.isAvailableAsync(): {this.state.isPedometerAvailable}
         </Text>
         <Text>
           Steps taken in the last 24 hours: {this.state.pastStepCount}
         </Text>
-        <Text>Walk! And watch this go up: {this.state.currentStepCount}</Text>
+        <Text>Walk! And watch this go up: {this.state.currentStepCount}</Text> */}
+        <BarChart
+                style={{ height: 200 }}
+                data={ [10, 34, 22, 54, 21, 100] }
+                contentInset={{ top: 30, bottom: 30 }}
+            >
+                <Grid/>
+            </BarChart>
       </View>
     );
   }
