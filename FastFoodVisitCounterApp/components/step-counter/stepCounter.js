@@ -7,7 +7,8 @@ export default class StepCounter extends React.Component {
   state = {
     isPedometerAvailable: "checking",
     pastStepCount: 0,
-    currentStepCount: 0
+    currentStepCount: 0,
+    pastWeekStepCountData: []
   };
 
   componentDidMount() {
@@ -51,8 +52,42 @@ export default class StepCounter extends React.Component {
         });
       }
     );
+    
+    //Creating the data step data for the last week
+    const today = new Date();
+    const prevDate = new Date();
+    let stepCountHolder = [];
+    for(let i=7;i>0;i--){
+      let stepData = {};
+      prevDate.setDate(today.getDate() - i);
+      const startInterval = new Date();
+      const endInterval = new Date();
+      startInterval.setDate(prevDate.getDate());
+      endInterval.setDate(prevDate.getDate() + 1)
+      let dateString = startInterval.getDate() + '/' +  (startInterval.getMonth()+1) + '/' + startInterval.getFullYear();
+      Pedometer.getStepCountAsync(startInterval, endInterval).then(
+        result => {
+          stepData['date'] = dateString.toString();
+          stepData['steps'] = result.steps;
+          stepCountHolder.push(stepData);
+        },
+        error => {
+          stepData['date'] = dateString.toString();
+          stepData['steps'] = 0;
+          console.log("Step Data Not Available");
+          stepCountHolder.push(stepData);
+        }
+      );
+    }
+    setTimeout(function(){
+      console.log("------checking------")
+      stepCountHolder.forEach(element => {
+        // console.log(Object.keys(element) + element);
+        console.log(element);
+      });
+    }, 5000);
   };
-
+  
   _unsubscribe = () => {
     this._subscription && this._subscription.remove();
     this._subscription = null;
