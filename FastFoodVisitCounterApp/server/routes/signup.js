@@ -59,8 +59,11 @@ module.exports = (req, res) => {
                 });
                  console.log("Database created")
                  var ref = firebase.database().ref('users');
-                 nextref = ref.child(user.uid).on("child_added",function (childSnapshot) {
-                  console.log(JSON.stringify(childSnapshot.val()));
+                 nextref = ref.child(user.uid).on("value",function (childSnapshot) {
+                  var data = childSnapshot.val();
+                  console.log("Email ID " + data.Email);
+
+                  console.log(JSON.stringify(childSnapshot));
                 });
                 } else {
                   //  console.log("No User logged In")
