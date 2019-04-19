@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import AppFooter  from '../footer/AppFooter'
 import StepCounter from '../step-counter/stepCounter';
 import { Card, CardItem, Text, Body } from 'native-base';
+// import Geocoder from 'react-native-geocoder';
 export default class Map extends React.Component {
   state = {
     mapRegion: null,
@@ -31,6 +32,21 @@ export default class Map extends React.Component {
    }
 
    let location = await Location.getCurrentPositionAsync({});
+
+   let latitute = location.coords.latitude
+   let longitude = location.coords.longitude
+
+   let locationObj = {
+     latitude: latitute,
+     longitude: longitude
+   }
+
+   let geoResult = await Location.reverseGeocodeAsync(locationObj)
+
+   console.log("######")
+   console.log(geoResult)
+   console.log("######")
+   
    this.setState({ locationResult: JSON.stringify(location) });
 
     // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
