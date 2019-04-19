@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import AppFooter  from '../footer/AppFooter'
 import StepCounter from '../step-counter/stepCounter';
 import { Card, CardItem, Text, Body } from 'native-base';
-// import Geocoder from 'react-native-geocoder';
+
 export default class Map extends React.Component {
   state = {
     mapRegion: null,
