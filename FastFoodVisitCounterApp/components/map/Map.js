@@ -75,9 +75,9 @@ export default class Map extends React.Component {
             />
         }
 
-        <Card style={styles.card}>
-                <StepCounter/>
-        </Card>
+        {/* <Card style={styles.card}> */}
+                {/* <StepCounter/> */}
+        {/* </Card> */}
 
 
         <Card style={styles.card}>
