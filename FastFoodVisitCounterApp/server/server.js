@@ -9,7 +9,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(bodyParser.json({ limit: '50mb', extended: true }));
 
 app.post("/signup", require("./routes/signup"));
-
+app.post("/map-data", require("./routes/databaseservice"));
 app.listen(port, (req, res) => {
 
 console.log(`server listening on port: ${port}`)

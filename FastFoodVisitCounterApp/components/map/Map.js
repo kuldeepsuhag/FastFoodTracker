@@ -11,7 +11,10 @@ export default class Map extends React.Component {
     mapRegion: null,
     hasLocationPermissions: false,
     locationResult: null,
-    locationDataToServer: null
+    lat: null,
+    long: null,
+    city: null
+    
   };
 
   componentDidMount() {
@@ -48,18 +51,21 @@ export default class Map extends React.Component {
 
    let geoResult = await Location.reverseGeocodeAsync(locationObj)
 
-   let locationObjToServer = {
-    latitude: latitute,
-    longitude: longitude,
-    city: geoResult[0].city
-  }
+  //  let locationObjToServer = {
+  //   latitude: latitute,
+  //   longitude: longitude,
+  //   city: geoResult[0].city
+  // }
    console.log("######")
    console.log(geoResult)
    console.log("######")
 
-   this.setState({ locationDataToServer: JSON.stringify(locationObjToServer) })
+   //this.setState({ locationDataToServer: JSON.stringify(locationObjToServer) })
+   //console.log("Testing " + this.state.locationDataToServer);
    this.setState({ locationResult: JSON.stringify(location) });
-
+   this.setState({lat:latitute });
+   this.setState({long: longitude});
+   this.setState({city: geoResult[0].city});
     // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
     // The map computes two values, longitudeDelta/width and latitudeDelta/height, compares those 2 computed values, and takes the larger of the two.
     // The map is zoomed according to the value chosen in step 2 and the other value is ignored.
@@ -80,16 +86,21 @@ export default class Map extends React.Component {
   };
 
   sendMapData(){
-    // var url = ip.ip.address;
-    // axios({
-    //     method: 'post',
-    //     url: url + "/map-data",
-    //     data: this.state.locationDataToServer
-    // }).then((response) => {
-    //     console.log(response.data);
-    // }).catch((error) => {
-    //     console.log(error);
-    // });
+    var url = ip.ip.address;
+
+    axios({
+        method: 'post',
+        url: url + "/map-data",
+        data: {
+          latitude: this.state.lat,
+          longitude: this.state.long,
+          place: this.state.city
+        }
+    }).then((response) => {
+        console.log(response.data);
+    }).catch((error) => {
+        console.log(error);
+    });
   }
 
   render() {
