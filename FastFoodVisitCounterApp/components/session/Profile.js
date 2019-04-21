@@ -3,7 +3,8 @@ import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
 import { View, StyleSheet, Image } from 'react-native';
 import { ImagePicker, Permissions } from 'expo';
-import ip from "../../config";
+import ip from '../../config';
+import axios from "axios"
 
 export default class Profile extends React.Component {
     constructor(props, { }) {
@@ -60,8 +61,7 @@ export default class Profile extends React.Component {
         //     this.props.history.push("/map");
         // }).catch((error) => {
         //     console.log(error);
-        // });
-
+        // });ceab6d68dc78a4a3614648f4c685986ed8b8e
     }
 
 
