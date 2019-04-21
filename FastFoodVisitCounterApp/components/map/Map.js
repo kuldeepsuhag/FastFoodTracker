@@ -1,6 +1,6 @@
 import React from 'react';
 import { Constants, MapView, Location, Permissions } from 'expo';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Alert, BackHandler } from 'react-native';
 import AppFooter  from '../footer/AppFooter'
 import StepCounter from '../step-counter/stepCounter';
 import { Card, CardItem, Text, Body } from 'native-base';
@@ -22,6 +22,7 @@ export default class Map extends React.Component {
   };
 
   _getLocationAsync = async () => {
+   let isGPSOn = await Location.hasServicesEnabledAsync();
    let { status } = await Permissions.askAsync(Permissions.LOCATION);
    if (status !== 'granted') {
      this.setState({
@@ -31,6 +32,10 @@ export default class Map extends React.Component {
      this.setState({ hasLocationPermissions: true });
    }
 
+   if(isGPSOn){
+    let location = await Location.getCurrentPositionAsync({});
+    this.setState({ locationResult: JSON.stringify(location) });
+  
    let location = await Location.getCurrentPositionAsync({});
 
    let latitute = location.coords.latitude
@@ -55,6 +60,16 @@ export default class Map extends React.Component {
     // If the chosen value is longitudeDelta, then the left edge is longitude - longitudeDelta and the right edge is longitude + longitudeDelta. The top and bottom are whatever values are needed to fill the height without stretching the map.
     // If the chosen value is latitudeDelta, then the bottom edge is latitude - latitudeDelta and the top edge is latitude + latitudeDelta. The left and right are whatever values are needed to fill the width without stretching the map.
     this.setState({mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }});
+   }else{
+    Alert.alert(
+      'Location Services Are Disabled',
+      'Please turn on location services to proceed.',
+      [
+        {text: 'Close App', onPress: () => BackHandler.exitApp()},
+      ],
+      { cancelable: false }
+    )
+   }
   };
 
   render() {
@@ -79,9 +94,9 @@ export default class Map extends React.Component {
             />
         }
 
-        <Card style={styles.card}>
-                <StepCounter/>
-        </Card>
+        {/* <Card style={styles.card}> */}
+                {/* <StepCounter/> */}
+        {/* </Card> */}
 
 
         <Card style={styles.card}>

@@ -3,13 +3,13 @@ import { View, StyleSheet } from 'react-native';
 import { Card, CardItem, Text, Body } from 'native-base';
 import AppFooter  from '../footer/AppFooter'
 // import { Route, Switch } from 'react-router-native'
+import StepCounter from '../step-counter/stepCounter';
 
 export default class Profile extends React.Component {
-
     render() {
         return (
-            <View style= {StyleSheet.profile}>
-                <Card style={styles.card}>
+            <View>
+                {/* <Card style={styles.card}>
                     <CardItem header>
                         <Text>NativeBase</Text>
                     </CardItem>
@@ -23,6 +23,9 @@ export default class Profile extends React.Component {
                     <CardItem footer>
                         <Text>GeekyAnts</Text>
                     </CardItem>
+                </Card> */}
+                <Card style={styles.card}>
+                    <StepCounter></StepCounter>
                 </Card>
                 <AppFooter/>
             </View>
