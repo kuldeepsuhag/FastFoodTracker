@@ -79,7 +79,7 @@ class Signup extends React.Component {
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Password</Label>
-                                <Input value={this.state.password}
+                                <Input secureTextEntry={true} value={this.state.password}
                                     onChangeText={(password) => this.setState({ password })} />
                             </Item>
                             {/* <Item floatingLabel style={styles.input}>
