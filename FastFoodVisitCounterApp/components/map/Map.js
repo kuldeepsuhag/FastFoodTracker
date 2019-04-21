@@ -1,7 +1,7 @@
 import React from 'react';
 import { Constants, MapView, Location, Permissions } from 'expo';
 import { StyleSheet, View, Alert, BackHandler } from 'react-native';
-import AppFooter  from '../footer/AppFooter'
+import AppFooter from '../footer/AppFooter'
 import StepCounter from '../step-counter/stepCounter';
 import { Card, CardItem, Text, Body } from 'native-base';
 import ip from '../../config';
@@ -101,30 +101,30 @@ export default class Map extends React.Component {
 
         {
           this.state.locationResult === null ?
-          <Text>Finding your current location...</Text> :
-          this.state.hasLocationPermissions === false ?
-            <Text>Please provide location permissions.</Text> :
-            this.state.mapRegion === null ?
-            <Text>Map region doesn't exist.</Text> :
-            <MapView
-              style={{ alignSelf: 'stretch', height: '50%' }}
-              region={this.state.mapRegion}
-              showsUserLocation={true}
-              onRegionChange={this._handleMapRegionChange}
-            />
+            <Text>Finding your current location...</Text> :
+            this.state.hasLocationPermissions === false ?
+              <Text>Please provide location permissions.</Text> :
+              this.state.mapRegion === null ?
+                <Text>Map region doesn't exist.</Text> :
+                <MapView
+                  style={{ alignSelf: 'stretch', height: '50%' }}
+                  region={this.state.mapRegion}
+                  showsUserLocation={true}
+                  onRegionChange={this._handleMapRegionChange}
+                />
         }
 
         {/* <Card style={styles.card}> */}
-                {/* <StepCounter/> */}
+        {/* <StepCounter/> */}
         {/* </Card> */}
 
 
         <Card style={styles.card}>
-              <CardItem>
-                <Text>Location Data: {this.state.locationResult}</Text>
-              </CardItem>
+          <CardItem>
+            <Text>Location Data: {this.state.locationResult}</Text>
+          </CardItem>
         </Card>
-        <AppFooter/>
+        <AppFooter />
       </View>
     );
   }
@@ -145,11 +145,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#34495e',
   },
-  card:{
-      flexDirection: 'row',
-      justifyContent: 'center',
-      marginLeft: '5%',
-      marginRight: '5%',
-      maxWidth: '100%'
+  card: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginLeft: '5%',
+    marginRight: '5%',
+    maxWidth: '100%'
   }
 });

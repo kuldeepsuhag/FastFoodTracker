@@ -61,7 +61,7 @@ export default class Profile extends React.Component {
         //     this.props.history.push("/map");
         // }).catch((error) => {
         //     console.log(error);
-        // });
+        // });ceab6d68dc78a4a3614648f4c685986ed8b8e
     }
 
 
