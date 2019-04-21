@@ -4,6 +4,7 @@ import { StyleSheet, View, Alert, BackHandler } from 'react-native';
 import AppFooter  from '../footer/AppFooter'
 import StepCounter from '../step-counter/stepCounter';
 import { Card, CardItem, Text, Body } from 'native-base';
+
 export default class Map extends React.Component {
   state = {
     mapRegion: null,
@@ -35,6 +36,24 @@ export default class Map extends React.Component {
     let location = await Location.getCurrentPositionAsync({});
     this.setState({ locationResult: JSON.stringify(location) });
   
+   let location = await Location.getCurrentPositionAsync({});
+
+   let latitute = location.coords.latitude
+   let longitude = location.coords.longitude
+
+   let locationObj = {
+     latitude: latitute,
+     longitude: longitude
+   }
+
+   let geoResult = await Location.reverseGeocodeAsync(locationObj)
+
+   console.log("######")
+   console.log(geoResult)
+   console.log("######")
+   
+   this.setState({ locationResult: JSON.stringify(location) });
+
     // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
     // The map computes two values, longitudeDelta/width and latitudeDelta/height, compares those 2 computed values, and takes the larger of the two.
     // The map is zoomed according to the value chosen in step 2 and the other value is ignored.

@@ -1,6 +1,6 @@
 export default {
     ip: {
-      //Akshay
+      // //Akshay
       // address: "http://172.20.10.2:5000"
       //Kuldeep
       // address: "http://172.20.10.2:5000"
