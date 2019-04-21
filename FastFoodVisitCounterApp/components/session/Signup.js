@@ -5,8 +5,10 @@ import { View, StyleSheet } from 'react-native';
 import axios from "axios";
 import ip from "../../config";
 import ValidateForm from "../validate/ValidateForm"
+import { addUser } from '../../redux/actions/index'
+import {connect} from 'react-redux'
 
-export default class Signup extends React.Component {
+class Signup extends React.Component {
     constructor(props, { }) {
         super(props);
         this.state = {
@@ -40,27 +42,15 @@ export default class Signup extends React.Component {
     signupUser() {
         console.log("Pressed btn");
         console.log(this.state.patient);
-       this.props.history.push("/profile");
-        // if (!this.validate()) {
-        //     var url = ip.ip.address;
-        //     axios({
-        //         method: 'post',
-        //         url: url + "/signup",
-        //         data: {
-        //             id: this.state.patient,
-        //             email: this.state.email,
-        //             password: this.state.password
-        //         }
-        //     }).then((response) => {
-        //         console.log(response.data);
-        //         this.props.history.push("/profile");
-        //     }).catch((error) => {
-        //         console.log(error);
-        //     });
-
-        // } else {
-
-        // }
+        if (!this.validate()) {
+            var data = {
+                id: this.state.patient,
+                email: this.state.email,
+                password: this.state.password
+            }
+            this.props.dispatch(addUser(data));
+            this.props.history.push("/profile");
+        }
     }
 
 
@@ -132,3 +122,5 @@ const styles = StyleSheet.create({
         marginBottom: '2%'
     }
 });
+
+export default connect()(Signup)

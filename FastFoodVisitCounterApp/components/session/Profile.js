@@ -4,9 +4,10 @@ import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
 import { View, StyleSheet, Image } from 'react-native';
 import { ImagePicker, Permissions } from 'expo';
 import ip from '../../config';
-import axios from "axios"
+import axios from "axios";
+import {connect} from 'react-redux'
 
-export default class Profile extends React.Component {
+class Profile extends React.Component {
     constructor(props, { }) {
         super(props);
         this.state = {
@@ -44,24 +45,26 @@ export default class Profile extends React.Component {
     }
 
     submitProfile() {
-        this.props.history.push("/map");
-        // var url = ip.ip.address;
-        // axios({
-        //     method: 'post',
-        //     url: url + "/profile",
-        //     data: {
-        //         id: this.state.doctor,
-        //         name: this.state.name,
-        //         height: this.state.height,
-        //         weight: this.state.weight,
-        //         image: this.state.image
-        //     }
-        // }).then((response) => {
-        //     console.log(response.data);
-        //     this.props.history.push("/map");
-        // }).catch((error) => {
-        //     console.log(error);
-        // });ceab6d68dc78a4a3614648f4c685986ed8b8e
+        var url = ip.ip.address;
+        axios({
+            method: 'post',
+            url: url + "/signup",
+            data: {
+                email: this.props.userData.email,
+                password: this.props.userData.password,
+                patientId: this.props.userData.id,
+                doctorId: this.state.doctor,
+                name: this.state.name,
+                height: this.state.height,
+                weight: this.state.weight,
+                image: this.state.image
+            }
+        }).then((response) => {
+            console.log(response.data);
+            this.props.history.push("/map");
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 
 
@@ -149,3 +152,11 @@ const styles = StyleSheet.create({
         marginBottom: '2%'
     }
 });
+
+const mapStateToProps = (state) => {
+    return {
+        userData: state
+    }
+}
+
+export default connect(mapStateToProps)(Profile); 

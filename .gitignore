@@ -3,10 +3,11 @@ node_modules
 nodejs-assets
 /dist
 src/api/index.js
-
+packager-info.json
+settings.json
 /tests/e2e/reports/
 selenium-debug.log
-
+.expo
 yarn.lock
 
 # local env files
