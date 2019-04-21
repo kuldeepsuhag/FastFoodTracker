@@ -4,12 +4,14 @@ import { StyleSheet, View, Alert, BackHandler } from 'react-native';
 import AppFooter  from '../footer/AppFooter'
 import StepCounter from '../step-counter/stepCounter';
 import { Card, CardItem, Text, Body } from 'native-base';
-
+import ip from '../../config';
+import axios from "axios"
 export default class Map extends React.Component {
   state = {
     mapRegion: null,
     hasLocationPermissions: false,
-    locationResult: null
+    locationResult: null,
+    locationDataToServer: null
   };
 
   componentDidMount() {
@@ -35,8 +37,6 @@ export default class Map extends React.Component {
    if(isGPSOn){
     let location = await Location.getCurrentPositionAsync({});
     this.setState({ locationResult: JSON.stringify(location) });
-  
-   let location = await Location.getCurrentPositionAsync({});
 
    let latitute = location.coords.latitude
    let longitude = location.coords.longitude
@@ -48,10 +48,16 @@ export default class Map extends React.Component {
 
    let geoResult = await Location.reverseGeocodeAsync(locationObj)
 
+   let locationObjToServer = {
+    latitude: latitute,
+    longitude: longitude,
+    city: geoResult[0].city
+  }
    console.log("######")
    console.log(geoResult)
    console.log("######")
-   
+
+   this.setState({ locationDataToServer: JSON.stringify(locationObjToServer) })
    this.setState({ locationResult: JSON.stringify(location) });
 
     // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
@@ -60,7 +66,8 @@ export default class Map extends React.Component {
     // If the chosen value is longitudeDelta, then the left edge is longitude - longitudeDelta and the right edge is longitude + longitudeDelta. The top and bottom are whatever values are needed to fill the height without stretching the map.
     // If the chosen value is latitudeDelta, then the bottom edge is latitude - latitudeDelta and the top edge is latitude + latitudeDelta. The left and right are whatever values are needed to fill the width without stretching the map.
     this.setState({mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }});
-   }else{
+    this.sendMapData() 
+  }else{
     Alert.alert(
       'Location Services Are Disabled',
       'Please turn on location services to proceed.',
@@ -71,6 +78,19 @@ export default class Map extends React.Component {
     )
    }
   };
+
+  sendMapData(){
+    // var url = ip.ip.address;
+    // axios({
+    //     method: 'post',
+    //     url: url + "/map-data",
+    //     data: this.state.locationDataToServer
+    // }).then((response) => {
+    //     console.log(response.data);
+    // }).catch((error) => {
+    //     console.log(error);
+    // });
+  }
 
   render() {
     return (
