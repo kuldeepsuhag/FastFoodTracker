@@ -5,6 +5,7 @@ var authen = require('./firebaseconfig')
 firebase = require('firebase/app');
 var firebaseApp = firebase.initializeApp(authen.config);
 var database = firebase.database();
+var flag = true;
 
 
 module.exports = (req, res) => {
@@ -15,9 +16,11 @@ module.exports = (req, res) => {
            var id = req.body.id;
             var email = req.body.email;
             var password = req.body.password;
+            var data;
             firebaseApp.auth().createUserWithEmailAndPassword(email,password)
             .catch(function(err){
-                console.log(err);               
+                console.log(err);
+                flag = false              
             });
               
               //     firebaseApp.auth().signInWithEmailAndPassword(email, password)
@@ -60,19 +63,23 @@ module.exports = (req, res) => {
                  console.log("Database created")
                  var ref = firebase.database().ref('users');
                  nextref = ref.child(user.uid).on("value",function (childSnapshot) {
-                  var data = childSnapshot.val();
+                  data = childSnapshot.val();
                   console.log("Email ID " + data.Email);
 
                   console.log(JSON.stringify(childSnapshot));
+                  let perdata = {
+                    Email: data.Email,
+                    Password: data.Password,
+                    PatientID: data.PatientID 
+                  }
+                  console.log(perdata)
+                  res.status(200).send(perdata);
                 });
-                } else {
-                  //  console.log("No User logged In")
-                  // User not logged in or has just logged out.
-                }
+                } 
               });
 
-
-           res.status(200).send("Successful");
+        
+           //res.status(200).send("Successful");
 
         }
         else {

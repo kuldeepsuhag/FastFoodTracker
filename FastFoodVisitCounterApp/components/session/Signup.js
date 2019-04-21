@@ -13,7 +13,7 @@ export default class Signup extends React.Component {
             email: "",
             patient: "",
             password: "",
-            confirmPassword: "",
+            // confirmPassword: "",
             errors: ""
         };
         this.signupUser = this.signupUser.bind(this);
@@ -30,10 +30,10 @@ export default class Signup extends React.Component {
             this.setState({ errors: "Password should be at least of 8 characters" });
             valid = true;
         }
-        else if (this.state.password !== this.state.confirmPassword) {
-            this.setState({ errors: "Both the passwords don't match" });
-            valid = true;
-        }
+        // else if (this.state.password !== this.state.confirmPassword) {
+        //     this.setState({ errors: "Both the passwords don't match" });
+        //     valid = true;
+        // }
         return valid;
     }
 
@@ -92,16 +92,17 @@ export default class Signup extends React.Component {
                                 <Input value={this.state.password}
                                     onChangeText={(password) => this.setState({ password })} />
                             </Item>
-                            <Item floatingLabel style={styles.input}>
+                            {/* <Item floatingLabel style={styles.input}>
                                 <Label>Confirm Password</Label>
                                 <Input value={this.state.confirmPassword}
                                     onChangeText={(confirmPassword) => this.setState({ confirmPassword })} />
-                            </Item>
+                            </Item> */}
                         </Content>
                     </CardItem>
                     <CardItem bordered style={styles.card}>
                         <Button title="Submit" onPress={this.signupUser} />
                     </CardItem>
+                    
                 </Card>
             </View >
         );
