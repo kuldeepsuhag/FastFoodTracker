@@ -40,6 +40,7 @@ export default class Signup extends React.Component {
     signupUser() {
         console.log("Pressed btn");
         console.log(this.state.patient);
+    //    this.props.history.push("/profile");
         if (!this.validate()) {
             var url = ip.ip.address;
             axios({
@@ -52,7 +53,7 @@ export default class Signup extends React.Component {
                 }
             }).then((response) => {
                 console.log(response.data);
-                this.props.history.push("/map");
+                this.props.history.push("/profile");
             }).catch((error) => {
                 console.log(error);
             });
