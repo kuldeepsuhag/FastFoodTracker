@@ -20,7 +20,7 @@ export default class AppFooter extends React.Component {
                         </Link>
                     </Button>
                     <Button>
-                        <Link to="/profile">
+                        <Link to="/viewProfile">
                             <Icon name="person" />
                         </Link>
                     </Button>
