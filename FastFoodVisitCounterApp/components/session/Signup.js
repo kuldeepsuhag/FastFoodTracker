@@ -40,27 +40,27 @@ export default class Signup extends React.Component {
     signupUser() {
         console.log("Pressed btn");
         console.log(this.state.patient);
-    //    this.props.history.push("/profile");
-        if (!this.validate()) {
-            var url = ip.ip.address;
-            axios({
-                method: 'post',
-                url: url + "/signup",
-                data: {
-                    id: this.state.patient,
-                    email: this.state.email,
-                    password: this.state.password
-                }
-            }).then((response) => {
-                console.log(response.data);
-                this.props.history.push("/profile");
-            }).catch((error) => {
-                console.log(error);
-            });
+       this.props.history.push("/profile");
+        // if (!this.validate()) {
+        //     var url = ip.ip.address;
+        //     axios({
+        //         method: 'post',
+        //         url: url + "/signup",
+        //         data: {
+        //             id: this.state.patient,
+        //             email: this.state.email,
+        //             password: this.state.password
+        //         }
+        //     }).then((response) => {
+        //         console.log(response.data);
+        //         this.props.history.push("/profile");
+        //     }).catch((error) => {
+        //         console.log(error);
+        //     });
 
-        } else {
+        // } else {
 
-        }
+        // }
     }
 
 
