@@ -13,15 +13,14 @@ module.exports = (req, res) => {
     setTimeout((function() {
         if (req.body) {
            console.log(req.body);
-           var id = req.body.id;
-            var email = req.body.email;
-            var password = req.body.password;
             var data;
-            firebaseApp.auth().createUserWithEmailAndPassword(email,password)
+            console.log("New Data")
+            console.log(req.body.email);
+            firebaseApp.auth().createUserWithEmailAndPassword(req.body.email,req.body.password)
             .catch(function(err){
-                console.log(err);
-                flag = false              
+                console.log(err);            
             });
+            console.log("Registered");
               
               //     firebaseApp.auth().signInWithEmailAndPassword(email, password)
               //         .catch(function(error){
@@ -51,14 +50,20 @@ module.exports = (req, res) => {
                 //  console.log("User successfullly Logged In")
                 //  var userId = user.uid
                  firebase.database().ref('users/' + user.uid).set({
-                      Email: email,
-                      PatientID : id,
-                      Password : password
-
+                      name : req.body.name,
+                      Email: req.body.email,
+                      PatientID : req.body.patientId,
+                      doctorId : req.body.doctorId,
+                      height: req.body.height,
+                      weight:req.body.weight,
+                      image: req.body.image
                     });
-                firebase.database().ref('PatientID/' + id).set({
+                    console.log("User Data Completed");
+                firebase.database().ref('PatientID/' + req.body.patientId).set({
                     UID : user.uid,
-                    Email : email
+                    Email : req.body.email,
+                    doctorId: req.body.doctorId,
+                    PatientName: req.body.name
                 });
                  console.log("Database created")
                  var ref = firebase.database().ref('users');
@@ -68,12 +73,17 @@ module.exports = (req, res) => {
 
                   console.log(JSON.stringify(childSnapshot));
                   let perdata = {
-                    Email: data.Email,
-                    Password: data.Password,
-                    PatientID: data.PatientID 
+                      name : data.name,
+                      Email: data.email,
+                      PatientID : data.patientId,
+                      doctorId : data.doctorId,
+                      height: data.height,
+                      weight:data.weight,
+                      image: data.image
                   }
-                  console.log(perdata)
+                  console.log("Sending data" + perdata.email);
                   res.status(200).send(perdata);
+      
                 });
                 } 
               });
