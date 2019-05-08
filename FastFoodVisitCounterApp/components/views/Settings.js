@@ -24,7 +24,7 @@ export default class Settings extends React.Component {
                         <Text>GeekyAnts</Text>
                     </CardItem>
                 </Card>
-                <AppFooter/>
+                {/* <AppFooter/> */}
             </View>
         );
     }
