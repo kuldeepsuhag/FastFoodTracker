@@ -19,6 +19,7 @@ class Signup extends React.Component {
         };
         this.signinUser = this.signinUser.bind(this);
         this.validate = this.validate.bind(this);
+        this.signup = this.signup.bind(this);
     }
 
     validate() {
@@ -45,6 +46,12 @@ class Signup extends React.Component {
             this.props.dispatch(userLogin(data));
             this.props.history.push("/profile");
         }
+    }
+
+    signup(){
+        this.props.history.push({
+            pathname: "/"
+        })
     }
 
 
@@ -80,8 +87,7 @@ class Signup extends React.Component {
                 <Card style={styles.card}>
                     <CardItem>
                         <Text>Go back to &nbsp;</Text>
-                        <Button title="Sign Up">
-                            <Link to="/"></Link>
+                        <Button title="Sign Up" onPress={this.signup}>
                         </Button>
                     </CardItem>
                 </Card>

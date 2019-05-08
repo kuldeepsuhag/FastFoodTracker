@@ -21,6 +21,7 @@ class Signup extends React.Component {
         };
         this.signupUser = this.signupUser.bind(this);
         this.validate = this.validate.bind(this);
+        this.login = this.login.bind(this);
     }
 
     validate() {
@@ -52,6 +53,12 @@ class Signup extends React.Component {
             this.props.dispatch(addUser(data));
             this.props.history.push("/profile");
         }
+    }
+
+    login(){
+        this.props.history.push({
+            pathname: "/login"
+        })
     }
 
 
@@ -97,8 +104,8 @@ class Signup extends React.Component {
                 <Card style={styles.card}>
                     <CardItem>
                         <Text>Already have an account? &nbsp;</Text>
-                        <Button title="Sign In">
-                            <Link to="/login"></Link>
+                        <Button title="Sign In" onPress={this.login}>
+                            
                         </Button>
                     </CardItem>
                 </Card>
