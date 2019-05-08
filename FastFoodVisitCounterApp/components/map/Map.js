@@ -135,7 +135,7 @@ export default class Map extends React.Component {
             <Text>Location Data: {this.state.locationResult}</Text>
           </CardItem>
         </Card>
-        <AppFooter />
+        {/* <AppFooter /> */}
       </View>
     );
   }
