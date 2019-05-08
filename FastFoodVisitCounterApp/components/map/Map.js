@@ -133,11 +133,12 @@ export default class Map extends React.Component {
               this.state.mapRegion === null ?
                 <Text>Map region doesn't exist.</Text> :
                 <MapView
-                  style={{ alignSelf: 'stretch', height: '50%' }}
+                  style={{ alignSelf: 'stretch', height: '61.9%', marginTop: '-1%' }}
                   region={this.state.mapRegion}
                   showsUserLocation={true}
                   showsPointsOfInterest={false}
                   followsUserLocation={false}
+                  zoomLevel={20}
                   provider="google"
                   onRegionChange={region => this.state.mapRegion = region}
                   onUserLocationChange={location => this._handleMapRegionChange(location)}
