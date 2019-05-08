@@ -78,17 +78,17 @@ class Signup extends React.Component {
                             <Item floatingLabel style={styles.input}>
                                 <Label>Patient ID</Label>
                                 <Input value={this.state.patient}
-                                    onChangeText={(patient) => this.setState({ patient })} />
+                                    onChangeText={(patient) => this.setState({patient: patient })} />
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Email</Label>
                                 <Input value={this.state.email}
-                                    onChangeText={(email) => this.setState({ email })} />
+                                    onChangeText={(email) => this.setState({ email: email })} />
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Password</Label>
                                 <Input secureTextEntry={true} value={this.state.password}
-                                    onChangeText={(password) => this.setState({ password })} />
+                                    onChangeText={(password) => this.setState({password: password })} />
                             </Item>
                             {/* <Item floatingLabel style={styles.input}>
                                 <Label>Confirm Password</Label>

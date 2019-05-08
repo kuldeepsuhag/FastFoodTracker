@@ -1,12 +1,6 @@
 require('firebase/auth')
 require('firebase/database')
-var authen = require('./firebaseconfig')
-
-firebase = require('firebase/app');
-var firebaseApp = firebase.initializeApp(authen.config);
-var database = firebase.database();
-var flag = true;
-
+var firebaseApp = require('../server');
 
 module.exports = (req, res) => {
     const timeOut = 500;
@@ -16,7 +10,8 @@ module.exports = (req, res) => {
             var data;
             console.log("New Data")
             console.log(req.body.email);
-            firebaseApp.auth().createUserWithEmailAndPassword(req.body.email,req.body.password)
+            
+            firebaseApp.firebaseApp.auth().createUserWithEmailAndPassword(req.body.email,req.body.password)
             .catch(function(err){
                 console.log(err);            
             });
