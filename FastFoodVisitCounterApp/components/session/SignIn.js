@@ -14,14 +14,12 @@ class Signup extends React.Component {
         super(props);
         this.state = {
             email: "",
-            patient: "",
             password: "",
-            // confirmPassword: "",
             errors: ""
         };
-        this.signupUser = this.signupUser.bind(this);
+        this.signinUser = this.signinUser.bind(this);
         this.validate = this.validate.bind(this);
-        this.login = this.login.bind(this);
+        this.signup = this.signup.bind(this);
     }
 
     validate() {
@@ -34,30 +32,25 @@ class Signup extends React.Component {
             this.setState({ errors: "Password should be at least of 8 characters" });
             valid = true;
         }
-        // else if (this.state.password !== this.state.confirmPassword) {
-        //     this.setState({ errors: "Both the passwords don't match" });
-        //     valid = true;
-        // }
         return valid;
     }
 
-    signupUser() {
+    signinUser() {
         console.log("Pressed btn");
         console.log(this.state.patient);
         if (!this.validate()) {
             var data = {
-                id: this.state.patient,
                 email: this.state.email,
                 password: this.state.password
             }
-            this.props.dispatch(addUser(data));
+            this.props.dispatch(userLogin(data));
             this.props.history.push("/profile");
         }
     }
 
-    login(){
+    signup(){
         this.props.history.push({
-            pathname: "/login"
+            pathname: "/"
         })
     }
 
@@ -68,18 +61,13 @@ class Signup extends React.Component {
             <View style={styles.container}>
                 <Card style={styles.card}>
                     <CardItem header bordered>
-                        <Text>Sign Up</Text>
+                        <Text>Sign In</Text>
                     </CardItem>
                     <CardItem>
                         <ValidateForm errors={this.state.errors} />
                     </CardItem>
                     <CardItem bordered>
                         <Content>
-                            <Item floatingLabel style={styles.input}>
-                                <Label>Patient ID</Label>
-                                <Input value={this.state.patient}
-                                    onChangeText={(patient) => this.setState({ patient })} />
-                            </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Email</Label>
                                 <Input value={this.state.email}
@@ -90,22 +78,16 @@ class Signup extends React.Component {
                                 <Input secureTextEntry={true} value={this.state.password}
                                     onChangeText={(password) => this.setState({ password })} />
                             </Item>
-                            {/* <Item floatingLabel style={styles.input}>
-                                <Label>Confirm Password</Label>
-                                <Input value={this.state.confirmPassword}
-                                    onChangeText={(confirmPassword) => this.setState({ confirmPassword })} />
-                            </Item> */}
                         </Content>
                     </CardItem>
                     <CardItem bordered style={styles.card}>
-                        <Button title="Submit" onPress={this.signupUser} />
+                        <Button title="Submit" onPress={this.signinUser} />
                     </CardItem>
                 </Card>
                 <Card style={styles.card}>
                     <CardItem>
-                        <Text>Already have an account? &nbsp;</Text>
-                        <Button title="Sign In" onPress={this.login}>
-                            
+                        <Text>Go back to &nbsp;</Text>
+                        <Button title="Sign Up" onPress={this.signup}>
                         </Button>
                     </CardItem>
                 </Card>

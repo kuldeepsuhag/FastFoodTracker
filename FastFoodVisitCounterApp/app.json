@@ -34,7 +34,6 @@
         "backgroundColor": "#ff0000",
         "backgroundImage": "./assets/icon.png"
       },
-      // "playStoreUrl": "",
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
@@ -64,7 +63,7 @@
       ],
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyB2F2xMPDKHtOuEGTAR5rvJfeN0mZJbKVw"
+          "apiKey": "AIzaSyDM6w1kp50Cf1MU00yKuyKRtFOfaI5lqiw"
         }
       },
       "intentFilters": [
