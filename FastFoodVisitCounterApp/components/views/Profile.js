@@ -27,7 +27,7 @@ export default class Profile extends React.Component {
                 <Card style={styles.card}>
                     <StepCounter></StepCounter>
                 </Card>
-                <AppFooter/>
+                {/* <AppFooter/> */}
             </View>
         );
     }

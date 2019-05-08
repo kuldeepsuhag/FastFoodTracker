@@ -30,17 +30,21 @@ export default class Map extends React.Component {
     let latitute = location.coords.latitude.toFixed(4)
     let longitude = location.coords.longitude.toFixed(4)
 
-    if(this.state.roundedLat == null && this.state.roundedLong == null){
-      this.setState({roundedLat: latitute,
-      roundedLong: longitude})
+    if (this.state.roundedLat == null && this.state.roundedLong == null) {
+      this.setState({
+        roundedLat: latitute,
+        roundedLong: longitude
+      })
       this._getLocationAsync();
-    }else if(this.state.roundedLat !== latitute ||
-    this.state.roundedLong !==  longitude){
-      this.setState({roundedLat: latitute,
-        roundedLong: longitude})
+    } else if (this.state.roundedLat !== latitute ||
+      this.state.roundedLong !== longitude) {
+      this.setState({
+        roundedLat: latitute,
+        roundedLong: longitude
+      })
       this._getLocationAsync();
     }
-   
+
   };
 
   _getLocationAsync = async () => {
@@ -73,7 +77,7 @@ export default class Map extends React.Component {
       //   longitude: longitude,
       //   city: geoResult[0].city
       // }
- 
+
 
       //this.setState({ locationDataToServer: JSON.stringify(locationObjToServer) })
       //console.log("Testing " + this.state.locationDataToServer);
@@ -120,42 +124,45 @@ export default class Map extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.paragraph}>
-          Fast Food Visit Counter App
+      <>
+        <View style={styles.container}>
+          <Text style={styles.paragraph}>
+            Fast Food Visit Counter App
         </Text>
 
-        {
-          this.state.locationResult === null ?
-            <Text>Finding your current location...</Text> :
-            this.state.hasLocationPermissions === false ?
-              <Text>Please provide location permissions.</Text> :
-              this.state.mapRegion === null ?
-                <Text>Map region doesn't exist.</Text> :
-                <MapView
-                  style={{ alignSelf: 'stretch', height: '50%' }}
-                  region={this.state.mapRegion}
-                  showsUserLocation={true}
-                  showsPointsOfInterest={false}
-                  followsUserLocation={false}
-                  provider="google"
-                  onRegionChange={region => this.state.mapRegion = region}
-                  onUserLocationChange={location => this._handleMapRegionChange(location)}
-                />
-        }
+          {
+            this.state.locationResult === null ?
+              <Text>Finding your current location...</Text> :
+              this.state.hasLocationPermissions === false ?
+                <Text>Please provide location permissions.</Text> :
+                this.state.mapRegion === null ?
+                  <Text>Map region doesn't exist.</Text> :
+                  <MapView
+                    style={{ alignSelf: 'stretch', height: '61.9%', marginTop: '-1%' }}
+                    region={this.state.mapRegion}
+                    showsUserLocation={true}
+                    showsPointsOfInterest={false}
+                    followsUserLocation={false}
+                    zoomLevel={20}
+                    provider="google"
+                    onRegionChange={region => this.state.mapRegion = region}
+                    onUserLocationChange={location => this._handleMapRegionChange(location)}
+                  />
+          }
 
-        {/* <Card style={styles.card}> */}
-        {/* <StepCounter/> */}
-        {/* </Card> */}
+          {/* <Card style={styles.card}> */}
+          {/* <StepCounter/> */}
+          {/* </Card> */}
 
 
-        <Card style={styles.card}>
-          <CardItem>
-            <Text>Location Data: {this.state.locationResult}</Text>
-          </CardItem>
-        </Card>
-        <AppFooter />
-      </View>
+          <Card style={styles.card}>
+            <CardItem>
+              <Text>Location Data: {this.state.locationResult}</Text>
+            </CardItem>
+          </Card>
+        </View>
+        <AppFooter showAppFooter={false} />
+      </>
     );
   }
 }
