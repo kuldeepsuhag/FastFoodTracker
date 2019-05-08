@@ -23,6 +23,7 @@ class Signup extends React.Component {
     }
 
     validate() {
+        console.log(this.state.email)
         let valid = false;
         if (!(this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i))) {
             this.setState({ errors: "Please enter a valid email" });
@@ -37,14 +38,23 @@ class Signup extends React.Component {
 
     signinUser() {
         console.log("Pressed btn");
-        console.log(this.state.patient);
+        console.log(this.state.email);
         if (!this.validate()) {
-            var data = {
-                email: this.state.email,
-                password: this.state.password
-            }
-            this.props.dispatch(userLogin(data));
-            this.props.history.push("/profile");
+            var url = ip.ip.address;
+            axios({
+                method: 'post',
+                url: url + "/signin",
+                data: {
+                    email: this.state.email,
+                    password: this.state.password
+                }
+            }).then((response) => {
+                console.log(response.data);
+                this.props.history.push("/map");
+            }).catch((error) => {
+                console.log(error);
+            });
+           // this.props.history.push("/profile");
         }
     }
 
@@ -71,12 +81,12 @@ class Signup extends React.Component {
                             <Item floatingLabel style={styles.input}>
                                 <Label>Email</Label>
                                 <Input value={this.state.email}
-                                    onChangeText={(email) => this.setState({ email })} />
+                                    onChangeText={(email) => this.setState({email:  email })} />
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Password</Label>
                                 <Input secureTextEntry={true} value={this.state.password}
-                                    onChangeText={(password) => this.setState({ password })} />
+                                    onChangeText={(password) => this.setState({password: password })} />
                             </Item>
                         </Content>
                     </CardItem>
