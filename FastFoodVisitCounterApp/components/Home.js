@@ -13,21 +13,16 @@ export default class Home extends React.Component {
 
     render() {
         return (
-            <View style = {{flex: 1}} >
                 <View style={{flex: 1}}>
                     <Switch>
-                        <Route exact path="/" component={Map} />
+                        <Route exact path="/" component={Signup} />
                         <Route exact path="/profile" component={Profile} />
                         <Route exact path="/map" component={Map} />
                         <Route exact path="/viewProfile" component={ViewProfile} />
                         <Route exact path="/settings" component={Settings} />
                         <Route exact path="/login" component={SignIn} />
                     </Switch>
-                </View> 
-                <View style={{height: 50}}>
-                    <AppFooter showAppFooter={false}/>
-                </View >
-            </View>
+                </View>
         );
     }
 }
