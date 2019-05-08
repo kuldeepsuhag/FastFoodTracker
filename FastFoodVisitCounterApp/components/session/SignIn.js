@@ -20,10 +20,12 @@ class Signup extends React.Component {
         this.signinUser = this.signinUser.bind(this);
         this.validate = this.validate.bind(this);
         this.signup = this.signup.bind(this);
+        this.handleEmailChange = this.handleEmailChange.bind(this);
+        this.handlePasswordChange = this.handlePasswordChange.bind(this);
     }
 
     validate() {
-        console.log(this.state.email)
+        this.setState({ errors: "" });
         let valid = false;
         if (!(this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i))) {
             this.setState({ errors: "Please enter a valid email" });
@@ -64,9 +66,18 @@ class Signup extends React.Component {
         })
     }
 
+    handleEmailChange(event) {
+        let processedData = event.nativeEvent.text;
+        this.setState({email: processedData})
+    }
+
+    handlePasswordChange(event) {
+        let processedData = event.nativeEvent.text;
+        this.setState({password: processedData})
+    }
+
 
     render() {
-        //  console.log(this.state.email);
         return (
             <View style={styles.container}>
                 <Card style={styles.card}>
@@ -81,12 +92,12 @@ class Signup extends React.Component {
                             <Item floatingLabel style={styles.input}>
                                 <Label>Email</Label>
                                 <Input value={this.state.email}
-                                    onChangeText={(email) => this.setState({email:  email })} />
+                                    onChange={this.handleEmailChange} />
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Password</Label>
                                 <Input secureTextEntry={true} value={this.state.password}
-                                    onChangeText={(password) => this.setState({password: password })} />
+                                    onChange={this.handlePasswordChange} />
                             </Item>
                         </Content>
                     </CardItem>
@@ -96,7 +107,7 @@ class Signup extends React.Component {
                 </Card>
                 <Card style={styles.card}>
                     <CardItem>
-                        <Text>Go back to &nbsp;</Text>
+                        <Text>New User? Go back to &nbsp;</Text>
                         <Button title="Sign Up" onPress={this.signup}>
                         </Button>
                     </CardItem>

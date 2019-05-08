@@ -23,6 +23,10 @@ class Profile extends React.Component {
         this.bmi = this.bmi.bind(this);
         this.weight = this.weight.bind(this);
         this.submitProfile = this.submitProfile.bind(this);
+        this.handleFullNameChange = this.handleFullNameChange.bind(this);
+        this.handleDocIDChange = this.handleDocIDChange.bind(this);
+        this.handleHeightChange = this.handleHeightChange.bind(this);
+        this.handleWeighttChange = this.handleWeighttChange.bind(this);
     }
 
     height(e) {
@@ -43,6 +47,28 @@ class Profile extends React.Component {
             var bmi = this.state.weight / ((this.state.height / 100) * (this.state.height / 100));
             this.setState({ bmi: bmi })
         }
+    }
+
+    handleFullNameChange(event) {
+        let processedData = event.nativeEvent.text;
+        this.setState({name: processedData})
+    }
+
+    handleDocIDChange(event) {
+        let processedData = event.nativeEvent.text;
+        this.setState({doctor: processedData})
+    }
+    
+    handleHeightChange(event) {
+        let processedData = event.nativeEvent.text;
+        this.setState({height: processedData})
+        this.bmi();
+    }
+    
+    handleWeighttChange(event) {
+        let processedData = event.nativeEvent.text;
+        this.setState({weight: processedData})
+         this.bmi();
     }
 
     submitProfile() {
@@ -101,22 +127,22 @@ class Profile extends React.Component {
                             <Item floatingLabel style={styles.input}>
                                 <Label>Full Name</Label>
                                 <Input value={this.state.name}
-                                    onChangeText={(name) => this.setState({ name })} />
+                                    onChange={this.handleFullNameChange} />
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Doctor ID</Label>
                                 <Input value={this.state.doctor}
-                                    onChangeText={(doctor) => this.setState({ doctor })} />
+                                    onChange={this.handleDocIDChange} />
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Height (in cms) </Label>
                                 <Input value={String(this.state.height)} keyboardType="numeric"
-                                    onChange={this.height} />
+                                    onChange={this.handleHeightChange} />
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Weight (in kgs) </Label>
                                 <Input value={String(this.state.weight)} keyboardType="numeric"
-                                    onChange={this.weight} />
+                                    onChange={this.handleWeighttChange} />
                             </Item>
                             <Label>BMI</Label>
                             <Label>{this.state.bmi}</Label>

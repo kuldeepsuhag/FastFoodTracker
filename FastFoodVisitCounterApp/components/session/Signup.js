@@ -22,6 +22,9 @@ class Signup extends React.Component {
         this.signupUser = this.signupUser.bind(this);
         this.validate = this.validate.bind(this);
         this.login = this.login.bind(this);
+        this.handleEmailChange = this.handleEmailChange.bind(this);
+        this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.handlePatientChange = this.handlePatientChange.bind(this);
     }
 
     validate() {
@@ -61,6 +64,21 @@ class Signup extends React.Component {
         })
     }
 
+    handleEmailChange(event) {
+        let processedData = event.nativeEvent.text;
+        this.setState({email: processedData})
+    }
+
+    handlePasswordChange(event) {
+        let processedData = event.nativeEvent.text;
+        this.setState({password: processedData})
+    }
+    
+    handlePatientChange(event) {
+        let processedData = event.nativeEvent.text;
+        this.setState({patient: processedData})
+    }
+
 
     render() {
         //  console.log(this.state.email);
@@ -78,17 +96,17 @@ class Signup extends React.Component {
                             <Item floatingLabel style={styles.input}>
                                 <Label>Patient ID</Label>
                                 <Input value={this.state.patient}
-                                    onChangeText={(patient) => this.setState({patient: patient })} />
+                                    onChange={this.handlePatientChange} />
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Email</Label>
                                 <Input value={this.state.email}
-                                    onChangeText={(email) => this.setState({ email: email })} />
+                                    onChange={this.handleEmailChange} />
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Password</Label>
                                 <Input secureTextEntry={true} value={this.state.password}
-                                    onChangeText={(password) => this.setState({password: password })} />
+                                    onChange={this.handlePasswordChange} />
                             </Item>
                             {/* <Item floatingLabel style={styles.input}>
                                 <Label>Confirm Password</Label>
