@@ -4,3 +4,10 @@ export const addUser = (newData) => ({
         newData
     }
 })
+
+export const loggedIn = (isUser) => ({
+    type: "LOGGED_IN",
+    payload: {
+        isUser
+    }
+})

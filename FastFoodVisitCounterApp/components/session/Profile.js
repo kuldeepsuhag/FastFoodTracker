@@ -6,6 +6,7 @@ import { ImagePicker, Permissions } from 'expo';
 import ip from '../../config';
 import axios from "axios";
 import {connect} from 'react-redux'
+import { loggedIn } from '../../redux/actions/index'
 
 class Profile extends React.Component {
     constructor(props, { }) {
@@ -61,6 +62,7 @@ class Profile extends React.Component {
             }
         }).then((response) => {
             console.log(response.data);
+            this.props.dispatch(loggedIn(true));
             this.props.history.push("/map");
         }).catch((error) => {
             console.log(error);

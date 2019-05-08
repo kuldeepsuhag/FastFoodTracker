@@ -5,7 +5,12 @@ export default (state, action) => {
         case "CREATE_USER": 
             console.log(state)
             return Object.assign({}, state, action.payload.newData); //better way        
-            break;
+        case "LOGGED_IN": 
+            console.log(state)
+            return {
+                state,
+                isUser: action.payload.isUser.isUser
+            }       
         default:
             return state;
     }
