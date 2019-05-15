@@ -2,12 +2,9 @@ import React from 'react';
 import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
 import { View, StyleSheet } from 'react-native';
-import axios from "axios";
-import ip from "../../config";
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
-import {connect} from 'react-redux'
-import { Link } from "react-router-native";
+import { connect } from 'react-redux'
 
 class Signup extends React.Component {
     constructor(props, { }) {
@@ -58,25 +55,25 @@ class Signup extends React.Component {
         }
     }
 
-    login(){
+    login() {
         this.props.history.push({
-            pathname: "/login"
+            pathname: "/"
         })
     }
 
     handleEmailChange(event) {
         let processedData = event.nativeEvent.text;
-        this.setState({email: processedData})
+        this.setState({ email: processedData })
     }
 
     handlePasswordChange(event) {
         let processedData = event.nativeEvent.text;
-        this.setState({password: processedData})
+        this.setState({ password: processedData })
     }
-    
+
     handlePatientChange(event) {
         let processedData = event.nativeEvent.text;
-        this.setState({patient: processedData})
+        this.setState({ patient: processedData })
     }
 
 
@@ -123,7 +120,7 @@ class Signup extends React.Component {
                     <CardItem>
                         <Text>Already have an account? &nbsp;</Text>
                         <Button title="Sign In" onPress={this.login}>
-                            
+
                         </Button>
                     </CardItem>
                 </Card>

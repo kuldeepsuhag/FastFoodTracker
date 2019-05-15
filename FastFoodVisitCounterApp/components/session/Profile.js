@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image , AsyncStorage } from 'react-native';
 import { ImagePicker, Permissions } from 'expo';
 import ip from '../../config';
 import axios from "axios";
@@ -71,6 +71,24 @@ class Profile extends React.Component {
          this.bmi();
     }
 
+    storeData = async () => {
+        console.log("savingg");
+        var that = this;
+        try {
+            console.log(this.props.userData.email)
+            const username = ["@username", this.props.userData.email]
+            const password = ["@password", this.props.userData.password]
+            let akshay = await AsyncStorage.multiSet([username, password] , function(){
+                console.log("Saved");
+                that.props.dispatch(loggedIn(true));
+                that.props.history.push("/map");
+            })
+            console.log(akshay);
+        } catch (e) {
+            // saving error
+        }
+    }
+
     submitProfile() {
         var url = ip.ip.address;
         axios({
@@ -88,8 +106,7 @@ class Profile extends React.Component {
             }
         }).then((response) => {
             console.log(response.data);
-            this.props.dispatch(loggedIn(true));
-            this.props.history.push("/map");
+            this.storeData();
         }).catch((error) => {
             console.log(error);
         });
