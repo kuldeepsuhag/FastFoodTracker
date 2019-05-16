@@ -63,7 +63,7 @@ class SignIn extends React.Component {
                 password: stored ? password : this.state.password
             }
         }).then((response) => {
-            console.log(response.data);
+            console.log(JSON.stringify(response.data));
             this.props.history.push("/map");
         }).catch((error) => {
             console.log(error);

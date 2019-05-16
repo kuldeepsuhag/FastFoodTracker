@@ -65,7 +65,7 @@ class Map extends React.Component {
       // Uncomment to get the state string
       // let dateString = startInterval.getDate() + '/' + (startInterval.getMonth() + 1) + '/' + startInterval.getFullYear();
       
-      let dayString = weekDay[startInterval.getDay()];
+      let dayString = weekDay[prevDate.getDay()];
 
       //First parameter: start of the interval ; Second Parameter: end of the interval
       Pedometer.getStepCountAsync(prevDate.getDate(), prevDate.getDate() + 1).then(
