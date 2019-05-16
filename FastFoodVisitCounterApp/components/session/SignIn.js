@@ -1,15 +1,16 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet , AsyncStorage } from 'react-native';
 import axios from "axios";
 import ip from "../../config";
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { Link } from "react-router-native";
 
-class Signup extends React.Component {
+
+class SignIn extends React.Component {
     constructor(props, { }) {
         super(props);
         this.state = {
@@ -24,56 +25,66 @@ class Signup extends React.Component {
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
     }
 
+    componentWillMount = async () => {
+        try {
+            const username = await AsyncStorage.getItem('@username')
+            const password = await AsyncStorage.getItem('@password')
+            console.log(username)
+            console.log(password)
+            if (username !== null && password !== null) {
+                this.signinUser(true, username, password);
+            }
+        } catch (e) {
+            // error reading value
+        }
+    }
+
     validate() {
         this.setState({ errors: "" });
         let valid = false;
         if (!(this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i))) {
             this.setState({ errors: "Please enter a valid email" });
-            valid = true;
         }
         else if (this.state.password.length < 8) {
             this.setState({ errors: "Password should be at least of 8 characters" });
-            valid = true;
-        }
-        return valid;
-    }
-
-    signinUser() {
-        console.log("Pressed btn");
-        console.log(this.state.email);
-        if (!this.validate()) {
-            var url = ip.ip.address;
-            axios({
-                method: 'post',
-                url: url + "/signin",
-                data: {
-                    email: this.state.email,
-                    password: this.state.password
-                }
-            }).then((response) => {
-                console.log(response.data);
-                this.props.history.push("/map");
-            }).catch((error) => {
-                console.log(error);
-            });
-           // this.props.history.push("/profile");
+        } else {
+            this.signinUser();
         }
     }
 
-    signup(){
+    signinUser(stored, username, password) {
+        console.log(stored)
+        var url = ip.ip.address;
+        axios({
+            method: 'post',
+            url: url + "/signin",
+            data: {
+                email: stored ? username : this.state.email,
+                password: stored ? password : this.state.password
+            }
+        }).then((response) => {
+            console.log(response.data);
+            this.props.history.push("/map");
+        }).catch((error) => {
+            console.log(error);
+        });
+        // this.props.history.push("/profile");
+    }
+
+    signup() {
         this.props.history.push({
-            pathname: "/"
+            pathname: "/signup"
         })
     }
 
     handleEmailChange(event) {
         let processedData = event.nativeEvent.text;
-        this.setState({email: processedData})
+        this.setState({ email: processedData })
     }
 
     handlePasswordChange(event) {
         let processedData = event.nativeEvent.text;
-        this.setState({password: processedData})
+        this.setState({ password: processedData })
     }
 
 
@@ -102,7 +113,7 @@ class Signup extends React.Component {
                         </Content>
                     </CardItem>
                     <CardItem bordered style={styles.card}>
-                        <Button title="Submit" onPress={this.signinUser} />
+                        <Button title="Submit" onPress={this.validate} />
                     </CardItem>
                 </Card>
                 <Card style={styles.card}>
@@ -141,4 +152,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default connect()(Signup)
+export default connect()(SignIn)
