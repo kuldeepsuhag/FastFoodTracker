@@ -3,28 +3,24 @@ import { View, StyleSheet } from 'react-native';
 import { Card, CardItem, Text, Body } from 'native-base';
 import AppFooter  from '../footer/AppFooter'
 // import { Route, Switch } from 'react-router-native'
-
+import StepCounter from '../step-counter/stepCounter';
 export default class Settings extends React.Component {
 
     render() {
+
         return (
-            <View style= {StyleSheet.profile}>
-                <Card style={styles.card}>
-                    <CardItem header>
-                        <Text>NativeBase</Text>
-                    </CardItem>
-                    <CardItem>
-                        <Body>
-                            <Text>
-                                //Your text here
-                            </Text>
-                        </Body>
-                    </CardItem>
-                    <CardItem footer>
-                        <Text>GeekyAnts</Text>
-                    </CardItem>
-                </Card>
-                {/* <AppFooter/> */}
+            <View style={{flex: 1}}>
+                <Text style={styles.paragraph}>
+                    User Daily Steps
+                </Text>
+                <View style={{flex: 1, backgroundColor: '#ecf0f1'}}>
+                    <View>
+                        <StepCounter></StepCounter>
+                    </View>
+                </View>
+                <View style={{height: 50, backgroundColor: '#ecf0f1'}}>
+                    < AppFooter />
+                </View>
             </View>
         );
     }
@@ -35,10 +31,15 @@ const styles = StyleSheet.create({
       backgroundColor: 'white',
     },
     card:{
-        flexDirection: 'column',
-        justifyContent: 'center',
         marginLeft: '5%',
         marginRight: '5%',
-        maxWidth: '100%'
-    }
+        maxWidth: '100%',
+    },
+    paragraph: {
+        margin: 24,
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#34495e',
+    },
 });

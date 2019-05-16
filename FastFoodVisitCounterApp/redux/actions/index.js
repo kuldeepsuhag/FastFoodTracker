@@ -11,3 +11,10 @@ export const loggedIn = (isUser) => ({
         isUser
     }
 })
+
+export const stepData = (stepData) => ({
+    type: "STEP_DATA",
+    payload: {
+        stepData
+    }
+})
