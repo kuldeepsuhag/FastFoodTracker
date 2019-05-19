@@ -13,9 +13,14 @@ module.exports = (req, res) => {
             
             firebaseApp.firebaseApp.auth().createUserWithEmailAndPassword(req.body.email,req.body.password)
             .catch(function(err){
-                console.log(err);            
-            });
-            console.log("Registered");
+              if(err.code == 'auth/email-already-in-use'){
+                //res.status(403).send("email-already-in-use");
+              }
+              console.log(err.code);            
+          }).then(function(user){
+              console.log(user);
+             });
+            
               
               //     firebaseApp.auth().signInWithEmailAndPassword(email, password)
               //         .catch(function(error){
@@ -45,20 +50,15 @@ module.exports = (req, res) => {
                 //  console.log("User successfullly Logged In")
                 //  var userId = user.uid
                  firebase.database().ref('users/' + user.uid).set({
-                      name : req.body.name,
                       Email: req.body.email,
                       PatientID : req.body.patientId,
-                      doctorId : req.body.doctorId,
-                      height: req.body.height,
-                      weight:req.body.weight,
-                      image: req.body.image
+                      UID: user.uid
                     });
                     console.log("User Data Completed");
                 firebase.database().ref('PatientID/' + req.body.patientId).set({
                     UID : user.uid,
                     Email : req.body.email,
-                    doctorId: req.body.doctorId,
-                    PatientName: req.body.name
+    
                 });
                  console.log("Database created")
                  var ref = firebase.database().ref('users');
@@ -68,15 +68,11 @@ module.exports = (req, res) => {
 
                   console.log(JSON.stringify(childSnapshot));
                   let perdata = {
-                      name : data.name,
                       Email: data.email,
                       PatientID : data.patientId,
-                      doctorId : data.doctorId,
-                      height: data.height,
-                      weight:data.weight,
-                      image: data.image
+                      UID: data.UID
                   }
-                  console.log("Sending data" + perdata.email);
+                  console.log("Sending data" + perdata.UID);
                   res.status(200).send(perdata);
       
                 });

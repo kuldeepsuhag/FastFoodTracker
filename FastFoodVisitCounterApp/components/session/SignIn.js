@@ -26,6 +26,7 @@ class SignIn extends React.Component {
     }
 
     componentWillMount = async () => {
+        AsyncStorage.clear();
         try {
             const username = await AsyncStorage.getItem('@username')
             const password = await AsyncStorage.getItem('@password')
