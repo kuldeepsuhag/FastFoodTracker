@@ -1,10 +1,11 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, BackHandler } from 'react-native';
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
 import { connect } from 'react-redux'
+import { KeyboardAvoidingView } from 'react-native';
 
 class Signup extends React.Component {
     constructor(props, { }) {
@@ -22,6 +23,19 @@ class Signup extends React.Component {
         this.handleEmailChange = this.handleEmailChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handlePatientChange = this.handlePatientChange.bind(this);
+    }
+
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    handleBackPress = () => {
+        this.props.history.goBack();
+        return true;
     }
 
     validate() {
@@ -80,7 +94,7 @@ class Signup extends React.Component {
     render() {
         //  console.log(this.state.email);
         return (
-            <View style={styles.container}>
+            <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                 <Card style={styles.card}>
                     <CardItem header bordered>
                         <Text>Sign Up</Text>
@@ -93,7 +107,7 @@ class Signup extends React.Component {
                             <Item floatingLabel style={styles.input}>
                                 <Label>Patient ID</Label>
                                 <Input value={this.state.patient}
-                                    onChange={this.handlePatientChange} />
+                                    onChange={this.handlePatientChange} keyboardType="numeric"/>
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Email</Label>
@@ -124,7 +138,7 @@ class Signup extends React.Component {
                         </Button>
                     </CardItem>
                 </Card>
-            </View >
+            </KeyboardAvoidingView >
         );
     }
 }

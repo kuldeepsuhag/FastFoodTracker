@@ -25,8 +25,13 @@ class Map extends React.Component {
   componentDidMount() {
     this._getLocationAsync();
     this._getStepCounterData();
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
   }
 
+  handleBackPress = () => {
+    this.props.history.goBack();
+    return true;
+  }
   _getStepCounterData = async () => {
     Pedometer.isAvailableAsync().then(
       result => {
@@ -59,7 +64,7 @@ class Map extends React.Component {
     let dayLabels = []
     let noOfSteps = []
     let weekDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    for (let i = 7; i > 0; i--) {
+    for (let i = 6; i > 0; i--) {
       prevDate.setDate(today.getDate() - i);
 
       // Uncomment to get the state string

@@ -1,12 +1,13 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
-import { View, StyleSheet, Image , AsyncStorage } from 'react-native';
+import { View, StyleSheet, Image, AsyncStorage, BackHandler } from 'react-native';
 import { ImagePicker, Permissions } from 'expo';
 import ip from '../../config';
 import axios from "axios";
 import {connect} from 'react-redux'
 import { loggedIn } from '../../redux/actions/index'
+import { KeyboardAvoidingView } from 'react-native';
 
 class Profile extends React.Component {
     constructor(props, { }) {
@@ -29,6 +30,19 @@ class Profile extends React.Component {
         this.handleWeighttChange = this.handleWeighttChange.bind(this);
     }
 
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    handleBackPress = () => {
+        this.props.history.goBack();
+        return true;
+    }
+
     height(e) {
         this.setState({ height: e.nativeEvent.text }, function () {
             this.bmi();
@@ -42,9 +56,10 @@ class Profile extends React.Component {
         });
     }
 
-    bmi() {
-        if (this.state.height > 0 && this.state.weight > 0) {
-            var bmi = this.state.weight / ((this.state.height / 100) * (this.state.height / 100));
+    bmi(height, weight) {
+        if (height > 0 && weight > 0) {
+            var bmi = 10000 * (weight / ((height) * (height)));
+            bmi = Math.round(bmi * 100) / 100
             this.setState({ bmi: bmi })
         }
     }
@@ -62,13 +77,13 @@ class Profile extends React.Component {
     handleHeightChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({height: processedData})
-        this.bmi();
+        this.bmi(processedData, this.state.weight);
     }
     
     handleWeighttChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({weight: processedData})
-         this.bmi();
+        this.bmi(this.state.height, processedData);
     }
 
     storeData = async () => {
@@ -128,7 +143,7 @@ class Profile extends React.Component {
     render() {
         //  console.log(this.state.email);
         return (
-            <View style={styles.container}>
+            <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                 <Card style={styles.card}>
                     <CardItem header bordered>
                         <Text>My Profile</Text>
@@ -149,7 +164,7 @@ class Profile extends React.Component {
                             <Item floatingLabel style={styles.input}>
                                 <Label>Doctor ID</Label>
                                 <Input value={this.state.doctor}
-                                    onChange={this.handleDocIDChange} />
+                                    onChange={this.handleDocIDChange} keyboardType="numeric"/>
                             </Item>
                             <Item floatingLabel style={styles.input}>
                                 <Label>Height (in cms) </Label>
@@ -169,7 +184,7 @@ class Profile extends React.Component {
                         <Button title="Submit" onPress={this.submitProfile} />
                     </CardItem>
                 </Card>
-            </View >
+            </KeyboardAvoidingView >
         );
     }
 }

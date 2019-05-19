@@ -1,14 +1,14 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
-import { View, StyleSheet , AsyncStorage } from 'react-native';
+import { View, StyleSheet, AsyncStorage, BackHandler } from 'react-native';
 import axios from "axios";
 import ip from "../../config";
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
 import { connect } from 'react-redux'
 import { Link } from "react-router-native";
-
+import { KeyboardAvoidingView } from 'react-native';
 
 class SignIn extends React.Component {
     constructor(props, { }) {
@@ -37,6 +37,19 @@ class SignIn extends React.Component {
         } catch (e) {
             // error reading value
         }
+    }
+
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    handleBackPress = () => {
+        this.props.history.goBack();
+        return true;
     }
 
     validate() {
@@ -90,7 +103,7 @@ class SignIn extends React.Component {
 
     render() {
         return (
-            <View style={styles.container}>
+            <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                 <Card style={styles.card}>
                     <CardItem header bordered>
                         <Text>Sign In</Text>
@@ -123,7 +136,7 @@ class SignIn extends React.Component {
                         </Button>
                     </CardItem>
                 </Card>
-            </View >
+            </KeyboardAvoidingView >
         );
     }
 }
