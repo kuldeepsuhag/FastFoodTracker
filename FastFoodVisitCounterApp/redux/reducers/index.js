@@ -10,7 +10,13 @@ export default (state, action) => {
             return {
                 state,
                 isUser: action.payload.isUser.isUser
-            }       
+            }
+        case "STEP_DATA":
+            console.log(state)
+            return {
+                state,
+                stepData: action.payload.stepData
+            }
         default:
             return state;
     }

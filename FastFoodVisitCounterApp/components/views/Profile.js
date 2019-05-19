@@ -8,26 +8,18 @@ import StepCounter from '../step-counter/stepCounter';
 export default class Profile extends React.Component {
     render() {
         return (
-            <View>
-                {/* <Card style={styles.card}>
-                    <CardItem header>
-                        <Text>NativeBase</Text>
-                    </CardItem>
-                    <CardItem>
-                        <Body>
-                            <Text>
-                                //Your text here
-                            </Text>
-                        </Body>
-                    </CardItem>
-                    <CardItem footer>
-                        <Text>GeekyAnts</Text>
-                    </CardItem>
-                </Card> */}
-                <Card style={styles.card}>
-                    <StepCounter></StepCounter>
-                </Card>
-                {/* <AppFooter/> */}
+            <View style={{flex: 1}}>
+                <Text style={styles.paragraph}>
+                    User Profile Data
+                </Text>
+                <View style={{flex: 1, backgroundColor: '#ecf0f1'}}>
+                    <Card style={styles.card}>
+                        {/* <StepCounter></StepCounter> */}
+                    </Card>
+                </View>
+                <View style={{height: 50, backgroundColor: '#ecf0f1'}}>
+                    < AppFooter />
+                </View>
             </View>
         );
     }
@@ -43,5 +35,12 @@ const styles = StyleSheet.create({
         marginLeft: '5%',
         marginRight: '5%',
         maxWidth: '100%'
-    }
+    },
+    paragraph: {
+        margin: 24,
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#34495e',
+    },
 });

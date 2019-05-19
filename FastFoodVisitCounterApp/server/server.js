@@ -13,6 +13,9 @@ app.use(bodyParser.json({ limit: '50mb', extended: true }));
 app.post("/signup", require("./routes/signup"));
 app.post("/signin", require("./routes/signin"));
 app.post("/map-data", require("./routes/databaseservice"));
+app.get("/step-data", require("./routes/stepservice"));
+app.post("/step-data", require("./routes/stepservicepost"));
+
 app.listen(port, (req, res) => {
 
 console.log(`server listening on port: ${port}`)
