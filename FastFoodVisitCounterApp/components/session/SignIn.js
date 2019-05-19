@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
-import { View, StyleSheet , AsyncStorage } from 'react-native';
+import { View, StyleSheet, AsyncStorage, Image } from 'react-native';
 import axios from "axios";
 import ip from "../../config";
 import ValidateForm from "../validate/ValidateForm"
@@ -16,7 +16,8 @@ class SignIn extends React.Component {
         this.state = {
             email: "",
             password: "",
-            errors: ""
+            errors: "",
+            base64: null
         };
         this.signinUser = this.signinUser.bind(this);
         this.validate = this.validate.bind(this);
@@ -26,11 +27,10 @@ class SignIn extends React.Component {
     }
 
     componentWillMount = async () => {
+        AsyncStorage.clear();
         try {
             const username = await AsyncStorage.getItem('@username')
             const password = await AsyncStorage.getItem('@password')
-            console.log(username)
-            console.log(password)
             if (username !== null && password !== null) {
                 this.signinUser(true, username, password);
             }
@@ -53,7 +53,6 @@ class SignIn extends React.Component {
     }
 
     signinUser(stored, username, password) {
-        console.log(stored)
         var url = ip.ip.address;
         axios({
             method: 'post',
@@ -63,8 +62,11 @@ class SignIn extends React.Component {
                 password: stored ? password : this.state.password
             }
         }).then((response) => {
-            console.log(response.data);
-            this.props.history.push("/map");
+            this.setState({ base64: 'data:text/plain;base64,' + JSON.stringify(response.data.image) }, function () {
+                console.log(this.state.base64)
+            })
+
+            // this.props.history.push("/map");
         }).catch((error) => {
             console.log(error);
         });
@@ -121,6 +123,22 @@ class SignIn extends React.Component {
                         <Text>New User? Go back to &nbsp;</Text>
                         <Button title="Sign Up" onPress={this.signup}>
                         </Button>
+                    </CardItem>
+                </Card>
+                <Card>
+                    <CardItem>
+                        {this.state.base64 ? 
+                        <Image
+                            style={{
+                                width: 51,
+                                height: 51,
+                                resizeMode: 'contain',
+                            }}
+                            source={{
+                                uri:
+                                this.state.base64,
+                            }}
+                        /> : <Text>""</Text>}
                     </CardItem>
                 </Card>
             </View >
