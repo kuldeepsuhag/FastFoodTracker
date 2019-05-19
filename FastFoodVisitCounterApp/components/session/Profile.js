@@ -18,7 +18,8 @@ class Profile extends React.Component {
             height: 0,
             weight: 0,
             bmi: 0,
-            image: null
+            image: null,
+            base64: null
         };
         this.height = this.height.bind(this);
         this.bmi = this.bmi.bind(this);
@@ -106,6 +107,7 @@ class Profile extends React.Component {
 
     submitProfile() {
         var url = ip.ip.address;
+        console.log(this.state.base64)
         axios({
             method: 'post',
             url: url + "/signup",
@@ -117,7 +119,7 @@ class Profile extends React.Component {
                 name: this.state.name,
                 height: this.state.height,
                 weight: this.state.weight,
-                image: this.state.image
+                image: this.state.base64
             }
         }).then((response) => {
             console.log(response.data);
@@ -131,11 +133,14 @@ class Profile extends React.Component {
     _pickImage = async () => {
         let { camera } = await Permissions.askAsync(Permissions.CAMERA);
         let { camera_roll } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-        let result = await ImagePicker.launchCameraAsync({
+        let result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             aspect: [4, 3],
+            base64: true
         });
         if (!result.cancelled) {
+            console.log(result.uri);
+            this.setState({base64: result.base64.replace(/(?:\r\n|\r|\n)/g, '')})
             this.setState({ image: result.uri });
         }
     };
