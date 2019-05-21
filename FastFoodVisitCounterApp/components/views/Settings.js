@@ -36,7 +36,7 @@ export default class Settings extends React.Component {
                     </View>
                 </View>
                 <View style={{height: 50, backgroundColor: '#ecf0f1'}}>
-                    < AppFooter />
+                    < AppFooter props={this.props}/>
                 </View>
             </View>
         );
