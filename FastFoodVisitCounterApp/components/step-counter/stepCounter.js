@@ -3,7 +3,7 @@ import React from "react";
 import { Pedometer } from "expo";
 import { StyleSheet, Text, View } from "react-native";
 // import { BarChart, Grid, YAxis } from 'react-native-svg-charts'
-import * as scale from 'd3-scale'
+// import * as scale from 'd3-scale'
 import ip from '../../config';
 import axios from "axios";
 import {connect} from 'react-redux'

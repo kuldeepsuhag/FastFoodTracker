@@ -4,6 +4,8 @@ import { Card, CardItem, Text, Body } from 'native-base';
 import AppFooter  from '../footer/AppFooter'
 // import { Route, Switch } from 'react-router-native'
 import StepCounter from '../step-counter/stepCounter';
+import DailyGoal from '../daily-goal/dailyGoal'
+
 export default class Settings extends React.Component {
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
@@ -28,6 +30,9 @@ export default class Settings extends React.Component {
                 <View style={{flex: 1, backgroundColor: '#ecf0f1'}}>
                     <View>
                         <StepCounter></StepCounter>
+                    </View>
+                    <View>
+                        <DailyGoal></DailyGoal>
                     </View>
                 </View>
                 <View style={{height: 50, backgroundColor: '#ecf0f1'}}>
