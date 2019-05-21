@@ -1,11 +1,13 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
-import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
-import { View, StyleSheet } from 'react-native';
+import { Content, Item, Label, Input, Text, Card, CardItem, Toast } from 'native-base';
+import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, TouchableOpacity} from 'react-native';
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
 import { connect } from 'react-redux'
-
+import image from '../../Images/background.jpg'
+import logo from '../../Images/logo.gif'
+const { width : WIDTH} = Dimensions.get('window')
 class Signup extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -43,6 +45,7 @@ class Signup extends React.Component {
 
     signupUser() {
         console.log("Pressed btn");
+       
         console.log(this.state.patient);
         if (!this.validate()) {
             var data = {
@@ -57,7 +60,7 @@ class Signup extends React.Component {
 
     login() {
         this.props.history.push({
-            pathname: "/"
+            pathname: "/signin"
         })
     }
 
@@ -80,62 +83,82 @@ class Signup extends React.Component {
     render() {
         //  console.log(this.state.email);
         return (
+            <ImageBackground source = {image} style={styles.backgroundcontainer}>
+            
             <View style={styles.container}>
-                <Card style={styles.card}>
-                    <CardItem header bordered>
-                        <Text>Sign Up</Text>
-                    </CardItem>
-                    <CardItem>
-                        <ValidateForm errors={this.state.errors} />
-                    </CardItem>
-                    <CardItem bordered>
-                        <Content>
-                            <Item floatingLabel style={styles.input}>
-                                <Label>Patient ID</Label>
-                                <Input value={this.state.patient}
-                                    onChange={this.handlePatientChange} />
-                            </Item>
-                            <Item floatingLabel style={styles.input}>
-                                <Label>Email</Label>
-                                <Input value={this.state.email}
-                                    onChange={this.handleEmailChange} />
-                            </Item>
-                            <Item floatingLabel style={styles.input}>
-                                <Label>Password</Label>
-                                <Input secureTextEntry={true} value={this.state.password}
-                                    onChange={this.handlePasswordChange} />
-                            </Item>
-                            {/* <Item floatingLabel style={styles.input}>
-                                <Label>Confirm Password</Label>
-                                <Input value={this.state.confirmPassword}
-                                    onChangeText={(confirmPassword) => this.setState({ confirmPassword })} />
-                            </Item> */}
-                        </Content>
-                    </CardItem>
-                    <CardItem bordered style={styles.card}>
-                        <Button title="Submit" onPress={this.signupUser} />
-                    </CardItem>
-                </Card>
-                <Card style={styles.card}>
-                    <CardItem>
-                        <Text>Already have an account? &nbsp;</Text>
-                        <Button title="Sign In" onPress={this.login}>
-
-                        </Button>
-                    </CardItem>
-                </Card>
+            <View style={styles.logocontainer}>
+                    <Image source={logo} style={styles.logo}/> 
+                    <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
+                </View>
+            <View>
+                <Text style={styles.text}>Register</Text>
+            </View>
+            <View>
+                 <ValidateForm errors={this.state.errors} />
+            </View>
+            <View>
+                    <TextInput 
+                         style={styles.input}
+                         placeholder={'Patient ID'}
+                         keyboardType="numeric"
+                         placeholderTextColor={'rgb(36,133,202)'}
+                         underlineColorAndroid='transparent'
+                         value={this.state.patient}
+                         onChange={this.handlePatientChange}
+                     />
+                </View>
+                <View>
+                    <TextInput 
+                         style={styles.input}
+                         placeholder={'Email'}
+                         placeholderTextColor={'rgb(36,133,202)'}
+                         underlineColorAndroid='transparent'
+                         value={this.state.email}
+                         onChange={this.handleEmailChange}
+                     />
+                </View>
+                <View>
+                    <TextInput 
+                         style={styles.input}
+                         placeholder={'Password'}
+                         placeholderTextColor={'rgb(36,133,202)'}
+                         underlineColorAndroid='transparent'
+                         value={this.state.password}
+                         onChange={this.handlePasswordChange}
+                         secureTextEntry={true}
+                     />
+                </View>
+                <View>
+                <TouchableOpacity style = {styles.btnlogin} onPress={this.signupUser}>
+                    <Text style={styles.logintext}>Next</Text>
+                </TouchableOpacity>
+                </View>
+                <View>
+                <Text onPress={this.login}>Already have an account</Text>
+                        {/* <Button title="Sign Up" >
+                        </Button> */}
+                </View>
+                
             </View >
+            </ImageBackground>
         );
     }
 }
 
 const styles = StyleSheet.create({
+    backgroundcontainer:{
+        flex: 1,
+        width: null,
+        height: null,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     container: {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'stretch',
         // paddingTop: 40,
-        backgroundColor: '#3066c9',
+        // backgroundColor: '#3066c9',
         height: '100%'
     },
     wrapper: {
@@ -148,8 +171,55 @@ const styles = StyleSheet.create({
         marginRight: '5%',
         maxWidth: '100%'
     },
+    tb5: {
+        marginBottom: '2%',
+       
+         borderColor: '#7a42f4',
+      borderWidth: 1
+       
+    },
     input: {
+        width: WIDTH - 55,
+        height: 45,
+        borderRadius: 45,
+        fontSize: 16,
+        paddingLeft: 45,
+        // backgroundColor: 'rgb(151,214,240)',
+        backgroundColor: 'rgb(255,255,255)',
+        color: 'rgb(36,133,202)',
+        marginHorizontal: 25,
         marginBottom: '2%'
+    },
+    logo: {
+        width: 120,
+        height: 120,
+        borderRadius: 130
+    },
+    logocontainer:{
+        alignItems: 'center'
+    },
+    text: {
+        justifyContent: 'center',
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginLeft: 130
+        
+    },
+    btnlogin: {
+        width: 100,
+        height: 45,
+        borderRadius: 45,
+        backgroundColor: "#432577",
+        justifyContent: 'center',
+        marginTop: 20,
+        marginBottom: '2%',
+        marginLeft: 130
+
+    },
+    logintext:{
+        color: "rgb(36,133,202)",
+        fontSize: 16,
+        textAlign: 'center'
     }
 });
 
