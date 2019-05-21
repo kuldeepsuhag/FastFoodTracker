@@ -1,28 +1,43 @@
 import React from 'react';
-import {  View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { Footer, FooterTab, Button, Icon } from 'native-base';
 import { Link } from "react-router-native";
 export default class AppFooter extends React.Component {
+    constructor(props, { }) {
+        super(props);
+        this.settings = this.settings.bind(this);
+        this.map = this.map.bind(this);
+        this.profile = this.profile.bind(this);
+    }
+    settings() {
+        this.props.props.history.push({
+            pathname: "/settings"
+        })
+    } 
+    map() {
+        this.props.props.history.push({
+            pathname: "/map"
+        })
+    } 
+    profile() {
+        this.props.props.history.push({
+            pathname: "/viewProfile"
+        })
+    }
 
     render() {
         return (
             <View style={{ height: 50 }}>
-                <Footer style={StyleSheet.footer}>
+                <Footer>
                     <FooterTab>
                         <Button onPress={this.settings}>
-                            <Link to="/settings">
                                 <Icon name="apps" />
-                            </Link>
-                        </Button>
+                         </Button>
                         <Button onPress={this.map}>
-                            <Link to="/map">
                                 <Icon name="navigate" />
-                            </Link>
                         </Button>
-                        <Button>
-                            <Link to="/viewProfile">
+                        <Button onPress={this.profile}>
                                 <Icon name="person" />
-                            </Link>
                         </Button>
                     </FooterTab>
                 </Footer>
@@ -30,9 +45,3 @@ export default class AppFooter extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    footer: {
-        backgroundColor: 'red',
-    }
-});

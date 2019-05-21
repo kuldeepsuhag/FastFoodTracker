@@ -27,11 +27,11 @@ export default class Profile extends React.Component {
                 </Text>
                 <View style={{flex: 1, backgroundColor: '#ecf0f1'}}>
                     <Card style={styles.card}>
-                        {/* <StepCounter></StepCounter> */}
+                        <Text>Coming soon to a mobile near you...</Text>
                     </Card>
                 </View>
                 <View style={{height: 50, backgroundColor: '#ecf0f1'}}>
-                    < AppFooter />
+                    < AppFooter props={this.props}/>
                 </View>
             </View>
         );
