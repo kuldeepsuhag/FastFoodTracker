@@ -48,19 +48,13 @@ class Map extends React.Component {
         this.setState({
           isPedometerAvailable: "Could not get is PedometerAvailable: " + error
         });
+        console.log("Error with Pedometer: " + error)
       }
     );
-    
-    // Use this to build the progress widget for the current day
-
-    // const end = new Date();
-    // const start = new Date();
-    // start.setDate(end.getDate() - 1);
-    
-
 
     //Creating the data step data for the last week
-    const today = new Date();
+    const temp = new Date();
+    const today = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), 0, 0, 0, 0);
     const prevDate = new Date();
     let that = this;
     let DataForGraph = {}
@@ -70,8 +64,8 @@ class Map extends React.Component {
     let noOfSteps = []
     let weekDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     for (let i = 6; i > 0; i--) {
-      prevDate.setDate(today.getDate() - i);
-
+      // prevDate.setDate(today.getDate() - i);
+      let prevDate = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate()-i, 0, 0, 0, 0);
       // Uncomment to get the state string
       // let dateString = startInterval.getDate() + '/' + (startInterval.getMonth() + 1) + '/' + startInterval.getFullYear();
       

@@ -15,16 +15,19 @@ const dayDim = {
 };
 
 export default class DailyGoal extends React.Component{
-
-    state = {
-        fill: 0,
-        currentStepCount: 0,
-        goal: 10000,
-        pastStepCount: 0
-    };
+    constructor(props, { }) {
+        super(props);
+        this.state = {
+            fill: 0,
+            currentStepCount: 0,
+            goal: 10000,
+            pastStepCount: 0,
+        };
+    }
 
     componentWillMount(){
         this._subscribe();
+        this.setState({ showGoalModal: false });
     }
 
     componentWillUnmount() {
@@ -46,9 +49,11 @@ export default class DailyGoal extends React.Component{
             this._calculateFill(this.state.goal, this.state.currentStepCount);
         });
 
-        const end = new Date();
-        const start = new Date();
-        start.setDate(end.getDate() - 1);
+        // new Date(year, month, day, hours, minutes, seconds, milliseconds)
+        const temp = new Date();
+        const end = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), 0, 0, 0, 0);
+        const start = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate()-1, 0,0,0,0);
+        
         Pedometer.getStepCountAsync(start, end).then(
             result => {
                 this.setState({ pastStepCount: result.steps });
@@ -68,39 +73,37 @@ export default class DailyGoal extends React.Component{
     };
     
     render() {
-        const data = this.props.dailyStep
         return (
-            <View style={styles.container}>
-                <AnimatedCircularProgress
-                    size={dayDim.size}
-                    width={dayDim.width}
-                    fill={this.state.fill}
-                    tintColor={tintColor}
-                    backgroundColor={backgroundColor}
-                    rotation={rotation}
-                >
-                    {
-                        (fill) => (
-                            <View style={styles.dayFill}>
-                                <Icon
-                                    name='blind'
-                                    type='font-awesome'
-                                    color='#0365d6'
-                                    disabledStyle
-                                    size={50}
-                                     />
-                                <Text style={styles.steps}>
-                                    {(this.state.currentStepCount > this.state.pastStepCount)? this.state.currentStepCount : this.state.pastStepCount} Steps
-                                </Text>
-                                <Text style={styles.goal}>
-                                    Goal: {this.state.goal}
-                            </Text>
-                            </View>
-                        )
-                    }
-                </AnimatedCircularProgress>
-
-            </View>
+                <View style={styles.container}>
+                    <AnimatedCircularProgress
+                        size={dayDim.size}
+                        width={dayDim.width}
+                        fill={this.state.fill}
+                        tintColor={tintColor}
+                        backgroundColor={backgroundColor}
+                        rotation={rotation}
+                    >
+                        {
+                            (fill) => (
+                                <View style={styles.dayFill}>
+                                    <Icon
+                                        name='blind'
+                                        type='font-awesome'
+                                        color='#0365d6'
+                                        disabledStyle
+                                        size={50}
+                                    />
+                                    <Text style={styles.steps}>
+                                        {(this.state.currentStepCount > this.state.pastStepCount)? this.state.currentStepCount : this.state.pastStepCount} Steps
+                                    </Text>
+                                    <Text style={styles.goal}>
+                                        Goal: {this.state.goal}
+                                    </Text>
+                                </View>
+                            )
+                        }
+                    </AnimatedCircularProgress>
+                </View>
         );
     }
 }
