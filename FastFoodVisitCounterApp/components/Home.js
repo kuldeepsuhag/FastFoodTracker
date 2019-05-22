@@ -8,6 +8,8 @@ import Profile from "./session/Profile";
 import AppFooter from "./footer/AppFooter"
 import { View, StyleSheet } from 'react-native';
 import { Route, Switch } from 'react-router-native'
+import Start from './session/start'
+
 
 export default class Home extends React.Component {
 
@@ -15,7 +17,8 @@ export default class Home extends React.Component {
         return (
                 <View style={{flex: 1}}>
                     <Switch>
-                        <Route exact path="/" component={SignIn} />
+                        <Route exact path="/" component={Start}/>
+                        <Route exact path="/signin" component={SignIn} />
                         <Route exact path="/profile" component={Profile} />
                         <Route exact path="/map" component={Map} />
                         <Route exact path="/viewProfile" component={ViewProfile} />
