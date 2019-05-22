@@ -47,7 +47,7 @@ class StepCounter extends React.Component {
     const chartConfig = {
       backgroundGradientFrom: '#ffffff',
       backgroundGradientTo: '#ffffff',
-      color: (opacity = 1) => `rgba(255, 50, 50, ${opacity})`,
+      color: (opacity = 1) => `rgba(36, 113, 202, ${opacity})`,
       strokeWidth: 3 // optional, default 3
     }
     return (

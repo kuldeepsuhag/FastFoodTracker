@@ -4,8 +4,8 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { Icon } from 'react-native-elements';
 import { Pedometer } from "expo";
 
-const tintColor = "#00e0ff";
-const backgroundColor = "#717BA5";
+const tintColor = "#16d353";
+const backgroundColor = "#c4c4c4";
 const rotation = 360;
 
 const dayDim = {
@@ -20,7 +20,7 @@ export default class DailyGoal extends React.Component{
         this.state = {
             fill: 0,
             currentStepCount: 0,
-            goal: 10000,
+            goal: 20000,
             pastStepCount: 0,
         };
     }

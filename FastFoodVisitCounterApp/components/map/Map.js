@@ -4,7 +4,6 @@ import { StyleSheet, View, Alert, BackHandler } from 'react-native';
 import AppFooter from '../footer/AppFooter'
 import { Card, CardItem, Text } from 'native-base';
 import { Button } from 'react-native-elements';
-// import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ip from '../../config';
 import axios from "axios";
@@ -53,9 +52,7 @@ class Map extends React.Component {
     );
 
     //Creating the data step data for the last week
-    const temp = new Date();
-    const today = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), 0, 0, 0, 0);
-    const prevDate = new Date();
+    const today = new Date();
     let that = this;
     let DataForGraph = {}
     // Send datelabel if date is needed
@@ -64,17 +61,19 @@ class Map extends React.Component {
     let noOfSteps = []
     let weekDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     for (let i = 6; i > 0; i--) {
-      // prevDate.setDate(today.getDate() - i);
-      let prevDate = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate()-i, 0, 0, 0, 0);
+      
+      let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
+      let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
       // Uncomment to get the state string
       // let dateString = startInterval.getDate() + '/' + (startInterval.getMonth() + 1) + '/' + startInterval.getFullYear();
       
-      let dayString = weekDay[prevDate.getDay()];
+      // let dayString = weekDay[prevDate.getDay()];
+      let dayString = weekDay[start.getDay()];
 
-      //First parameter: start of the interval ; Second Parameter: end of the interval
-      Pedometer.getStepCountAsync(prevDate.getDate(), prevDate.getDate() + 1).then(
+      Pedometer.getStepCountAsync(start, end).then(
         result => {
           // Send datelabel if date is needed
+          // Send datelabel if date is neededpr
           // dateLabels.push(dateString.toString());
           noOfSteps.push(result.steps);
         },
@@ -147,19 +146,12 @@ class Map extends React.Component {
 
       let geoResult = await Location.reverseGeocodeAsync(locationObj)
 
-      //  let locationObjToServer = {
-      //   latitude: latitute,
-      //   longitude: longitude,
-      //   city: geoResult[0].city
-      // }
 
-
-      //this.setState({ locationDataToServer: JSON.stringify(locationObjToServer) })
-      //console.log("Testing " + this.state.locationDataToServer);
       this.setState({ locationResult: JSON.stringify(location) });
       this.setState({ lat: latitute });
       this.setState({ long: longitude });
       this.setState({ city: (geoResult[0].city)?  geoResult[0].city: ""});
+      
       // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
       // The map computes two values, longitudeDelta/width and latitudeDelta/height, compares those 2 computed values, and takes the larger of the two.
       // The map is zoomed according to the value chosen in step 2 and the other value is ignored.
