@@ -1,12 +1,15 @@
 import React from 'react';
-import { View, StyleSheet, BackHandler } from 'react-native';
-import { Card, CardItem, Text, Body } from 'native-base';
-import AppFooter  from '../footer/AppFooter'
+import { View, StyleSheet, BackHandler, Image } from 'react-native';
+import { Card, Text } from 'native-base';
+import AppFooter from '../footer/AppFooter'
+import { connect } from 'react-redux'
 // import { Route, Switch } from 'react-router-native'
 import StepCounter from '../step-counter/stepCounter';
 
-export default class Profile extends React.Component {
+
+class Profile extends React.Component {
     componentDidMount() {
+        console.log(this.props.userDetails);
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
 
@@ -18,20 +21,44 @@ export default class Profile extends React.Component {
         this.props.history.goBack();
         return true;
     }
-    
+
     render() {
         return (
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
                 <Text style={styles.paragraph}>
                     User Profile Data
                 </Text>
-                <View style={{flex: 1, backgroundColor: '#ecf0f1'}}>
+                {this.props.userDetails.state.image ?
+                        <Image
+                            style={{
+                                width: 150,
+                                height: 150,
+                                resizeMode: 'contain',
+                            }}
+                            source={{
+                                uri:
+                                'data:text/plain;base64,' +  this.props.userDetails.state.image,
+                            }}
+                        /> : <Text>""</Text>}
+                <View style={{ flex: 1, backgroundColor: '#ecf0f1' }}>
                     <Card style={styles.card}>
-                        <Text>Coming soon to a mobile near you...</Text>
+                        <Text>{this.props.userDetails.state.PatientID}</Text>
+                    </Card>
+                    <Card style={styles.card}>
+                        <Text>{this.props.userDetails.state.name}</Text>
+                    </Card>
+                    <Card style={styles.card}>
+                        <Text>{this.props.userDetails.state.Email}</Text>
+                    </Card>
+                    <Card style={styles.card}>
+                        <Text>{this.props.userDetails.state.height}</Text>
+                    </Card>
+                    <Card style={styles.card}>
+                        <Text>{this.props.userDetails.state.weight}</Text>
                     </Card>
                 </View>
-                <View style={{height: 50, backgroundColor: '#ecf0f1'}}>
-                    < AppFooter props={this.props}/>
+                <View style={{ height: 50, backgroundColor: '#ecf0f1' }}>
+                    <AppFooter props={this.props} />
                 </View>
             </View>
         );
@@ -40,9 +67,9 @@ export default class Profile extends React.Component {
 
 const styles = StyleSheet.create({
     profile: {
-      backgroundColor: 'white',
+        backgroundColor: 'white',
     },
-    card:{
+    card: {
         flexDirection: 'column',
         justifyContent: 'center',
         marginLeft: '5%',
@@ -57,3 +84,11 @@ const styles = StyleSheet.create({
         color: '#34495e',
     },
 });
+
+const mapStateToProps = (state) => {
+    return {
+        userDetails: state
+    }
+}
+
+export default connect(mapStateToProps)(Profile); 

@@ -1,25 +1,14 @@
 import React from 'react';
-import { Button } from 'react-native-elements';
-import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
-import { 
-    View, 
-    StyleSheet,
-    AsyncStorage, 
-    ImageBackground, 
-    Image, 
-    Dimensions, 
-    TextInput,
-    TouchableOpacity,
-    BackHandler, KeyboardAvoidingView } from 'react-native';
+import { Text} from 'native-base';
+import { View, StyleSheet,AsyncStorage, ImageBackground, Image, Dimensions, 
+    TextInput, TouchableOpacity, BackHandler, KeyboardAvoidingView, Keyboard } from 'react-native';
 import axios from "axios";
 import ip from "../../config";
 import ValidateForm from "../validate/ValidateForm"
-import { addUser } from '../../redux/actions/index'
+import { userData } from '../../redux/actions/index'
 import { connect } from 'react-redux'
-import { Link } from "react-router-native";
 import image from '../../Images/background.jpg' 
 import logo from '../../Images/logo.gif'
-import Icon from 'react-native-vector-icons/Ionicons';
 const { width : WIDTH} = Dimensions.get('window')
 class SignIn extends React.Component {
     constructor(props, { }) {
@@ -64,6 +53,7 @@ class SignIn extends React.Component {
     }
 
     validate() {
+        Keyboard.dismiss();
         this.setState({ errors: "" });
         let valid = false;
         if (!(this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i))) {
@@ -86,13 +76,15 @@ class SignIn extends React.Component {
                 password: stored ? password : this.state.password
             }
         }).then((response) => {
+            // console.log(response.data);
             // this.setState({ base64: 'data:text/plain;base64,' + JSON.stringify(response.data.image) }, function () {
             //     console.log(this.state.base64)
             // })
-
+            this.props.dispatch(userData(response.data));
             this.props.history.push("/map");
         }).catch((error) => {
-            console.log(error);
+            console.log("error")
+            this.setState({ errors: error.response.data.message });
         });
         // this.props.history.push("/profile");
     }
@@ -158,18 +150,6 @@ class SignIn extends React.Component {
                         {/* <Button title="Sign Up" >
                         </Button> */}
                 </View>
-                {/* {this.state.base64 ?
-                            <Image
-                                style={{
-                                    width: 51,
-                                    height: 51,
-                                    resizeMode: 'contain',
-                                }}
-                                source={{
-                                    uri:
-                                        this.state.base64,
-                                }}
-                            /> : <Text>""</Text>} */}
                 </KeyboardAvoidingView>
             </ImageBackground>
         );

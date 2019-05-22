@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button } from 'react-native-elements';
-import { Content, Item, Label, Input, Text, Card, CardItem, Toast } from 'native-base';
+import { Text } from 'native-base';
 import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, TouchableOpacity ,KeyboardAvoidingView, BackHandler} from 'react-native';
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'

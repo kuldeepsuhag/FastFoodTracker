@@ -7,103 +7,20 @@ var firebaseApp = require('../server');
 
 
 module.exports = (req, res) => {
-    const timeOut = 500;
-    setTimeout((function() {
-        if (req.body) {
-           console.log(req.body);
-            var data;
-            console.log("New Data")
-            console.log(req.body.email);
-            
-            firebaseApp.firebaseApp.auth().createUserWithEmailAndPassword(req.body.email,req.body.password)
-            .catch(function(err){
-              if(err.code == 'auth/email-already-in-use'){
-                //res.status(403).send("email-already-in-use");
-              }
-              console.log(err.code);            
-          }).then(function(user){
-              console.log(user);
-             });
-            
-              
-              //     firebaseApp.auth().signInWithEmailAndPassword(email, password)
-              //         .catch(function(error){
-              //             console.log("ERRRROOOOORRRRRRRR")
-              //             var errorCode = error.code;
-              //             var errorMessage = error.message;
-              //             if (errorCode === 'auth/wrong-password') {
-              //                     console.log('Wrong password.');
-              //                     flag = false;
-              //             } else {
-              //                     console.log(errorMessage);
-              //             }
-                          
-              //   console.log(error);
-              //     });
-              //     if (flag){
-              //     res.status(200).send("Successful");
-              //     }
-              //     else
-              //     {
-              //       res.status(403).end();
-              //     }
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user) {
-                  // User logged in already or has just logged in.
-                //  console.log(user.uid);
-                //  console.log("User successfullly Logged In")
-                //  var userId = user.uid
-                 firebase.database().ref('users/' + user.uid).set({
-                      Email: req.body.email,
-                      PatientID : req.body.patientId,
-                      UID: user.uid
-                    });
-                    console.log("User Data Completed");
-                firebase.database().ref('PatientID/' + req.body.patientId).set({
-                    UID : user.uid,
-                    Email : req.body.email,
-    
-                });
-                 console.log("Database created")
-                 var ref = firebase.database().ref('users');
-                 nextref = ref.child(user.uid).on("value",function (childSnapshot) {
-                  data = childSnapshot.val();
-                  console.log("Email ID " + data.Email);
+  const timeOut = 500;
+  setTimeout((function () {
+    if (req.body) {
+      var data;
+      firebaseApp.firebaseApp.auth().createUserWithEmailAndPassword(req.body.email, req.body.password)
+        .catch(function (err) {
+          if (err.code == 'auth/email-already-in-use') {
+            res.status(400).send(error);
+          }
+          console.log(err.code);
+        }).then(function (user) {
+          console.log(user);
+        });
 
-                  console.log(JSON.stringify(childSnapshot));
-                  let perdata = {
-                      Email: data.email,
-                      PatientID : data.patientId,
-                      UID: data.UID
-                  }
-                  console.log("Sending data" + perdata.UID);
-                  res.status(200).send(perdata);
-      
-                });
-                } 
-              });
-
-      //     firebaseApp.auth().signInWithEmailAndPassword(email, password)
-      //         .catch(function(error){
-      //             console.log("ERRRROOOOORRRRRRRR")
-      //             var errorCode = error.code;
-      //             var errorMessage = error.message;
-      //             if (errorCode === 'auth/wrong-password') {
-      //                     console.log('Wrong password.');
-      //                     flag = false;
-      //             } else {
-      //                     console.log(errorMessage);
-      //             }
-
-      //   console.log(error);
-      //     });
-      //     if (flag){
-      //     res.status(200).send("Successful");
-      //     }
-      //     else
-      //     {
-      //       res.status(403).end();
-      //     }
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           // User logged in already or has just logged in.
@@ -140,24 +57,20 @@ module.exports = (req, res) => {
             console.log("Email ID " + data.Email);
             console.log(JSON.stringify(childSnapshot));
             let perdata = {
-              name: data.name,
-              Email: data.email,
-              PatientID: data.patientId,
-              doctorId: data.doctorId,
-              height: data.height,
-              weight: data.weight,
+              name: data.name, //getting
+              email: data.Email, //getting
+              patientID: data.PatientID, 
+              doctorId: data.doctorId, //getting
+              height: data.height, //getting
+              weight: data.weight, //getting
               image: data.image
             }
-            console.log("Sending data" + perdata.Email);
+            console.log("Sending data" + perdata.email);
             res.status(200).send(perdata);
 
           });
         }
       });
-
-
-      //res.status(200).send("Successful");
-
     }
     else {
       res.status(403).end();
