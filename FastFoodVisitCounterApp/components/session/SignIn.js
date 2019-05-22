@@ -9,7 +9,8 @@ import {
     Image, 
     Dimensions, 
     TextInput,
-    TouchableOpacity } from 'react-native';
+    TouchableOpacity,
+    BackHandler, KeyboardAvoidingView } from 'react-native';
 import axios from "axios";
 import ip from "../../config";
 import ValidateForm from "../validate/ValidateForm"
@@ -26,7 +27,8 @@ class SignIn extends React.Component {
         this.state = {
             email: "",
             password: "",
-            errors: ""
+            errors: "",
+            // base64: null
         };
         this.signinUser = this.signinUser.bind(this);
         this.validate = this.validate.bind(this);
@@ -40,14 +42,25 @@ class SignIn extends React.Component {
         try {
             const username = await AsyncStorage.getItem('@username')
             const password = await AsyncStorage.getItem('@password')
-            console.log(username)
-            console.log(password)
             if (username !== null && password !== null) {
                 this.signinUser(true, username, password);
             }
         } catch (e) {
             // error reading value
         }
+    }
+
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    handleBackPress = () => {
+        this.props.history.goBack();
+        return true;
     }
 
     validate() {
@@ -64,7 +77,6 @@ class SignIn extends React.Component {
     }
 
     signinUser(stored, username, password) {
-        console.log(stored)
         var url = ip.ip.address;
         axios({
             method: 'post',
@@ -74,7 +86,10 @@ class SignIn extends React.Component {
                 password: stored ? password : this.state.password
             }
         }).then((response) => {
-            console.log(JSON.stringify(response.data));
+            // this.setState({ base64: 'data:text/plain;base64,' + JSON.stringify(response.data.image) }, function () {
+            //     console.log(this.state.base64)
+            // })
+
             this.props.history.push("/map");
         }).catch((error) => {
             console.log(error);
@@ -102,8 +117,7 @@ class SignIn extends React.Component {
     render() {
         return (
             <ImageBackground source = {image} style={styles.backgroundcontainer}>
-                
-            <View style={styles.container}>
+                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
             <View style={styles.logocontainer}>
                     <Image source={logo} style={styles.logo}/> 
                     <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
@@ -144,8 +158,19 @@ class SignIn extends React.Component {
                         {/* <Button title="Sign Up" >
                         </Button> */}
                 </View>
-               
-            </View >
+                {/* {this.state.base64 ?
+                            <Image
+                                style={{
+                                    width: 51,
+                                    height: 51,
+                                    resizeMode: 'contain',
+                                }}
+                                source={{
+                                    uri:
+                                        this.state.base64,
+                                }}
+                            /> : <Text>""</Text>} */}
+                </KeyboardAvoidingView>
             </ImageBackground>
         );
     }

@@ -2,7 +2,10 @@ import React from 'react';
 import { Constants, MapView, Location, Permissions } from 'expo';
 import { StyleSheet, View, Alert, BackHandler } from 'react-native';
 import AppFooter from '../footer/AppFooter'
-import { Card, CardItem, Text, Body } from 'native-base';
+import { Card, CardItem, Text } from 'native-base';
+import { Button } from 'react-native-elements';
+// import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Ionicons';
 import ip from '../../config';
 import axios from "axios";
 import { Pedometer } from "expo";
@@ -20,13 +23,20 @@ class Map extends React.Component {
     roundedLat: null,
     roundedLong: null,
     isPedometerAvailable: "",
+    countFastFood: 0,
+    countPark: 0
   };
 
   componentDidMount() {
     this._getLocationAsync();
     this._getStepCounterData();
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
   }
 
+  handleBackPress = () => {
+    this.props.history.goBack();
+    return true;
+  }
   _getStepCounterData = async () => {
     Pedometer.isAvailableAsync().then(
       result => {
@@ -59,7 +69,7 @@ class Map extends React.Component {
     let dayLabels = []
     let noOfSteps = []
     let weekDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    for (let i = 7; i > 0; i--) {
+    for (let i = 6; i > 0; i--) {
       prevDate.setDate(today.getDate() - i);
 
       // Uncomment to get the state string
@@ -220,13 +230,40 @@ class Map extends React.Component {
                     onUserLocationChange={location => this._handleMapRegionChange(location)}
                   />
           }
-          <Card style={styles.card}>
+          <Card style={styles.card} transparent>
+            <CardItem>
+              <Button
+                buttonStyle={{ backgroundColor: "red" }}
+                icon={
+                  <Icon
+                    name="md-pizza"
+                    size={15}
+                    color="white"
+                  />
+                }
+                color="green"
+                title={this.state.countFastFood.toString()}
+              />
+              <Button
+                buttonStyle={{ backgroundColor: "green" }}
+                icon={
+                  <Icon
+                    name="ios-american-football"
+                    size={15}
+                    color="white"
+                  />
+                }
+                title={" " + this.state.countPark.toString()}
+              />
+            </CardItem>
+          </Card>
+          <Card>
             <CardItem>
               <Text>Location Data: {this.state.locationResult}</Text>
             </CardItem>
           </Card>
         </View>
-        <AppFooter showAppFooter={false} />
+        <AppFooter props={this.props}/>
       </>
     );
   }

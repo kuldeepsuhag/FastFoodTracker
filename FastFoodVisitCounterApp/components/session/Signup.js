@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem, Toast } from 'native-base';
-import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, TouchableOpacity} from 'react-native';
+import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, TouchableOpacity ,KeyboardAvoidingView, BackHandler} from 'react-native';
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
 import { connect } from 'react-redux'
@@ -24,6 +24,19 @@ class Signup extends React.Component {
         this.handleEmailChange = this.handleEmailChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handlePatientChange = this.handlePatientChange.bind(this);
+    }
+
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    handleBackPress = () => {
+        this.props.history.goBack();
+        return true;
     }
 
     validate() {
@@ -85,7 +98,7 @@ class Signup extends React.Component {
         return (
             <ImageBackground source = {image} style={styles.backgroundcontainer}>
             
-            <View style={styles.container}>
+            <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
             <View style={styles.logocontainer}>
                     <Image source={logo} style={styles.logo}/> 
                     <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
@@ -139,7 +152,7 @@ class Signup extends React.Component {
                         </Button> */}
                 </View>
                 
-            </View >
+                </KeyboardAvoidingView >
             </ImageBackground>
         );
     }

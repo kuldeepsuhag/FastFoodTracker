@@ -1,13 +1,8 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
-import { View, 
-    StyleSheet, 
-    Image, 
-    AsyncStorage, 
-    ImageBackground, 
-    TextInput, 
-    Dimensions, TouchableOpacity, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { View, StyleSheet, Image, AsyncStorage, ImageBackground, TextInput, Dimensions, 
+    TouchableOpacity, ScrollView, KeyboardAvoidingView, BackHandler } from 'react-native';
 import { ImagePicker, Permissions } from 'expo';
 import ip from '../../config';
 import axios from "axios";
@@ -16,9 +11,8 @@ import { loggedIn } from '../../redux/actions/index'
 import image from '../../Images/background.jpg'
 import logo from '../../Images/logo.gif'
 const { width: WIDTH } = Dimensions.get('window')
-const window = Dimensions.get('window');
-const IMAGE_HEIGHT = window.width / 2;
-const IMAGE_HEIGHT_SMALL = window.width /7;
+
+
 class Profile extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -41,6 +35,19 @@ class Profile extends React.Component {
         
     }
 
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    handleBackPress = () => {
+        this.props.history.goBack();
+        return true;
+    }
+
     height(e) {
         this.setState({ height: e.nativeEvent.text }, function () {
             this.bmi();
@@ -54,9 +61,10 @@ class Profile extends React.Component {
         });
     }
 
-    bmi() {
-        if (this.state.height > 0 && this.state.weight > 0) {
-            var bmi = this.state.weight / ((this.state.height / 100) * (this.state.height / 100));
+    bmi(height, weight) {
+        if (height > 0 && weight > 0) {
+            var bmi = 10000 * (weight / ((height) * (height)));
+            bmi = Math.round(bmi * 100) / 100
             this.setState({ bmi: bmi })
         }
     }
@@ -73,14 +81,14 @@ class Profile extends React.Component {
 
     handleHeightChange(event) {
         let processedData = event.nativeEvent.text;
-        this.setState({ height: processedData })
-        this.bmi();
+        this.setState({height: processedData})
+        this.bmi(processedData, this.state.weight);
     }
-
+    
     handleWeighttChange(event) {
         let processedData = event.nativeEvent.text;
-        this.setState({ weight: processedData })
-        this.bmi();
+        this.setState({weight: processedData})
+        this.bmi(this.state.height, processedData);
     }
 
     storeData = async () => {
@@ -128,11 +136,14 @@ class Profile extends React.Component {
     _pickImage = async () => {
         let { camera } = await Permissions.askAsync(Permissions.CAMERA);
         let { camera_roll } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-        let result = await ImagePicker.launchCameraAsync({
+        let result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             aspect: [4, 3],
+            base64: true
         });
         if (!result.cancelled) {
+            console.log(result.uri);
+            this.setState({base64: result.base64.replace(/(?:\r\n|\r|\n)/g, '')})
             this.setState({ image: result.uri });
         }
     };

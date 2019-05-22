@@ -17,7 +17,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { ThemeConsumer } from 'react-native-elements';
 const { width: WIDTH } = Dimensions.get('window')
-const {height: HEIGHT} = Dimensions.get('window')
+const { height: HEIGHT } = Dimensions.get('window')
 
 class Start extends React.Component {
     constructor(props, { }) {
@@ -42,7 +42,7 @@ class Start extends React.Component {
     render() {
         return (
             <ImageBackground backgroundColor='white' style={styles.backgroundcontainer}>
-                
+
 
                 <View style={styles.logocontainer}>
                     <Image source={doc} style={styles.image} />
@@ -53,15 +53,15 @@ class Start extends React.Component {
                     </Text>
                 </View>
                 <View>
-                    
+
                     <TouchableOpacity style={styles.btnlogin} onPress={this.signin}>
                         <Text style={styles.text}>SignIn</Text>
-                        </TouchableOpacity>
+                    </TouchableOpacity>
                     <TouchableOpacity style={styles.btnlogin} onPress={this.signup}>
                         <Text style={styles.text}>Register</Text>
 
                     </TouchableOpacity>
-                    
+
                 </View>
 
 
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     },
     image: {
         width: 290,
-        height: HEIGHT-190,
+        height: HEIGHT - 190,
         borderRadius: 130
     },
     btnlogin: {
