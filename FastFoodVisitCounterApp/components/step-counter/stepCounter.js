@@ -3,7 +3,7 @@ import React from "react";
 import { Pedometer } from "expo";
 import { StyleSheet, Text, View } from "react-native";
 // import { BarChart, Grid, YAxis } from 'react-native-svg-charts'
-import * as scale from 'd3-scale'
+// import * as scale from 'd3-scale'
 import ip from '../../config';
 import axios from "axios";
 import {connect} from 'react-redux'
@@ -47,7 +47,7 @@ class StepCounter extends React.Component {
     const chartConfig = {
       backgroundGradientFrom: '#ffffff',
       backgroundGradientTo: '#ffffff',
-      color: (opacity = 1) => `rgba(255, 50, 50, ${opacity})`,
+      color: (opacity = 1) => `rgba(36, 113, 202, ${opacity})`,
       strokeWidth: 3 // optional, default 3
     }
     return (
