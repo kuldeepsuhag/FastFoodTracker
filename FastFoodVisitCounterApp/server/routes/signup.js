@@ -53,7 +53,13 @@ module.exports = (req, res) => {
             PatientID: req.body.patientId,
             doctorId: req.body.doctorId,
             height: req.body.height,
+<<<<<<< Updated upstream
             weight: req.body.weight
+=======
+            weight: req.body.weight,
+            countpark: 0,
+            countrest: 0
+>>>>>>> Stashed changes
           });
 
           console.log("User Data Completed");
@@ -84,7 +90,13 @@ module.exports = (req, res) => {
               doctorId: data.doctorId,
               height: data.height,
               weight: data.weight,
+<<<<<<< Updated upstream
               image: data.image
+=======
+              image: data.image,
+              countpark: data.countpark,
+              countrest: data.countrest
+>>>>>>> Stashed changes
             }
             console.log("Sending data" + perdata.Email);
             res.status(200).send(perdata);
