@@ -1,15 +1,26 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
-import { View, StyleSheet, AsyncStorage, BackHandler, Image } from 'react-native';
+import { 
+    View, 
+    StyleSheet,
+    AsyncStorage, 
+    ImageBackground, 
+    Image, 
+    Dimensions, 
+    TextInput,
+    TouchableOpacity,
+    BackHandler, KeyboardAvoidingView } from 'react-native';
 import axios from "axios";
 import ip from "../../config";
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
 import { connect } from 'react-redux'
 import { Link } from "react-router-native";
-import { KeyboardAvoidingView } from 'react-native';
-
+import image from '../../Images/background.jpg' 
+import logo from '../../Images/logo.gif'
+import Icon from 'react-native-vector-icons/Ionicons';
+const { width : WIDTH} = Dimensions.get('window')
 class SignIn extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -17,7 +28,7 @@ class SignIn extends React.Component {
             email: "",
             password: "",
             errors: "",
-            base64: null
+            // base64: null
         };
         this.signinUser = this.signinUser.bind(this);
         this.validate = this.validate.bind(this);
@@ -75,11 +86,11 @@ class SignIn extends React.Component {
                 password: stored ? password : this.state.password
             }
         }).then((response) => {
-            this.setState({ base64: 'data:text/plain;base64,' + JSON.stringify(response.data.image) }, function () {
-                console.log(this.state.base64)
-            })
+            // this.setState({ base64: 'data:text/plain;base64,' + JSON.stringify(response.data.image) }, function () {
+            //     console.log(this.state.base64)
+            // })
 
-            // this.props.history.push("/map");
+            this.props.history.push("/map");
         }).catch((error) => {
             console.log(error);
         });
@@ -105,42 +116,49 @@ class SignIn extends React.Component {
 
     render() {
         return (
-            <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-                <Card style={styles.card}>
-                    <CardItem header bordered>
-                        <Text>Sign In</Text>
-                    </CardItem>
-                    <CardItem>
-                        <ValidateForm errors={this.state.errors} />
-                    </CardItem>
-                    <CardItem bordered>
-                        <Content>
-                            <Item floatingLabel style={styles.input}>
-                                <Label>Email</Label>
-                                <Input value={this.state.email}
-                                    onChange={this.handleEmailChange} />
-                            </Item>
-                            <Item floatingLabel style={styles.input}>
-                                <Label>Password</Label>
-                                <Input secureTextEntry={true} value={this.state.password}
-                                    onChange={this.handlePasswordChange} />
-                            </Item>
-                        </Content>
-                    </CardItem>
-                    <CardItem bordered style={styles.card}>
-                        <Button title="Submit" onPress={this.validate} />
-                    </CardItem>
-                </Card>
-                <Card style={styles.card}>
-                    <CardItem>
-                        <Text>New User? Go back to &nbsp;</Text>
-                        <Button title="Sign Up" onPress={this.signup}>
-                        </Button>
-                    </CardItem>
-                </Card>
-                <Card>
-                    <CardItem>
-                        {this.state.base64 ?
+            <ImageBackground source = {image} style={styles.backgroundcontainer}>
+                 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+            <View style={styles.logocontainer}>
+                    <Image source={logo} style={styles.logo}/> 
+                    <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
+                </View>
+                <View>
+                <ValidateForm errors={this.state.errors} />
+                </View>
+
+                <View>
+                    <TextInput 
+                         style={styles.input}
+                         placeholder={'Email'}
+                         placeholderTextColor={'rgb(36,133,202)'}
+                         underlineColorAndroid='transparent'
+                         value={this.state.email}
+                         onChange={this.handleEmailChange}
+                     />
+                </View>
+                
+                <View>
+                <TextInput 
+                         style={styles.input}
+                         placeholder={'Password'}
+                         placeholderTextColor={'rgb(36,133,202)'}
+                         underlineColorAndroid='transparent'
+                         secureTextEntry={true} 
+                         value={this.state.password}
+                         onChange={this.handlePasswordChange}
+                     />
+
+                </View>
+                <TouchableOpacity style = {styles.btnlogin} onPress={this.validate}>
+                    <Text style={styles.text}>Login</Text>
+
+                </TouchableOpacity>
+                <View>
+                <Text onPress={this.signup}>New User? &nbsp;</Text>
+                        {/* <Button title="Sign Up" >
+                        </Button> */}
+                </View>
+                {/* {this.state.base64 ?
                             <Image
                                 style={{
                                     width: 51,
@@ -151,25 +169,46 @@ class SignIn extends React.Component {
                                     uri:
                                         this.state.base64,
                                 }}
-                            /> : <Text>""</Text>}
-                    </CardItem>
-                </Card>
-            </KeyboardAvoidingView >
+                            /> : <Text>""</Text>} */}
+                </KeyboardAvoidingView>
+            </ImageBackground>
         );
     }
 }
 
 const styles = StyleSheet.create({
+    backgroundcontainer:{
+        flex: 1,
+        width: null,
+        height: null,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    logocontainer:{
+        alignItems: 'center'
+    },
+    logo: {
+        width: 120,
+        height: 120,
+        borderRadius: 130
+    },
     container: {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'stretch',
         // paddingTop: 40,
-        backgroundColor: '#3066c9',
+        // background Color: '#3066c9',
         height: '100%'
     },
     wrapper: {
         alignItems: 'center', paddingBottom: 40, paddingTop: 40
+    },
+    logotext:{
+          color: 'red',
+          fontSize: 20,
+          fontWeight: '500',
+          marginTop: 10,
+          opacity: 0.5
     },
     card: {
         flexDirection: 'column',
@@ -179,7 +218,32 @@ const styles = StyleSheet.create({
         maxWidth: '100%'
     },
     input: {
+        width: WIDTH - 55,
+        height: 45,
+        borderRadius: 45,
+        fontSize: 16,
+        paddingLeft: 45,
+        // backgroundColor: 'rgb(151,214,240)',
+        backgroundColor: 'rgb(255,255,255)',
+        color: 'rgb(36,133,202)',
+        marginHorizontal: 25,
         marginBottom: '2%'
+    },
+    btnlogin: {
+        width: 100,
+        height: 45,
+        borderRadius: 45,
+        backgroundColor: "#432577",
+        justifyContent: 'center',
+        marginTop: 20,
+        marginBottom: '2%',
+        marginLeft: 130
+
+    },
+    text:{
+        color: "rgb(36,133,202)",
+        fontSize: 16,
+        textAlign: 'center',
     }
 });
 

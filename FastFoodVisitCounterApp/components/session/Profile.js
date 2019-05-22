@@ -1,13 +1,17 @@
 import React from 'react';
 import { Button } from 'react-native-elements';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
-import { View, StyleSheet, Image, AsyncStorage, BackHandler } from 'react-native';
+import { View, StyleSheet, Image, AsyncStorage, ImageBackground, TextInput, Dimensions, 
+    TouchableOpacity, ScrollView, KeyboardAvoidingView, BackHandler } from 'react-native';
 import { ImagePicker, Permissions } from 'expo';
 import ip from '../../config';
 import axios from "axios";
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { loggedIn } from '../../redux/actions/index'
-import { KeyboardAvoidingView } from 'react-native';
+import image from '../../Images/background.jpg'
+import logo from '../../Images/logo.gif'
+const { width: WIDTH } = Dimensions.get('window')
+
 
 class Profile extends React.Component {
     constructor(props, { }) {
@@ -18,8 +22,7 @@ class Profile extends React.Component {
             height: 0,
             weight: 0,
             bmi: 0,
-            image: null,
-            base64: null
+            image: null
         };
         this.height = this.height.bind(this);
         this.bmi = this.bmi.bind(this);
@@ -29,6 +32,7 @@ class Profile extends React.Component {
         this.handleDocIDChange = this.handleDocIDChange.bind(this);
         this.handleHeightChange = this.handleHeightChange.bind(this);
         this.handleWeighttChange = this.handleWeighttChange.bind(this);
+        
     }
 
     componentDidMount() {
@@ -67,14 +71,14 @@ class Profile extends React.Component {
 
     handleFullNameChange(event) {
         let processedData = event.nativeEvent.text;
-        this.setState({name: processedData})
+        this.setState({ name: processedData })
     }
 
     handleDocIDChange(event) {
         let processedData = event.nativeEvent.text;
-        this.setState({doctor: processedData})
+        this.setState({ doctor: processedData })
     }
-    
+
     handleHeightChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({height: processedData})
@@ -94,7 +98,7 @@ class Profile extends React.Component {
             console.log(this.props.userData.email)
             const username = ["@username", this.props.userData.email]
             const password = ["@password", this.props.userData.password]
-            let akshay = await AsyncStorage.multiSet([username, password] , function(){
+            let akshay = await AsyncStorage.multiSet([username, password], function () {
                 console.log("Saved");
                 that.props.dispatch(loggedIn(true));
                 that.props.history.push("/map");
@@ -107,7 +111,6 @@ class Profile extends React.Component {
 
     submitProfile() {
         var url = ip.ip.address;
-        console.log(this.state.base64)
         axios({
             method: 'post',
             url: url + "/signup",
@@ -119,7 +122,7 @@ class Profile extends React.Component {
                 name: this.state.name,
                 height: this.state.height,
                 weight: this.state.weight,
-                image: this.state.base64
+                image: this.state.image
             }
         }).then((response) => {
             console.log(response.data);
@@ -148,73 +151,177 @@ class Profile extends React.Component {
     render() {
         //  console.log(this.state.email);
         return (
-            <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-                <Card style={styles.card}>
-                    <CardItem header bordered>
-                        <Text>My Profile</Text>
-                    </CardItem>
-                    <CardItem bordered>
-                        <Content>
-                            <Button
-                                title="Choose Image"
-                                onPress={this._pickImage}
-                            />
-                            {this.state.image &&
-                                <Image source={{ uri: this.state.image }} style={{ width: 200, height: 200 }} />}
-                            <Item floatingLabel style={styles.input}>
-                                <Label>Full Name</Label>
-                                <Input value={this.state.name}
-                                    onChange={this.handleFullNameChange} />
-                            </Item>
-                            <Item floatingLabel style={styles.input}>
-                                <Label>Doctor ID</Label>
-                                <Input value={this.state.doctor}
-                                    onChange={this.handleDocIDChange} keyboardType="numeric"/>
-                            </Item>
-                            <Item floatingLabel style={styles.input}>
-                                <Label>Height (in cms) </Label>
-                                <Input value={String(this.state.height)} keyboardType="numeric"
-                                    onChange={this.handleHeightChange} />
-                            </Item>
-                            <Item floatingLabel style={styles.input}>
-                                <Label>Weight (in kgs) </Label>
-                                <Input value={String(this.state.weight)} keyboardType="numeric"
-                                    onChange={this.handleWeighttChange} />
-                            </Item>
-                            <Label>BMI</Label>
-                            <Label>{this.state.bmi}</Label>
-                        </Content>
-                    </CardItem>
-                    <CardItem bordered style={styles.card}>
-                        <Button title="Submit" onPress={this.submitProfile} />
-                    </CardItem>
-                </Card>
-            </KeyboardAvoidingView >
+            <ImageBackground source={image} style={styles.backgroundcontainer}>
+            <ScrollView>
+                <View style={styles.container}>
+                    <View style={styles.logocontainer}>
+                        <Image source={logo} style={styles.logo} />
+                        <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
+                    </View>
+                    <View>
+                        <Text style={styles.text}>Register</Text>
+                    </View>
+                    {this.state.image &&
+                        <Image source={{ uri: this.state.image }} style={[styles.image,{marginLeft: 80}]} />}
+                    <TouchableOpacity
+                    style = {styles.imagebutton}
+                        title="Profile Image"
+                        onPress={this._pickImage}
+
+
+                    >
+                        <Text style={styles.logintext}>Profile Picture</Text>
+                    </TouchableOpacity>
+                    <View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={'Full Name'}
+                            placeholderTextColor={'rgb(36,133,202)'}
+                            underlineColorAndroid='transparent'
+                            value={this.state.name}
+                            onChange={this.handleFullNameChange}
+                        />
+                    </View>
+                    <View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={'Doctor ID'}
+                            placeholderTextColor={'rgb(36,133,202)'}
+                            keyboardType="numeric"
+                            underlineColorAndroid='transparent'
+                            value={this.state.doctor}
+                            onChange={this.handleDocIDChange}
+                        />
+                    </View>
+
+                    <View>
+                        <Label style={styles.label}>Height (in cms) </Label>
+                        <TextInput
+                            style={styles.input}
+                            placeholderTextColor={'rgb(36,133,202)'}
+                            underlineColorAndroid='transparent'
+
+                            value={String(this.state.height)}
+                            keyboardType="numeric"
+                            onChange={this.handleHeightChange}
+                        />
+                    </View>
+                    <View>
+                        <Label style={styles.label}> Weight (in kgs)</Label>
+                        <TextInput
+                            style={styles.input}
+                            placeholderTextColor={'rgb(36,133,202)'}
+                            underlineColorAndroid='transparent'
+
+                            value={String(this.state.weight)}
+                            keyboardType="numeric"
+                            onChange={this.handleWeighttChange}
+                        />
+                    </View>
+                    <View>
+                        <Label style={styles.label}> BMI (Body Mass Index)</Label>
+                        <Text style={{marginLeft: 30}}>{this.state.bmi}</Text>
+                    </View>
+                    <View>
+                        <TouchableOpacity style={styles.btnsubmit} onPress={this.submitProfile}>
+                            <Text style={styles.logintext}>Submit</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View >
+                </ScrollView>
+            </ImageBackground>
+            
         );
     }
 }
 
 const styles = StyleSheet.create({
+    backgroundcontainer: {
+        flex: 1,
+        width: null,
+        height: null,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    keycontainer:{
+            backgroundColor: '#4c69a5',
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+    },
+
     container: {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'stretch',
         // paddingTop: 40,
-        backgroundColor: '#3066c9',
+        // backgroundColor: '#3066c9',
         height: '100%'
     },
-    wrapper: {
-        alignItems: 'center', paddingBottom: 40, paddingTop: 40
-    },
-    card: {
-        flexDirection: 'column',
-        justifyContent: 'center',
-        marginLeft: '5%',
-        marginRight: '5%',
-        maxWidth: '100%'
-    },
     input: {
+        width: WIDTH - 55,
+        height: 45,
+        borderRadius: 45,
+        fontSize: 16,
+        paddingLeft: 45,
+        // backgroundColor: 'rgb(151,214,240)',
+        backgroundColor: 'rgb(255,255,255)',
+        color: 'rgb(36,133,202)',
+        marginHorizontal: 25,
         marginBottom: '2%'
+    },
+    logo: {
+        width: 120,
+        height: 120,
+        borderRadius: 130
+    },
+    logocontainer: {
+        alignItems: 'center'
+    },
+    text: {
+        justifyContent: 'center',
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginLeft: 130
+
+    },
+    label: {
+        marginLeft: 30,
+        fontSize: 15,
+
+    },
+    imagebutton: {
+        width: 150,
+        height: 45,
+        borderRadius: 45,
+        backgroundColor: "green",
+        justifyContent: 'center',
+        marginTop: 20,
+        marginBottom: '2%',
+        marginLeft: 100
+
+    },
+    btnsubmit: {
+        width: 100,
+        height: 45,
+        borderRadius: 45,
+        backgroundColor: "#432577",
+        justifyContent: 'center',
+        marginTop: 20,
+        marginBottom: '2%',
+        marginLeft: 130
+
+    },
+    logintext:{
+        color: "rgb(36,133,202)",
+        fontSize: 16,
+        textAlign: 'center'
+    },
+    image:{
+        width: 200, 
+        height: 200, 
+        borderRadius: 100, 
+        justifyContent: 'center'
     }
 });
 
