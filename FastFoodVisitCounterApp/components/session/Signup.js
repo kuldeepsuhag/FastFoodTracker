@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import image from '../../Images/background.jpg'
 import logo from '../../Images/logo.gif'
 const { width : WIDTH} = Dimensions.get('window')
+import Toast, { DURATION } from 'react-native-easy-toast'
 class Signup extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -41,14 +42,17 @@ class Signup extends React.Component {
     validate() {
         let valid = false;
         if (!(this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i))) {
-            this.setState({ errors: "Please enter a valid email" });
+            // this.setState({ errors: "Please enter a valid email" });
+            this.refs.toast.show("Please enter a valid email")
             valid = true;
         }
         else if (this.state.password.length < 8) {
-            this.setState({ errors: "Password should be at least of 8 characters" });
+            this.refs.toast.show("Password should be at least of 8 characters")
+            // this.setState({ errors: "Password should be at least of 8 characters" });
             valid = true;
         }
         // else if (this.state.password !== this.state.confirmPassword) {
+        //     this.refs.toast.show("Both the passwords don't match")
         //     this.setState({ errors: "Both the passwords don't match" });
         //     valid = true;
         // }
@@ -105,9 +109,9 @@ class Signup extends React.Component {
             <View>
                 <Text style={styles.text}>Register</Text>
             </View>
-            <View>
+            {/* <View>
                  <ValidateForm errors={this.state.errors} />
-            </View>
+            </View> */}
             <View>
                     <TextInput 
                          style={styles.input}
@@ -150,8 +154,8 @@ class Signup extends React.Component {
                         {/* <Button title="Sign Up" >
                         </Button> */}
                 </View>
-                
                 </KeyboardAvoidingView >
+                <Toast ref="toast" textStyle={{ color: 'red' }} fadeOutDuration={1000} fadeInDuration={2500} />
             </ImageBackground>
         );
     }

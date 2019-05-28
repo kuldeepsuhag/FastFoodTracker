@@ -10,6 +10,7 @@ import { connect } from 'react-redux'
 import image from '../../Images/background.jpg' 
 import logo from '../../Images/logo.gif'
 const { width : WIDTH} = Dimensions.get('window')
+import Toast, { DURATION } from 'react-native-easy-toast'
 class SignIn extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -57,10 +58,12 @@ class SignIn extends React.Component {
         this.setState({ errors: "" });
         let valid = false;
         if (!(this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i))) {
-            this.setState({ errors: "Please enter a valid email" });
+            this.refs.toast.show("Please enter a valid email")
+            // this.setState({ errors: "Please enter a valid email" });
         }
         else if (this.state.password.length < 8) {
-            this.setState({ errors: "Password should be at least of 8 characters" });
+            // this.setState({ errors: "Password should be at least of 8 characters" });
+            this.refs.toast.show("Password should be at least of 8 characters")
         } else {
             this.signinUser();
         }
@@ -84,7 +87,8 @@ class SignIn extends React.Component {
             this.props.history.push("/map");
         }).catch((error) => {
             console.log("error")
-            this.setState({ errors: error.response.data.message });
+            this.refs.toast.show(error.response.data.message)
+            // this.setState({ errors: error.response.data.message });
         });
         // this.props.history.push("/profile");
     }
@@ -114,9 +118,9 @@ class SignIn extends React.Component {
                     <Image source={logo} style={styles.logo}/> 
                     <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
                 </View>
-                <View>
+                {/* <View>
                 <ValidateForm errors={this.state.errors} />
-                </View>
+                </View> */}
 
                 <View>
                     <TextInput 
@@ -151,6 +155,7 @@ class SignIn extends React.Component {
                         </Button> */}
                 </View>
                 </KeyboardAvoidingView>
+                <Toast ref="toast" textStyle={{ color: 'red' }} fadeOutDuration={1000} fadeInDuration={2500} />
             </ImageBackground>
         );
     }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Constants, MapView, Location, Permissions } from 'expo';
+import { Constants, MapView, Location, Permissions, Pedometer, TaskManager } from 'expo';
 import { StyleSheet, View, Alert, BackHandler } from 'react-native';
 import AppFooter from '../footer/AppFooter'
 import { Card, CardItem, Text } from 'native-base';
@@ -7,10 +7,10 @@ import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ip from '../../config';
 import axios from "axios";
-import { Pedometer } from "expo";
 import {connect} from 'react-redux'
 import { stepData } from '../../redux/actions/index'
 
+const LOCATION_TASK_NAME = 'background-location-task';
 class Map extends React.Component {
   state = {
     mapRegion: null,
@@ -26,10 +26,13 @@ class Map extends React.Component {
     countPark: 0
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this._getLocationAsync();
     this._getStepCounterData();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+      accuracy: Location.Accuracy.Balanced,
+    });
   }
 
   handleBackPress = () => {
@@ -158,7 +161,7 @@ class Map extends React.Component {
       // If the chosen value is longitudeDelta, then the left edge is longitude - longitudeDelta and the right edge is longitude + longitudeDelta. The top and bottom are whatever values are needed to fill the height without stretching the map.
       // If the chosen value is latitudeDelta, then the bottom edge is latitude - latitudeDelta and the top edge is latitude + latitudeDelta. The left and right are whatever values are needed to fill the width without stretching the map.
       this.setState({ mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 } });
-      this.sendMapData()
+      this.sendMapData(this.state.latitude, this.state.longitude, this.state.city)
     } else {
       Alert.alert(
         'Location Services Are Disabled',
@@ -171,16 +174,16 @@ class Map extends React.Component {
     }
   };
 
-  sendMapData() {
+  sendMapData(lat, lon, city) {
     var url = ip.ip.address;
 
     axios({
       method: 'post',
       url: url + "/map-data",
       data: {
-        latitude: this.state.lat,
-        longitude: this.state.long,
-        place: this.state.city
+        latitude: lat,
+        longitude: lon,
+        place: city
       }
     }).then((response) => {
       console.log(response.data);
@@ -254,6 +257,41 @@ class Map extends React.Component {
     );
   }
 }
+
+TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
+  if (error) {
+    // Error occurred - check `error.message` for more details.
+    console.log("error" + error.message)
+    return;
+  }
+  if (data) {
+    const { locations } = data;
+    console.log('background locations', locations)
+    let lat = locations[0].coords.latitude
+    let lon = locations[0].coords.longitude
+    let locationObj = {
+      latitude: lat,
+      longitude: lon
+    }
+
+    var url = ip.ip.address;
+
+    axios({
+      method: 'post',
+      url: url + "/map-data",
+      data: {
+        latitude: lat,
+        longitude: lon,
+        place: ""
+      }
+    }).then((response) => {
+      console.log(response.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+    
+  }
+});
 
 const styles = StyleSheet.create({
   container: {

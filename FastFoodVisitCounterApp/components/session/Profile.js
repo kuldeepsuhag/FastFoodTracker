@@ -11,6 +11,7 @@ import { connect } from 'react-redux'
 import { loggedIn } from '../../redux/actions/index'
 import image from '../../Images/background.jpg'
 import logo from '../../Images/logo.gif'
+import Toast, { DURATION } from 'react-native-easy-toast'
 const { width: WIDTH } = Dimensions.get('window')
 
 class Profile extends React.Component {
@@ -128,6 +129,7 @@ class Profile extends React.Component {
             console.log(response.data);
             this.storeData();
         }).catch((error) => {
+            
             console.log(error);
         });
     }
