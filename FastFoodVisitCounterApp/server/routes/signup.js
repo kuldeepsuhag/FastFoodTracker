@@ -115,13 +115,9 @@ module.exports = (req, res) => {
             PatientID: req.body.patientId,
             doctorId: req.body.doctorId,
             height: req.body.height,
-<<<<<<< Updated upstream
-            weight: req.body.weight
-=======
             weight: req.body.weight,
             countpark: 0,
             countrest: 0
->>>>>>> Stashed changes
           });
 
           console.log("User Data Completed");
