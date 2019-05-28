@@ -5,6 +5,13 @@ export const addUser = (newData) => ({
     }
 })
 
+export const userData = (userDetails) => ({
+    type: "USER_DATA",
+    payload : {
+        userDetails
+    }
+})
+
 export const loggedIn = (isUser) => ({
     type: "LOGGED_IN",
     payload: {

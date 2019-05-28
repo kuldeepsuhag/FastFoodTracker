@@ -1,17 +1,16 @@
 import React from 'react';
-import { Constants, MapView, Location, Permissions } from 'expo';
+import { Constants, MapView, Location, Permissions, Pedometer, TaskManager } from 'expo';
 import { StyleSheet, View, Alert, BackHandler } from 'react-native';
 import AppFooter from '../footer/AppFooter'
 import { Card, CardItem, Text } from 'native-base';
 import { Button } from 'react-native-elements';
-// import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ip from '../../config';
 import axios from "axios";
-import { Pedometer } from "expo";
 import {connect} from 'react-redux'
 import { stepData } from '../../redux/actions/index'
 
+const LOCATION_TASK_NAME = 'background-location-task';
 class Map extends React.Component {
   state = {
     mapRegion: null,
@@ -27,10 +26,13 @@ class Map extends React.Component {
     countPark: 0
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this._getLocationAsync();
     this._getStepCounterData();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+      accuracy: Location.Accuracy.Balanced,
+    });
   }
 
   handleBackPress = () => {
@@ -48,20 +50,12 @@ class Map extends React.Component {
         this.setState({
           isPedometerAvailable: "Could not get is PedometerAvailable: " + error
         });
+        console.log("Error with Pedometer: " + error)
       }
     );
-    
-    // Use this to build the progress widget for the current day
-
-    // const end = new Date();
-    // const start = new Date();
-    // start.setDate(end.getDate() - 1);
-    
-
 
     //Creating the data step data for the last week
     const today = new Date();
-    const prevDate = new Date();
     let that = this;
     let DataForGraph = {}
     // Send datelabel if date is needed
@@ -70,17 +64,19 @@ class Map extends React.Component {
     let noOfSteps = []
     let weekDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     for (let i = 6; i > 0; i--) {
-      prevDate.setDate(today.getDate() - i);
-
+      
+      let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
+      let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
       // Uncomment to get the state string
       // let dateString = startInterval.getDate() + '/' + (startInterval.getMonth() + 1) + '/' + startInterval.getFullYear();
       
-      let dayString = weekDay[prevDate.getDay()];
+      // let dayString = weekDay[prevDate.getDay()];
+      let dayString = weekDay[start.getDay()];
 
-      //First parameter: start of the interval ; Second Parameter: end of the interval
-      Pedometer.getStepCountAsync(prevDate.getDate(), prevDate.getDate() + 1).then(
+      Pedometer.getStepCountAsync(start, end).then(
         result => {
           // Send datelabel if date is needed
+          // Send datelabel if date is neededpr
           // dateLabels.push(dateString.toString());
           noOfSteps.push(result.steps);
         },
@@ -153,26 +149,19 @@ class Map extends React.Component {
 
       let geoResult = await Location.reverseGeocodeAsync(locationObj)
 
-      //  let locationObjToServer = {
-      //   latitude: latitute,
-      //   longitude: longitude,
-      //   city: geoResult[0].city
-      // }
 
-
-      //this.setState({ locationDataToServer: JSON.stringify(locationObjToServer) })
-      //console.log("Testing " + this.state.locationDataToServer);
       this.setState({ locationResult: JSON.stringify(location) });
       this.setState({ lat: latitute });
       this.setState({ long: longitude });
       this.setState({ city: (geoResult[0].city)?  geoResult[0].city: ""});
+      
       // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
       // The map computes two values, longitudeDelta/width and latitudeDelta/height, compares those 2 computed values, and takes the larger of the two.
       // The map is zoomed according to the value chosen in step 2 and the other value is ignored.
       // If the chosen value is longitudeDelta, then the left edge is longitude - longitudeDelta and the right edge is longitude + longitudeDelta. The top and bottom are whatever values are needed to fill the height without stretching the map.
       // If the chosen value is latitudeDelta, then the bottom edge is latitude - latitudeDelta and the top edge is latitude + latitudeDelta. The left and right are whatever values are needed to fill the width without stretching the map.
       this.setState({ mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 } });
-      this.sendMapData()
+      this.sendMapData(this.state.latitude, this.state.longitude, this.state.city)
     } else {
       Alert.alert(
         'Location Services Are Disabled',
@@ -185,16 +174,16 @@ class Map extends React.Component {
     }
   };
 
-  sendMapData() {
+  sendMapData(lat, lon, city) {
     var url = ip.ip.address;
 
     axios({
       method: 'post',
       url: url + "/map-data",
       data: {
-        latitude: this.state.lat,
-        longitude: this.state.long,
-        place: this.state.city
+        latitude: lat,
+        longitude: lon,
+        place: city
       }
     }).then((response) => {
       console.log(response.data);
@@ -268,6 +257,41 @@ class Map extends React.Component {
     );
   }
 }
+
+TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
+  if (error) {
+    // Error occurred - check `error.message` for more details.
+    console.log("error" + error.message)
+    return;
+  }
+  if (data) {
+    const { locations } = data;
+    console.log('background locations', locations)
+    let lat = locations[0].coords.latitude
+    let lon = locations[0].coords.longitude
+    let locationObj = {
+      latitude: lat,
+      longitude: lon
+    }
+
+    var url = ip.ip.address;
+
+    axios({
+      method: 'post',
+      url: url + "/map-data",
+      data: {
+        latitude: lat,
+        longitude: lon,
+        place: ""
+      }
+    }).then((response) => {
+      console.log(response.data);
+    }).catch((error) => {
+      console.log(error);
+    });
+    
+  }
+});
 
 const styles = StyleSheet.create({
   container: {
