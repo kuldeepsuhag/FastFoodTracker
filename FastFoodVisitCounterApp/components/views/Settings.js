@@ -8,43 +8,59 @@ import DialogInput from 'react-native-dialog-input';
 import ip from '../../config';
 import axios from "axios";
 import Toast, { DURATION } from 'react-native-easy-toast'
+import { connect } from 'react-redux'
+import { currentGoal, userData } from '../../redux/actions/index'
 
-export default class Settings extends React.Component {
+ class Settings extends React.Component {
     constructor(props, { }) {
         super(props);
         this.state = {
-            showGoalModal: false
+            showGoalModal: false,
+            reload: false
         };
-        this.showGoalDialog = this.showGoalDialog.bind(this);
+        this.showGoalChangeDialog = this.showGoalChangeDialog.bind(this);
     }
 
-    showGoalDialog(){
+    showGoalChangeDialog(){
         this.setState({ showGoalModal: !(this.state.showGoalModal)});
     }
+
     sendInput = async (inputText) => {
-        console.log("new goal", inputText)
-        console.log("new goal int", parseInt(inputText, 10))
+        let stepGoal = parseInt(inputText, 10)
+        let that = this
         this.setState({ showGoalModal: !(this.state.showGoalModal) });
         if (isNaN(parseInt(inputText, 10))){
             this.refs.toast.show('Enter a valid number')
         }
         else{
+            that.props.userDetails.state.currentGoal = stepGoal
+            // that.props.dispatch(currentGoal(stepGoal))
+            that.props.dispatch(userData(that.props.userDetails.state))
             var url = ip.ip.address;
             axios({
                 method: 'post',
                 url: url + "/new-step-goal",
                 data: {
-                    stepGoal: "test"
+                    stepGoal: stepGoal
                 }
             }).then((response) => {
                 console.log(response.data);
+                // that.props.dispatch(currentGoal(stepGoal))
+                that.props.dispatch(userData(that.props.userDetails.state.currentGoal))
                 //save the updated goal in profile redux!!
             }).catch((error) => {
                 console.log(error);
             });
+            that.setState({
+                reload: !(that.state.reload)
+            })
         }
     }
     componentDidMount() {
+        console.log(this.props.userDetails.state);
+        if(this.props.userDetails.state.stepGoal == null) {
+            this.raisePopupForInitialStep();
+        }
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
 
@@ -55,6 +71,10 @@ export default class Settings extends React.Component {
     handleBackPress = () => {
         this.props.history.goBack();
         return true;
+    }
+
+    raisePopupForInitialStep(){
+        this.setState({ showGoalModal: !(this.state.showGoalModal) });
     }
 
     render() {
@@ -72,13 +92,13 @@ export default class Settings extends React.Component {
                         <DailyGoal></DailyGoal>
                     </View>
                     <View style={{ flexDirection: "row" , justifyContent: "center", marginTop: 10}}>
-                        <Button onPress={this.showGoalDialog} title="Update Goal"></Button>
+                        <Button onPress={this.showGoalChangeDialog} title="Update Goal"></Button>
                         <DialogInput isDialogVisible={this.state.showGoalModal}
                             title={"Change Daily Step Goal"}
                             message={"Enter the new goal"}
-                            hintInput={"Eg. 5000"}
+                            hintInput={"Default# 10,000"}
                             submitInput={(inputText) => { this.sendInput(inputText) }}
-                            closeDialog={() => { this.showGoalDialog() }}>
+                            closeDialog={() => { this.showGoalChangeDialog() }}>
                         </DialogInput>
                     </View>
                 </View>
@@ -108,3 +128,11 @@ const styles = StyleSheet.create({
         color: '#34495e',
     }
 });
+
+const mapStateToProps = (state) => {
+    return {
+        userDetails: state
+    }
+}
+
+export default connect(mapStateToProps)(Settings); 

@@ -7,7 +7,7 @@ export default (state, action) => {
             return Object.assign({}, state, action.payload.newData); //better way 
         case "USER_DATA": 
             console.log(state)
-            return Object.assign({}, state, action.payload.userDetails); //better way        
+            return Object.assign({}, state, action.payload.userDetails); //better way
         case "LOGGED_IN": 
             console.log(state)
             return {
@@ -19,6 +19,18 @@ export default (state, action) => {
             return {
                 state,
                 stepData: action.payload.stepData
+            }
+        case "CURRENT_GOAL":
+            // console.log(state)
+            // console.log("test", action.payload.currentGoal)
+            return {
+                state,
+                userDetails: {
+                ...state.userDetails,
+                // state: {
+                // ...state.userDetails.state,
+                    currentGoal: action.payload.currentGoal
+                }
             }
         default:
             return state;
