@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text} from 'native-base';
+import { Text } from 'native-base';
+import { Button } from 'react-native-elements';
 import { View, StyleSheet,AsyncStorage, ImageBackground, Image, Dimensions, 
     TextInput, TouchableOpacity, BackHandler, KeyboardAvoidingView, Keyboard } from 'react-native';
 import axios from "axios";
@@ -126,46 +127,59 @@ class SignIn extends React.Component {
         return (
             <ImageBackground source = {image} style={styles.backgroundcontainer}>
                  <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-            <View style={styles.logocontainer}>
-                    <Image source={logo} style={styles.logo}/> 
-                    <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
-                </View>
+                    <View style={styles.logocontainer}>
+                        <Image source={logo} style={styles.logo}/> 
+                        
+                    </View>
+                    <View style={styles.logocontainer}>
+                        <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
+                    </View>
+                    <View style={styles.logocontainer}>
+                        <Text style={styles.logotext}>Sign In</Text>
+                    </View>
                 {/* <View>
                 <ValidateForm errors={this.state.errors} />
                 </View> */}
-
-                <View>
-                    <TextInput 
-                         style={styles.input}
-                         placeholder={'Email'}
-                         placeholderTextColor={'rgb(36,133,202)'}
-                         underlineColorAndroid='transparent'
-                         value={this.state.email}
-                         onChange={this.handleEmailChange}
-                     />
-                </View>
-                
-                <View>
-                <TextInput 
-                         style={styles.input}
-                         placeholder={'Password'}
-                         placeholderTextColor={'rgb(36,133,202)'}
-                         underlineColorAndroid='transparent'
-                         secureTextEntry={true} 
-                         value={this.state.password}
-                         onChange={this.handlePasswordChange}
-                     />
-
-                </View>
-                <TouchableOpacity style = {styles.btnlogin} onPress={this.validate}>
-                    <Text style={styles.text}>Login</Text>
-
-                </TouchableOpacity>
-                <View>
-                <Text onPress={this.signup}>New User? &nbsp;</Text>
-                        {/* <Button title="Sign Up" >
-                        </Button> */}
-                </View>
+                    <View>
+                        <TextInput 
+                            style={styles.input}
+                            placeholder={'Email'}
+                            placeholderTextColor={'rgb(36,133,202)'}
+                            underlineColorAndroid='transparent'
+                            value={this.state.email}
+                            onChange={this.handleEmailChange}
+                        />
+                    </View>
+                    <View>
+                        <TextInput 
+                                style={styles.input}
+                                placeholder={'Password'}
+                                placeholderTextColor={'rgb(36,133,202)'}
+                                underlineColorAndroid='transparent'
+                                secureTextEntry={true} 
+                                value={this.state.password}
+                                onChange={this.handlePasswordChange}
+                            />
+                    </View>
+                    <View style={{
+                        width: '100%',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginBottom: '1%'
+                    }}>
+                        {/* <Button title="Login" raised onPress={this.validate} style={styles.loginButton}></Button> */}
+                        <TouchableOpacity onPress={this.validate} style={styles.btnlogin}>
+                            <Text style={styles.text}>Login</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{
+                        width: '100%',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center'}}>
+                        <Button title="New User" type="outline" onPress={this.signup} style={styles.loginButton}></Button>
+                    </View>
                 </KeyboardAvoidingView>
                 <Toast ref="toast" textStyle={{ color: 'red' }} fadeOutDuration={1000} fadeInDuration={2500} />
             </ImageBackground>
@@ -230,17 +244,21 @@ const styles = StyleSheet.create({
         width: WIDTH - 250,
         height: 45,
         borderRadius: 45,
-        backgroundColor: "#432577",
+        backgroundColor: 'rgb(36,133,202)',
         justifyContent: 'center',
         marginTop: 20,
         marginBottom: '2%',
-        marginLeft: 130
+        // marginLeft: 130
 
     },
     text:{
-        color: "rgb(36,133,202)",
+        color: "rgb(245,245,245)",
         fontSize: 16,
         textAlign: 'center',
+    },
+    loginButton: {
+        backgroundColor: 'red',
+        color: 'white'
     }
 });
 

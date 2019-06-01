@@ -10,22 +10,27 @@ import axios from "axios";
 import {connect} from 'react-redux'
 import { stepData } from '../../redux/actions/index'
 import {Header} from 'react-native-elements'
+import AnimatedLoader from "react-native-animated-loader";
 
 const LOCATION_TASK_NAME = 'background-location-task';
 class Map extends React.Component {
-  state = {
-    mapRegion: null,
-    hasLocationPermissions: false,
-    locationResult: null,
-    lat: null,
-    long: null,
-    city: null,
-    roundedLat: null,
-    roundedLong: null,
-    isPedometerAvailable: "",
-    countFastFood: 0,
-    countPark: 0
-  };
+  constructor(props, { }) {
+    super(props);
+    this.state = {
+      mapRegion: null,
+      hasLocationPermissions: false,
+      locationResult: null,
+      lat: null,
+      long: null,
+      city: null,
+      roundedLat: null,
+      roundedLong: null,
+      isPedometerAvailable: "",
+      countFastFood: 0,
+      countPark: 0,
+      visible: true
+    };
+  }
 
   async componentDidMount() {
     this._getLocationAsync();
@@ -34,6 +39,14 @@ class Map extends React.Component {
     await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
       accuracy: Location.Accuracy.Balanced,
     });
+  }
+  componentWillMount(){
+    let that = this
+    setTimeout(function () {
+      that.setState({
+        visible: !that.state.visible
+      });
+    }, 5000); 
   }
 
   handleBackPress = () => {
@@ -140,21 +153,21 @@ class Map extends React.Component {
       let location = await Location.getCurrentPositionAsync({});
       this.setState({ locationResult: JSON.stringify(location) });
 
-      let latitute = location.coords.latitude
-      let longitude = location.coords.longitude
+      // let latitute = location.coords.latitude
+      // let longitude = location.coords.longitude
 
-      let locationObj = {
-        latitude: latitute,
-        longitude: longitude
-      }
+      // let locationObj = {
+      //   latitude: latitute,
+      //   longitude: longitude
+      // }
 
-      let geoResult = await Location.reverseGeocodeAsync(locationObj)
+      // let geoResult = await Location.reverseGeocodeAsync(locationObj)
 
 
-      this.setState({ locationResult: JSON.stringify(location) });
-      this.setState({ lat: latitute });
-      this.setState({ long: longitude });
-      this.setState({ city: (geoResult[0].city)?  geoResult[0].city: ""});
+      // this.setState({ locationResult: JSON.stringify(location) });
+      this.setState({ lat: location.coords.latitude });
+      this.setState({ long: location.coords.longitude });
+      // this.setState({ city: (geoResult[0].city)?  geoResult[0].city: ""});
       
       // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
       // The map computes two values, longitudeDelta/width and latitudeDelta/height, compares those 2 computed values, and takes the larger of the two.
@@ -162,7 +175,8 @@ class Map extends React.Component {
       // If the chosen value is longitudeDelta, then the left edge is longitude - longitudeDelta and the right edge is longitude + longitudeDelta. The top and bottom are whatever values are needed to fill the height without stretching the map.
       // If the chosen value is latitudeDelta, then the bottom edge is latitude - latitudeDelta and the top edge is latitude + latitudeDelta. The left and right are whatever values are needed to fill the width without stretching the map.
       this.setState({ mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 } });
-      this.sendMapData(this.state.latitude, this.state.longitude, this.state.city)
+      // this.sendMapData(this.state.latitude, this.state.longitude, this.state.city)
+      this.sendMapData(this.state.lat, this.state.lon)
     } else {
       Alert.alert(
         'Location Services Are Disabled',
@@ -175,7 +189,8 @@ class Map extends React.Component {
     }
   };
 
-  sendMapData(lat, lon, city) {
+  // sendMapData(lat, lon, city) {
+  sendMapData(lat, lon) {
     var url = ip.ip.address;
 
     axios({
@@ -183,8 +198,8 @@ class Map extends React.Component {
       url: url + "/map-data",
       data: {
         latitude: lat,
-        longitude: lon,
-        place: city
+        longitude: lon
+        // place: city
       }
     }).then((response) => {
       console.log(response.data);
@@ -207,58 +222,66 @@ class Map extends React.Component {
                     }
                 }} />
         <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundImage}>
-          
-          {
-            this.state.locationResult === null ?
-              <Text>Finding your current location...</Text> :
-              this.state.hasLocationPermissions === false ?
-                <Text>Please provide location permissions.</Text> :
-                this.state.mapRegion === null ?
-                  <Text>Map region doesn't exist.</Text> :
-                  <MapView
-                    style={{ alignSelf: 'stretch', height: '61.9%', marginTop: '-1%' }}
-                    region={this.state.mapRegion}
-                    showsUserLocation={true}
-                    showsPointsOfInterest={false}
-                    followsUserLocation={false}
-                    zoomLevel={20}
-                    provider="google"
-                    onRegionChange={region => this.state.mapRegion = region}
-                    onUserLocationChange={location => this._handleMapRegionChange(location)}
+            <AnimatedLoader
+              visible={this.state.visible}
+              overlayColor="rgba(255,255,255,1)"
+              source={require("../../Images/loader.json")}
+              animationStyle={styles.lottie}
+              speed={1}
+            />
+            <View>
+              {
+                this.state.locationResult === null ?
+                  <Text>Finding your current location...</Text> :
+                  this.state.hasLocationPermissions === false ?
+                    <Text>Please provide location permissions.</Text> :
+                    this.state.mapRegion === null ?
+                      <Text>Map region doesn't exist.</Text> :
+                      <MapView
+                        style={{ alignSelf: 'stretch', height: '61.9%', marginTop: '-1%' }}
+                        region={this.state.mapRegion}
+                        showsUserLocation={true}
+                        showsPointsOfInterest={false}
+                        followsUserLocation={false}
+                        zoomLevel={20}
+                        provider="google"
+                        onRegionChange={region => this.state.mapRegion = region}
+                        onUserLocationChange={location => this._handleMapRegionChange(location)}
+                      />
+              }
+              <Card style={styles.card} transparent>
+                <CardItem>
+                  <Button
+                    buttonStyle={{ backgroundColor: "red" }}
+                    icon={
+                      <Icon
+                        name="md-pizza"
+                        size={15}
+                        color="white"
+                      />
+                    }
+                    color="green"
+                    title={this.state.countFastFood.toString()}
                   />
-          }
-          <Card style={styles.card} transparent>
-            <CardItem>
-              <Button
-                buttonStyle={{ backgroundColor: "red" }}
-                icon={
-                  <Icon
-                    name="md-pizza"
-                    size={15}
-                    color="white"
+                  <Button
+                    buttonStyle={{ backgroundColor: "green" }}
+                    icon={
+                      <Icon
+                        name="ios-american-football"
+                        size={15}
+                        color="white"
+                      />
+                    }
+                    title={" " + this.state.countPark.toString()}
                   />
-                }
-                color="green"
-                title={this.state.countFastFood.toString()}
-              />
-              <Button
-                buttonStyle={{ backgroundColor: "green" }}
-                icon={
-                  <Icon
-                    name="ios-american-football"
-                    size={15}
-                    color="white"
-                  />
-                }
-                title={" " + this.state.countPark.toString()}
-              />
-            </CardItem>
-          </Card>
-          <Card>
-            <CardItem>
-              <Text>Location Data: {this.state.locationResult}</Text>
-            </CardItem>
-          </Card>
+                </CardItem>
+              </Card>
+              <Card>
+                <CardItem>
+                  <Text>Location Data: {this.state.locationResult}</Text>
+                </CardItem>
+              </Card>
+            </View>
           </ImageBackground>
         </View>
         <AppFooter props={this.props}/>
@@ -329,7 +352,11 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     width: null,
     justifyContent: 'center'
-}
+  },
+  lottie: {
+    width: 400,
+    height: 400
+  }
 });
 
 export default connect()(Map)
