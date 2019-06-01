@@ -31,8 +31,6 @@ class SignIn extends React.Component {
         try {
             const username = await AsyncStorage.getItem('@username')
             const password = await AsyncStorage.getItem('@password')
-            console.log(username)
-            console.log(password)
             if (username !== null && password !== null) {
                 this.signinUser(true, username, password);
             }
@@ -71,14 +69,22 @@ class SignIn extends React.Component {
     }
 
     setDetail = async (response) => {
-        const username = ["@username", this.state.email]
-        const password = ["@password", this.state.password]
-        var that = this;
-        let saved = await AsyncStorage.multiSet([username, password], function () {
-            console.log("Saved");
-            that.props.dispatch(userData(response.data));
-            that.props.history.push("/map");
-        })
+        const username = await AsyncStorage.getItem('@username')
+        const password = await AsyncStorage.getItem('@password')
+        if (username !== null && password !== null) {
+            this.props.dispatch(userData(response.data));
+            this.props.history.push("/map");
+        }else{
+            const username = ["@username", this.state.email]
+            const password = ["@password", this.state.password]
+            var that = this;
+            await AsyncStorage.multiSet([username, password], function () {
+                console.log("Saved");
+                that.props.dispatch(userData(response.data));
+                that.props.history.push("/map");
+            })
+        }
+
     }
 
     signinUser(stored, username, password)  {
@@ -91,18 +97,11 @@ class SignIn extends React.Component {
                 password: stored ? password : this.state.password
             }
         }).then((response) => {
-            // console.log(response.data);
-            // this.setState({ base64: 'data:text/plain;base64,' + JSON.stringify(response.data.image) }, function () {
-            //     console.log(this.state.base64)
-            // })
             this.setDetail(response);
-
         }).catch((error) => {
             console.log("error")
             this.refs.toast.show(error.response.data.message)
-            // this.setState({ errors: error.response.data.message });
         });
-        // this.props.history.push("/profile");
     }
 
     signup() {
