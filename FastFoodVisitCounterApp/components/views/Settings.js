@@ -59,7 +59,7 @@ import { Header } from 'react-native-elements'
     componentDidMount() {
         console.log(this.props.currentGoal);
         if(this.props.currentGoal == null) {
-            this.raisePopupForInitialStep();
+            this.showGoalChangeDialog();
         }
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
