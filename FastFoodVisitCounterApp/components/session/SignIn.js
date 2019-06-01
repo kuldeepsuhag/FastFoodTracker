@@ -12,6 +12,7 @@ import image from '../../Images/back.jpg'
 import logo from '../../Images/logo.gif'
 const { width : WIDTH} = Dimensions.get('window')
 import Toast, { DURATION } from 'react-native-easy-toast'
+import AnimatedLoader from "react-native-animated-loader";
 class SignIn extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -19,6 +20,7 @@ class SignIn extends React.Component {
             email: "",
             password: "",
             errors: "",
+            visible: false
             // base64: null
         };
         this.signinUser = this.signinUser.bind(this);
@@ -32,8 +34,6 @@ class SignIn extends React.Component {
         try {
             const username = await AsyncStorage.getItem('@username')
             const password = await AsyncStorage.getItem('@password')
-            console.log(username)
-            console.log(password)
             if (username !== null && password !== null) {
                 this.signinUser(true, username, password);
             }
@@ -72,17 +72,26 @@ class SignIn extends React.Component {
     }
 
     setDetail = async (response) => {
-        const username = ["@username", this.state.email]
-        const password = ["@password", this.state.password]
-        var that = this;
-        let saved = await AsyncStorage.multiSet([username, password], function () {
-            console.log("Saved");
-            that.props.dispatch(userData(response.data));
-            that.props.history.push("/map");
-        })
+        const username = await AsyncStorage.getItem('@username')
+        const password = await AsyncStorage.getItem('@password')
+        if (username !== null && password !== null) {
+            this.props.dispatch(userData(response.data));
+            this.props.history.push("/map");
+        }else{
+            const username = ["@username", this.state.email]
+            const password = ["@password", this.state.password]
+            var that = this;
+            await AsyncStorage.multiSet([username, password], function () {
+                console.log("Saved");
+                that.props.dispatch(userData(response.data));
+                that.props.history.push("/map");
+            })
+        }    
     }
 
     signinUser(stored, username, password)  {
+        this.setState({visible: true})
+        let that = this
         var url = ip.ip.address;
         axios({
             method: 'post',
@@ -92,18 +101,13 @@ class SignIn extends React.Component {
                 password: stored ? password : this.state.password
             }
         }).then((response) => {
-            // console.log(response.data);
-            // this.setState({ base64: 'data:text/plain;base64,' + JSON.stringify(response.data.image) }, function () {
-            //     console.log(this.state.base64)
-            // })
+            that.setState({visible: false})
             this.setDetail(response);
-
         }).catch((error) => {
             console.log("error")
+            that.setState({ visible: false })
             this.refs.toast.show(error.response.data.message)
-            // this.setState({ errors: error.response.data.message });
         });
-        // this.props.history.push("/profile");
     }
 
     signup() {
@@ -126,10 +130,16 @@ class SignIn extends React.Component {
     render() {
         return (
             <ImageBackground source = {image} style={styles.backgroundcontainer}>
+                <AnimatedLoader
+                    visible={this.state.visible}
+                    overlayColor="rgba(255,255,255,1)"
+                    source={require("../../Images/loader.json")}
+                    animationStyle={styles.lottie}
+                    speed={1}
+                />
                  <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                     <View style={styles.logocontainer}>
                         <Image source={logo} style={styles.logo}/> 
-                        
                     </View>
                     <View style={styles.logocontainer}>
                         <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
@@ -168,7 +178,7 @@ class SignIn extends React.Component {
                         </TouchableOpacity> */}
                     </View>
                     <View style={styles.alternate}>
-                        <Button title="New User" type="outline" onPress={this.signup} style={styles.loginButton}></Button>
+                        <Button title="New User" type="outline" onPress={this.signup}></Button>
                     </View>
                 </KeyboardAvoidingView>
                 <Toast ref="toast" textStyle={{ color: 'red' }} fadeOutDuration={1000} fadeInDuration={2500} />
@@ -257,15 +267,19 @@ const styles = StyleSheet.create({
     //     fontSize: 16,
     //     textAlign: 'center',
     // },
-    loginButton: {
-        backgroundColor: 'red',
-        color: 'white'
-    },
+    // loginButton: {
+    //     backgroundColor: 'red',
+    //     color: 'white'
+    // },
     nextButton: {
         backgroundColor: 'rgb(36,133,202)',
         borderRadius: 45,
         paddingLeft: 40,
         paddingRight: 40
+    },
+    lottie: {
+        width: 400,
+        height: 400
     }
 });
 

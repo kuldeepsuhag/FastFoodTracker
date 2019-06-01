@@ -12,13 +12,15 @@ import Toast, { DURATION } from 'react-native-easy-toast'
 import { connect } from 'react-redux'
 import { currentGoal } from '../../redux/actions/index'
 import { Header } from 'react-native-elements'
+import AnimatedLoader from "react-native-animated-loader";
 
  class Settings extends React.Component {
     constructor(props, { }) {
         super(props);
         this.state = {
             showGoalModal: false,
-            reload: false
+            reload: false,
+            visible: false
         };
         this.showGoalChangeDialog = this.showGoalChangeDialog.bind(this);
     }
@@ -37,6 +39,9 @@ import { Header } from 'react-native-elements'
         else{
             console.log(that.props.currentGoal)
             console.log(stepGoal)
+            that.setState({
+                visible: true
+            })
             that.props.dispatch(currentGoal(stepGoal))
             var url = ip.ip.address;
             axios({
@@ -48,9 +53,15 @@ import { Header } from 'react-native-elements'
                 }
             }).then((response) => {
                 console.log(response.data);
+                that.setState({
+                    visible: true
+                })
                // that.props.dispatch(userData(that.props.userDetails.state.currentGoal))
             }).catch((error) => {
                 console.log(error);
+                that.setState({
+                    visible: true
+                })
             });
             that.setState({
                 reload: !(that.state.reload)
@@ -90,6 +101,13 @@ import { Header } from 'react-native-elements'
                     }
                 }} />
                 <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundImage}>
+                    <AnimatedLoader
+                        visible={this.state.visible}
+                        overlayColor="rgba(255,255,255,1)"
+                        source={require("../../Images/loader.json")}
+                        animationStyle={styles.lottie}
+                        speed={1}
+                    />    
                 <View style={{ flex: 1}}>
                     
                         <View>
@@ -142,6 +160,10 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         width: null,
         justifyContent: 'center'
+    },
+    lottie: {
+        width: 400,
+        height: 400
     }
 });
 

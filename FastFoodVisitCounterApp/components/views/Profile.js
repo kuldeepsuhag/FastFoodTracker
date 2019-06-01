@@ -10,6 +10,7 @@ import { TextField } from 'react-native-material-textfield'
 import DialogInput from 'react-native-dialog-input';
 import ip from '../../config';
 import axios from "axios";
+import AnimatedLoader from "react-native-animated-loader";
 
 const { width: WIDTH } = Dimensions.get('window')
 class Profile extends React.Component {
@@ -57,6 +58,10 @@ class Profile extends React.Component {
             this.refs.toast.show('Enter a valid number')
         }
         else {
+            this.setState({
+                visible: true
+            })
+            let that = this
             var url = ip.ip.address;
             axios({
                 method: 'post',
@@ -66,15 +71,24 @@ class Profile extends React.Component {
                     label: isHeight ? "height" : "weight"
                 }
             }).then((response) => {
+                that.setState({
+                    visible: false
+                })
                 console.log(response.data);
                 //save the updated goal in profile redux!!
             }).catch((error) => {
+                that.setState({
+                    visible: false
+                })
                 console.log(error);
             });
         }
     }
 
     signout() {
+        this.setState({
+            visible: true
+        })
         var url = ip.ip.address;
         var that = this;
         console.log("signout")
@@ -83,14 +97,23 @@ class Profile extends React.Component {
             url: url + "/signout",
         }).then((response) => {
             console.log(response.data)
+            that.setState({
+                visible: false
+            })
             that.props.history.push("/");
         }).catch((error) => {
+            that.setState({
+                visible: false
+            })
             console.log("error", error)
         });
 
     }
 
     disable() {
+        this.setState({
+            visible: true
+        })
         var url = ip.ip.address;
         var that = this;
         console.log("Test")
@@ -99,10 +122,15 @@ class Profile extends React.Component {
             url: url + "/disable",
         }).then((response) => {
             console.log(response.data)
+            that.setState({
+                visible: false
+            })
             //that.props.history.push("/");
         }).catch((error) => {
             console.log("error", error)
-
+            that.setState({
+                visible: false
+            })
         });
     }
 
@@ -119,6 +147,13 @@ class Profile extends React.Component {
                     }
                 }} />
                 <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundImage}>
+                    <AnimatedLoader
+                        visible={this.state.visible}
+                        overlayColor="rgba(255,255,255,1)"
+                        source={require("../../Images/loader.json")}
+                        animationStyle={styles.lottie}
+                        speed={1}
+                    />  
                     <View style={{ marginLeft: 20, justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
                         {this.props.userDetails.image ?
                             <Image style={styles.image} source={{
@@ -254,6 +289,10 @@ const styles = StyleSheet.create({
         marginHorizontal: 25,
         marginBottom: '2%'
     },
+    lottie: {
+        width: 400,
+        height: 400
+    }
 });
 
 const mapStateToProps = (state) => {
