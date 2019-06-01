@@ -9,7 +9,6 @@ import ip from '../../config';
 import axios from "axios";
 import { connect } from 'react-redux'
 import { loggedIn } from '../../redux/actions/index'
-import image from '../../Images/background.jpg'
 import logo from '../../Images/logo.gif'
 import Toast, { DURATION } from 'react-native-easy-toast'
 const { width: WIDTH } = Dimensions.get('window')
@@ -180,7 +179,7 @@ class Profile extends React.Component {
     render() {
         //  console.log(this.state.email);
         return (
-            <ImageBackground source={image} style={styles.backgroundcontainer}>
+            <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundcontainer}>
                 <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={1}>
                     <ScrollView>
                         <View style={styles.container}>

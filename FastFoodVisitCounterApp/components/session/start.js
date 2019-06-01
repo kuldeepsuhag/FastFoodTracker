@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
 import doc from '../../Images/doc.gif'
-import image from '../../Images/background.jpg'
 import ip from "../../config";
 import React from 'react';
 import { connect } from 'react-redux'

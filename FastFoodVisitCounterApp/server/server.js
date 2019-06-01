@@ -15,6 +15,10 @@ app.post("/signin", require("./routes/signin"));
 app.post("/map-data", require("./routes/databaseservice"));
 app.get("/step-data", require("./routes/stepservice"));
 app.post("/step-data", require("./routes/stepservicepost"));
+app.post("/updateheight", require("./routes/updateHeight"));
+//app.post("/updateweight", require("./routes/updateWeight"));
+app.post("/signout", require("./routes/signout"));
+app.post("/disable", require("./routes/disableaccount"))
 
 app.listen(port, (req, res) => {
 
