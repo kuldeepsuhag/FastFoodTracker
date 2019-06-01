@@ -10,6 +10,7 @@ import { TextField } from 'react-native-material-textfield'
 import DialogInput from 'react-native-dialog-input';
 import ip from '../../config';
 import axios from "axios";
+import {setHeight , setWeight} from '../../redux/actions/index'
 
 const { width: WIDTH } = Dimensions.get('window')
 class Profile extends React.Component {
@@ -67,6 +68,12 @@ class Profile extends React.Component {
                 }
             }).then((response) => {
                 console.log(response.data);
+                if(isHeight){
+                    this.props.dispatch(setHeight(inputText))
+                }else{
+                    this.props.dispatch(setWeight(inputText))
+                }
+                
                 //save the updated goal in profile redux!!
             }).catch((error) => {
                 console.log(error);
