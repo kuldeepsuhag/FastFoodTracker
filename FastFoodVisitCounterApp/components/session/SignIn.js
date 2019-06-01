@@ -7,7 +7,7 @@ import ip from "../../config";
 import ValidateForm from "../validate/ValidateForm"
 import { userData } from '../../redux/actions/index'
 import { connect } from 'react-redux'
-import image from '../../Images/background.jpg' 
+import image from '../../Images/back.jpg' 
 import logo from '../../Images/logo.gif'
 const { width : WIDTH} = Dimensions.get('window')
 import Toast, { DURATION } from 'react-native-easy-toast'
@@ -28,10 +28,11 @@ class SignIn extends React.Component {
     }
 
     componentWillMount = async () => {
-        AsyncStorage.clear();
         try {
             const username = await AsyncStorage.getItem('@username')
             const password = await AsyncStorage.getItem('@password')
+            console.log(username)
+            console.log(password)
             if (username !== null && password !== null) {
                 this.signinUser(true, username, password);
             }
@@ -69,7 +70,18 @@ class SignIn extends React.Component {
         }
     }
 
-    signinUser(stored, username, password) {
+    setDetail = async (response) => {
+        const username = ["@username", this.state.email]
+        const password = ["@password", this.state.password]
+        var that = this;
+        let saved = await AsyncStorage.multiSet([username, password], function () {
+            console.log("Saved");
+            that.props.dispatch(userData(response.data));
+            that.props.history.push("/map");
+        })
+    }
+
+    signinUser(stored, username, password)  {
         var url = ip.ip.address;
         axios({
             method: 'post',
@@ -83,8 +95,8 @@ class SignIn extends React.Component {
             // this.setState({ base64: 'data:text/plain;base64,' + JSON.stringify(response.data.image) }, function () {
             //     console.log(this.state.base64)
             // })
-            this.props.dispatch(userData(response.data));
-            this.props.history.push("/map");
+            this.setDetail(response);
+
         }).catch((error) => {
             console.log("error")
             this.refs.toast.show(error.response.data.message)
@@ -215,7 +227,7 @@ const styles = StyleSheet.create({
         marginBottom: '2%'
     },
     btnlogin: {
-        width: 100,
+        width: WIDTH - 250,
         height: 45,
         borderRadius: 45,
         backgroundColor: "#432577",
