@@ -28,7 +28,7 @@ class Profile extends React.Component {
                 <Text style={styles.paragraph}>
                     User Profile Data
                 </Text>
-                {this.props.userDetails.state.image ?
+                {this.props.userDetails.image ?
                         <Image
                             style={{
                                 width: 150,
@@ -37,24 +37,24 @@ class Profile extends React.Component {
                             }}
                             source={{
                                 uri:
-                                'data:text/plain;base64,' +  this.props.userDetails.state.image,
+                                'data:text/plain;base64,' +  this.props.userDetails.image,
                             }}
                         /> : <Text>""</Text>}
                 <View style={{ flex: 1, backgroundColor: '#ecf0f1' }}>
                     <Card style={styles.card}>
-                        <Text>{this.props.userDetails.state.PatientID}</Text>
+                        <Text>{this.props.userDetails.PatientID}</Text>
                     </Card>
                     <Card style={styles.card}>
-                        <Text>{this.props.userDetails.state.name}</Text>
+                        <Text>{this.props.userDetails.name}</Text>
                     </Card>
                     <Card style={styles.card}>
-                        <Text>{this.props.userDetails.state.Email}</Text>
+                        <Text>{this.props.userDetails.Email}</Text>
                     </Card>
                     <Card style={styles.card}>
-                        <Text>{this.props.userDetails.state.height}</Text>
+                        <Text>{this.props.userDetails.height}</Text>
                     </Card>
                     <Card style={styles.card}>
-                        <Text>{this.props.userDetails.state.weight}</Text>
+                        <Text>{this.props.userDetails.weight}</Text>
                     </Card>
                 </View>
                 <View style={{ height: 50, backgroundColor: '#ecf0f1' }}>

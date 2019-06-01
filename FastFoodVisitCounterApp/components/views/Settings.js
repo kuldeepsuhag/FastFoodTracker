@@ -9,7 +9,7 @@ import ip from '../../config';
 import axios from "axios";
 import Toast, { DURATION } from 'react-native-easy-toast'
 import { connect } from 'react-redux'
-import { currentGoal, userData } from '../../redux/actions/index'
+import { currentGoal } from '../../redux/actions/index'
 
  class Settings extends React.Component {
     constructor(props, { }) {
@@ -25,7 +25,7 @@ import { currentGoal, userData } from '../../redux/actions/index'
         this.setState({ showGoalModal: !(this.state.showGoalModal)});
     }
 
-    sendInput = async (inputText) => {
+    sendInput(inputText){
         let stepGoal = parseInt(inputText, 10)
         let that = this
         this.setState({ showGoalModal: !(this.state.showGoalModal) });
@@ -33,9 +33,9 @@ import { currentGoal, userData } from '../../redux/actions/index'
             this.refs.toast.show('Enter a valid number')
         }
         else{
-            that.props.userDetails.state.currentGoal = stepGoal
-            // that.props.dispatch(currentGoal(stepGoal))
-            that.props.dispatch(userData(that.props.userDetails.state))
+            console.log(that.props.currentGoal)
+            console.log(stepGoal)
+            that.props.dispatch(currentGoal(stepGoal))
             var url = ip.ip.address;
             axios({
                 method: 'post',
@@ -45,9 +45,7 @@ import { currentGoal, userData } from '../../redux/actions/index'
                 }
             }).then((response) => {
                 console.log(response.data);
-                // that.props.dispatch(currentGoal(stepGoal))
                 that.props.dispatch(userData(that.props.userDetails.state.currentGoal))
-                //save the updated goal in profile redux!!
             }).catch((error) => {
                 console.log(error);
             });
@@ -57,8 +55,8 @@ import { currentGoal, userData } from '../../redux/actions/index'
         }
     }
     componentDidMount() {
-        console.log(this.props.userDetails.state);
-        if(this.props.userDetails.state.stepGoal == null) {
+        console.log(this.props.currentGoal);
+        if(this.props.currentGoal == null) {
             this.raisePopupForInitialStep();
         }
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
@@ -129,9 +127,10 @@ const styles = StyleSheet.create({
     }
 });
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (userDetails) => {
+    console.log(userDetails)
     return {
-        userDetails: state
+        currentGoal: userDetails.currentGoal
     }
 }
 

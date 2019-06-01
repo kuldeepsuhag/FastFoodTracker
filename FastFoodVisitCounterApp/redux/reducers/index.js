@@ -3,7 +3,6 @@
 export default (state, action) => {
     switch (action.type){
         case "CREATE_USER": 
-            console.log(state)
             return Object.assign({}, state, action.payload.newData); //better way 
         case "USER_DATA": 
             console.log(state)
@@ -15,22 +14,17 @@ export default (state, action) => {
                 isUser: action.payload.isUser.isUser
             }
         case "STEP_DATA":
-            console.log(state)
             return {
-                state,
+                ...state,
                 stepData: action.payload.stepData
             }
         case "CURRENT_GOAL":
-            // console.log(state)
-            // console.log("test", action.payload.currentGoal)
+            console.log(state)
+            console.log(action.payload.currentGoal)
+            var userDetails = state.state;
             return {
-                state,
-                userDetails: {
-                ...state.userDetails,
-                // state: {
-                // ...state.userDetails.state,
-                    currentGoal: action.payload.currentGoal
-                }
+                ...state,
+                currentGoal: action.payload.currentGoal
             }
         default:
             return state;

@@ -30,7 +30,7 @@ class DailyGoal extends React.Component{
         this._subscribe();
         this.setState({ showGoalModal: false });
         this.setState({
-            goal: (this.props.userDetails.state.stepGoal) ? this.props.userDetails.state.stepGoal : 10000
+            goal: (this.props.currentGoal) ? this.props.currentGoal : 10000
         })
     }
 
@@ -139,9 +139,9 @@ const styles = StyleSheet.create({
     }
 });
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (userDetails) => {
     return {
-        userDetails: state
+        currentGoal: userDetails.currentGoal
     }
 }
 
