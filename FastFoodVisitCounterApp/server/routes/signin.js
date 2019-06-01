@@ -26,7 +26,6 @@ module.exports = (req, res) => {
               nextref = ref.child(user.uid).on("value", function (childSnapshot) {
                 data = childSnapshot.val();
                 console.log("Email ID " + data);
-
                 console.log(JSON.stringify(childSnapshot));
                 var firebaseStorage = firebase.storage().ref();
                 console.log(user.uid);
@@ -36,8 +35,6 @@ module.exports = (req, res) => {
                 }).catch(function (error) {
                   console.log(error);
                 });
-
-
               });
 
             } else {
@@ -52,9 +49,10 @@ module.exports = (req, res) => {
 };
 
 async function getImage(url, data, res, uid) {
+  var ref = firebase.database().ref('users');
+  ref.child(uid).off("value");
   var urlFirebase = await fetch(url);
   var image = await urlFirebase.text();
-  console.log(image);
   let perdata = {
     name: data.name,
     Email: data.Email,

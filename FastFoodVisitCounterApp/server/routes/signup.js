@@ -70,6 +70,7 @@ module.exports = (req, res) => {
               park: data.countPark
 
             }
+            ref.child(user.uid).off("value")
             console.log("Sending data" + perdata.email);
             res.status(200).send(perdata);
 

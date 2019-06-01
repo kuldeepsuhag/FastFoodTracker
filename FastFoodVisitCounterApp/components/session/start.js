@@ -1,7 +1,6 @@
 import {
     View,
     StyleSheet,
-    AsyncStorage,
     ImageBackground,
     Image,
     Dimensions,
