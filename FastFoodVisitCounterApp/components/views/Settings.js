@@ -41,13 +41,14 @@ import { Header } from 'react-native-elements'
             var url = ip.ip.address;
             axios({
                 method: 'post',
-                url: url + "/new-step-goal",
+                url: url + "/updateValue",
                 data: {
-                    stepGoal: stepGoal
+                    updateValue: stepGoal,
+                    label: "currentGoal"
                 }
             }).then((response) => {
                 console.log(response.data);
-                that.props.dispatch(userData(that.props.userDetails.state.currentGoal))
+               // that.props.dispatch(userData(that.props.userDetails.state.currentGoal))
             }).catch((error) => {
                 console.log(error);
             });
@@ -145,7 +146,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (userDetails) => {
-    console.log(userDetails)
     return {
         currentGoal: userDetails.currentGoal
     }

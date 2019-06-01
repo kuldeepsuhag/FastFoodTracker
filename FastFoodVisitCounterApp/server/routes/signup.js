@@ -65,6 +65,7 @@ module.exports = (req, res) => {
               weight: data.weight, //getting
               image: data.image
             }
+            ref.child(user.uid).off("value")
             console.log("Sending data" + perdata.email);
             res.status(200).send(perdata);
 

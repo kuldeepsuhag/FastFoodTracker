@@ -29,7 +29,6 @@ class Profile extends React.Component {
         this.setState({ showHeightModal: !(this.state.showHeightModal) });
     }
     componentDidMount() {
-        console.log(this.props.userDetails);
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
 
@@ -48,11 +47,12 @@ class Profile extends React.Component {
         })
     }
 
-    sendHeightInput = async (inputText) => {
-        console.log("new Height", inputText)
-        console.log("new Height int", parseInt(inputText, 10))
-        var height = inputText
-        this.setState({ showHeightModal: !(this.state.showHeightModal) });
+    updateValue(inputText, isHeight) {
+        if (isHeight) {
+            this.setState({ showHeightModal: !(this.state.showHeightModal) });
+        } else {
+            this.setState({ showWeightModal: !(this.state.showWeightModal) });
+        }
         if (isNaN(parseInt(inputText, 10))) {
             this.refs.toast.show('Enter a valid number')
         }
@@ -60,31 +60,10 @@ class Profile extends React.Component {
             var url = ip.ip.address;
             axios({
                 method: 'post',
-                url: url + "/updateheight",
+                url: url + "/updateValue",
                 data: {
-                    Height: height
-                }
-            }).then((response) => {
-                console.log(response.data);
-                //save the updated goal in profile redux!!
-            }).catch((error) => {
-                console.log(error);
-            });
-        }
-    }
-    sendWeightInput = async (inputText) => {
-
-        this.setState({ showWeightModall: !(this.state.showWeightModal) });
-        if (isNaN(parseInt(inputText, 10))) {
-            this.refs.toast.show('Enter a valid number')
-        }
-        else {
-            var url = ip.ip.address;
-            axios({
-                method: 'post',
-                url: url + "/updateweight",
-                data: {
-                    stepGoal: "test"
+                    updateValue: inputText,
+                    label: isHeight ? "height" : "weight"
                 }
             }).then((response) => {
                 console.log(response.data);
@@ -98,17 +77,15 @@ class Profile extends React.Component {
     signout() {
         var url = ip.ip.address;
         var that = this;
+        console.log("signout")
         axios({
             method: 'post',
             url: url + "/signout",
         }).then((response) => {
-
             console.log(response.data)
             that.props.history.push("/");
-
         }).catch((error) => {
             console.log("error", error)
-
         });
 
     }
@@ -116,19 +93,17 @@ class Profile extends React.Component {
     disable() {
         var url = ip.ip.address;
         var that = this;
+        console.log("Test")
         axios({
             method: 'post',
             url: url + "/disable",
         }).then((response) => {
-
             console.log(response.data)
             //that.props.history.push("/");
-
         }).catch((error) => {
             console.log("error", error)
 
         });
-
     }
 
     render() {
@@ -144,156 +119,68 @@ class Profile extends React.Component {
                     }
                 }} />
                 <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundImage}>
-
                     <View style={{ marginLeft: 20, justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
                         {this.props.userDetails.image ?
-                            <Image
-                                style={styles.image}
-                                source={{
+                            <Image style={styles.image} source={{
                                     uri:
                                         'data:text/plain;base64,' + this.props.userDetails.image,
                                 }}
-                            /> : <Text>""</Text>}
+                            /> : <Text></Text>}
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Personal Details</Text>
                     </View>
                     <ScrollView>
                         <View style={{ flex: 1 }}>
-
-                            <View style={styles.headtext}>
-
+                            <View style={{ marginLeft: 20 }}>
+                                <TextField editable={false} label='PatientID' value={this.props.userDetails.PatientID} />
                             </View>
                             <View style={{ marginLeft: 20 }}>
-                                {/* <Text>PatientID : </Text> */}
-                                <TextField
-
-                                    editable={false}
-                                    label='PatientID'
-
-                                    value={this.props.userDetails.PatientID} />
+                                <TextField editable={false} label='Name' value={this.props.userDetails.name} />
                             </View>
                             <View style={{ marginLeft: 20 }}>
-                                {/* <Text>PatientID : </Text> */}
-                                <TextField
-
-                                    editable={false}
-                                    label='Name'
-
-                                    value={this.props.userDetails.name} />
-                            </View>
-                            <View style={{ marginLeft: 20 }}>
-                                {/* <Text>PatientID : </Text> */}
-                                <TextField
-
-                                    editable={false}
-                                    label='Email ID'
-
-                                    value={this.props.userDetails.Email} />
+                                <TextField editable={false} label='Email ID' value={this.props.userDetails.Email} />
                             </View>
                             <View style={{ flex: 1, flexDirection: "row", alignItems: 'flex-start' }}>
                                 <View style={styles.inputWrap}>
-                                    {/* <Text>PatientID : </Text> */}
-                                    <TextField
-
-                                        editable={false}
-                                        label='Height in cm'
-
-                                        value={this.props.userDetails.height} />
+                                    <TextField editable={false} label='Height in cm' value={this.props.userDetails.height} />
                                 </View>
                                 <View style={styles.inputWrap}>
-                                    <TouchableOpacity
-                                        style={{
-                                            backgroundColor: '#DDDDDD',
-                                            padding: 10,
-                                            marginLeft: 20,
-                                            marginTop: 15,
-                                            marginRight: 40
-
-                                            //  width: WIDTH - 200,
-                                            //  marginLeft: 110
-                                        }}
-                                        onPress={this.showHeightDialog}>
-                                        <Text > Update </Text>
-
-
+                                    <TouchableOpacity style={styles.updateBtn} onPress={this.showHeightDialog}>
+                                        <Text> Update </Text>
                                     </TouchableOpacity>
                                     <DialogInput isDialogVisible={this.state.showHeightModal}
                                         title={"Height Update"}
                                         message={"Enter your current Height"}
                                         hintInput={"Eg. 60"}
-                                        submitInput={(inputText) => { this.sendHeightInput(inputText) }}
-                                        closeDialog={() => { this.showHeightDialog() }}>
+                                        submitInput={(inputText) => this.updateValue(inputText, true)}
+                                        >
                                     </DialogInput>
                                 </View>
                             </View>
                             <View style={{ flex: 1, flexDirection: "row", alignItems: 'flex-start' }}>
                                 <View style={styles.inputWrap}>
-                                    {/* <Text>PatientID : </Text> */}
-                                    <TextField
-                                        style={{ marginLeft: 20 }}
-                                        editable={false}
-                                        label='Weight in KG'
-
-                                        value={this.props.userDetails.weight} />
+                                    <TextField editable={false} label='Weight in KG' value={this.props.userDetails.weight} />
                                 </View>
-
                                 <View style={styles.inputWrap}>
-                                    <TouchableOpacity
-                                        style={{
-                                            backgroundColor: '#DDDDDD',
-                                            padding: 10,
-                                            marginLeft: 20,
-                                            marginTop: 15,
-                                            marginRight: 40
-
-                                            //  width: WIDTH - 200,
-                                            //  marginLeft: 110
-                                        }}
-                                        onPress={this.showWeightDialog}>
-                                        <Text > Update </Text>
-
-
+                                    <TouchableOpacity style={styles.updateBtn} onPress={this.showWeightDialog}>
+                                        <Text>Update</Text>
                                     </TouchableOpacity>
                                     <DialogInput isDialogVisible={this.state.showWeightModal}
                                         title={"Weight Update"}
                                         message={"Enter your current Weight"}
                                         hintInput={"Eg. 60"}
-                                        submitInput={(inputText) => { this.sendWeightInput(inputText) }}
-                                        closeDialog={() => { this.showWeightDialog() }}>
+                                        submitInput={(inputText) => this.updateValue(inputText, false)}
+                                        >
                                     </DialogInput>
                                 </View>
                             </View>
                             <View>
-                                <TouchableOpacity
-                                    style={{
-                                        backgroundColor: '#DDDDDD',
-                                        padding: 10,
-                                        marginLeft: 20,
-                                        marginTop: 15,
-                                        marginRight: 40
-
-                                        //  width: WIDTH - 200,
-                                        //  marginLeft: 110
-                                    }}
-                                    onPress={this.signout}>
-                                    <Text > Logout </Text>
-
-
+                                <TouchableOpacity style={styles.updateBtn} onPress={this.signout}>
+                                    <Text> Logout </Text>
                                 </TouchableOpacity>
                             </View>
                             <View>
-                                <TouchableOpacity
-                                    style={{
-                                        backgroundColor: '#DDDDDD',
-                                        padding: 10,
-                                        marginLeft: 20,
-                                        marginTop: 15,
-                                        marginRight: 40
-
-                                        //  width: WIDTH - 200,
-                                        //  marginLeft: 110
-                                    }}
-                                onPress={this.disable()}>
-                                    <Text > Deactivate Account </Text>
+                                <TouchableOpacity style={styles.updateBtn} onPress={this.disable}>
+                                    <Text> Deactivate Account </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -316,6 +203,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         flexDirection: 'column',
         marginLeft: 20
+    },
+    updateBtn:{
+        backgroundColor: '#DDDDDD',
+        padding: 10,
+        marginLeft: 20,
+        marginTop: 15
     },
     profile: {
         backgroundColor: 'white',
