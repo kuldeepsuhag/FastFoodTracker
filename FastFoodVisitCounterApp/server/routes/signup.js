@@ -32,7 +32,9 @@ module.exports = (req, res) => {
             PatientID: req.body.patientId,
             doctorId: req.body.doctorId,
             height: req.body.height,
-            weight: req.body.weight
+            weight: req.body.weight,
+            countRest: 0,
+            countPark: 0
           });
 
           console.log("User Data Completed");
@@ -63,7 +65,10 @@ module.exports = (req, res) => {
               doctorId: data.doctorId, //getting
               height: data.height, //getting
               weight: data.weight, //getting
-              image: data.image
+              image: data.image,
+              rest: data.countRest,
+              park: data.countPark
+
             }
             ref.child(user.uid).off("value")
             console.log("Sending data" + perdata.email);
