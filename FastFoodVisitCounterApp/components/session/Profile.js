@@ -2,14 +2,13 @@ import React from 'react';
 import { Label, Text } from 'native-base';
 import {
     View, StyleSheet, Image, AsyncStorage, ImageBackground, TextInput, Dimensions,
-    TouchableOpacity, ScrollView, BackHandler, KeyboardAvoidingView
+    TouchableOpacity, ScrollView, BackHandler, KeyboardAvoidingView, Alert
 } from 'react-native';
 import { ImagePicker, Permissions } from 'expo';
 import ip from '../../config';
 import axios from "axios";
 import { connect } from 'react-redux'
 import { loggedIn } from '../../redux/actions/index'
-import image from '../../Images/background.jpg'
 import logo from '../../Images/logo.gif'
 import Toast, { DURATION } from 'react-native-easy-toast'
 const { width: WIDTH } = Dimensions.get('window')
@@ -129,31 +128,58 @@ class Profile extends React.Component {
             console.log(response.data);
             this.storeData();
         }).catch((error) => {
-            
+
             console.log(error);
         });
     }
 
-
-    _pickImage = async () => {
-        let { camera } = await Permissions.askAsync(Permissions.CAMERA);
-        let { camera_roll } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-        let result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            aspect: [4, 3],
-            base64: true
-        });
+    setImage(result){
         if (!result.cancelled) {
             console.log(result.uri);
             this.setState({ base64: result.base64.replace(/(?:\r\n|\r|\n)/g, '') })
             this.setState({ image: result.uri });
         }
+    }
+
+    getImage = async (camera) => {
+        if (camera) {
+            let { camera } = await Permissions.askAsync(Permissions.CAMERA);
+            let result = await ImagePicker.launchCameraAsync({
+                allowsEditing: true,
+                aspect: [4, 3],
+                base64: true
+            });
+            this.setImage(result)
+        } else {
+            let { camera_roll } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            let result = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                aspect: [4, 3],
+                base64: true
+            });
+            this.setImage(result)
+        }
+    }
+
+    _pickImage = async () => {
+        Alert.alert(
+            'Choose an Image Source',
+            'Profile Picture',
+            [
+                { text: 'Camera', onPress: () => this.getImage(true) },
+                {
+                    text: 'Gallery',
+                    onPress: () => this.getImage(false)
+                }
+            ],
+            { cancelable: false },
+        );
     };
 
     render() {
         //  console.log(this.state.email);
         return (
-            <ImageBackground source={image} style={styles.backgroundcontainer}>
+            <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundcontainer}>
                 <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={1}>
                     <ScrollView>
                         <View style={styles.container}>
@@ -232,107 +258,107 @@ class Profile extends React.Component {
                             </View>
                         </View >
                     </ScrollView>
-                    </KeyboardAvoidingView>
+                </KeyboardAvoidingView>
             </ImageBackground>
 
-                );
-            }
-        }
-        
+        );
+    }
+}
+
 const styles = StyleSheet.create({
-                    backgroundcontainer: {
-                    flex: 1,
-                width: null,
-                height: null,
-                justifyContent: 'center',
-                alignItems: 'center'
-            },
-    keycontainer:{
-                    backgroundColor: '#4c69a5',
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-        },
-    
+    backgroundcontainer: {
+        flex: 1,
+        width: null,
+        height: null,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    keycontainer: {
+        backgroundColor: '#4c69a5',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
     container: {
-                    flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'stretch',
-                // paddingTop: 40,
-                // backgroundColor: '#3066c9',
-                height: '100%'
-            },
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'stretch',
+        // paddingTop: 40,
+        // backgroundColor: '#3066c9',
+        height: '100%'
+    },
     input: {
-                    width: WIDTH - 55,
-                height: 45,
-                borderRadius: 45,
-                fontSize: 16,
-                paddingLeft: 45,
-                // backgroundColor: 'rgb(151,214,240)',
-                backgroundColor: 'rgb(255,255,255)',
-                color: 'rgb(36,133,202)',
-                marginHorizontal: 25,
-                marginBottom: '2%'
-            },
+        width: WIDTH - 55,
+        height: 45,
+        borderRadius: 45,
+        fontSize: 16,
+        paddingLeft: 45,
+        // backgroundColor: 'rgb(151,214,240)',
+        backgroundColor: 'rgb(255,255,255)',
+        color: 'rgb(36,133,202)',
+        marginHorizontal: 25,
+        marginBottom: '2%'
+    },
     logo: {
-                    width: 120,
-                height: 120,
-                borderRadius: 130
-            },
+        width: 120,
+        height: 120,
+        borderRadius: 130
+    },
     logocontainer: {
-                    alignItems: 'center'
-            },
+        alignItems: 'center'
+    },
     text: {
-                    justifyContent: 'center',
-                fontSize: 20,
-                fontWeight: 'bold',
-                marginLeft: 130
-        
-            },
+        justifyContent: 'center',
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginLeft: 130
+
+    },
     label: {
-                    marginLeft: 30,
-                fontSize: 15,
-        
-            },
+        marginLeft: 30,
+        fontSize: 15,
+
+    },
     imagebutton: {
-                    width: 150,
-                height: 45,
-                borderRadius: 45,
-                backgroundColor: "green",
-                justifyContent: 'center',
-                marginTop: 20,
-                marginBottom: '2%',
-                marginLeft: 100
-        
-            },
+        width: 150,
+        height: 45,
+        borderRadius: 45,
+        backgroundColor: "green",
+        justifyContent: 'center',
+        marginTop: 20,
+        marginBottom: '2%',
+        marginLeft: 100
+
+    },
     btnsubmit: {
-                    width: 100,
-                height: 45,
-                borderRadius: 45,
-                backgroundColor: "#432577",
-                justifyContent: 'center',
-                marginTop: 20,
-                marginBottom: '2%',
-                marginLeft: 130
-        
-            },
-    logintext:{
-                    color: "rgb(36,133,202)",
-                fontSize: 16,
-                textAlign: 'center'
-            },
-    image:{
-                    width: 200,
-                height: 200,
-                borderRadius: 100,
-                justifyContent: 'center'
-            }
-        });
-        
+        width: 100,
+        height: 45,
+        borderRadius: 45,
+        backgroundColor: "#432577",
+        justifyContent: 'center',
+        marginTop: 20,
+        marginBottom: '2%',
+        marginLeft: 130
+
+    },
+    logintext: {
+        color: "rgb(36,133,202)",
+        fontSize: 16,
+        textAlign: 'center'
+    },
+    image: {
+        width: 200,
+        height: 200,
+        borderRadius: 100,
+        justifyContent: 'center'
+    }
+});
+
 const mapStateToProps = (state) => {
     return {
-                    userData: state
-            }
-        }
-        
+        userData: state
+    }
+}
+
 export default connect(mapStateToProps)(Profile); 

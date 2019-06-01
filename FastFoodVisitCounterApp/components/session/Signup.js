@@ -4,7 +4,8 @@ import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, Toucha
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
 import { connect } from 'react-redux'
-import image from '../../Images/background.jpg'
+import image from '../../Images/back.jpg'
+
 import logo from '../../Images/logo.gif'
 const { width : WIDTH} = Dimensions.get('window')
 import Toast, { DURATION } from 'react-native-easy-toast'

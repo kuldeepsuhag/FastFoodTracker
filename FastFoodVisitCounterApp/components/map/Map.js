@@ -1,6 +1,6 @@
 import React from 'react';
 import { Constants, MapView, Location, Permissions, Pedometer, TaskManager } from 'expo';
-import { StyleSheet, View, Alert, BackHandler } from 'react-native';
+import { StyleSheet, View, Alert, BackHandler, ImageBackground } from 'react-native';
 import AppFooter from '../footer/AppFooter'
 import { Card, CardItem, Text } from 'native-base';
 import { Button } from 'react-native-elements';
@@ -9,6 +9,7 @@ import ip from '../../config';
 import axios from "axios";
 import {connect} from 'react-redux'
 import { stepData } from '../../redux/actions/index'
+import {Header} from 'react-native-elements'
 
 const LOCATION_TASK_NAME = 'background-location-task';
 class Map extends React.Component {
@@ -196,10 +197,17 @@ class Map extends React.Component {
     return (
       <>
         <View style={{flex: 1}}>
-          <Text style={styles.paragraph}>
-            Fast Food Visit Counter App
-          </Text>
-
+        <Header centerComponent={{
+                    text: 'Home Page', style: {
+                        margin: 24,
+                        fontSize: 15,
+                        fontWeight: 'bold',
+                        textAlign: 'center',
+                        color: '#34495e',
+                    }
+                }} />
+        <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundImage}>
+          
           {
             this.state.locationResult === null ?
               <Text>Finding your current location...</Text> :
@@ -251,6 +259,7 @@ class Map extends React.Component {
               <Text>Location Data: {this.state.locationResult}</Text>
             </CardItem>
           </Card>
+          </ImageBackground>
         </View>
         <AppFooter props={this.props}/>
       </>
@@ -314,7 +323,13 @@ const styles = StyleSheet.create({
     marginLeft: '5%',
     marginRight: '5%',
     maxWidth: '100%'
-  }
+  },
+  backgroundImage:{
+    flex:1,
+    alignSelf: 'stretch',
+    width: null,
+    justifyContent: 'center'
+}
 });
 
 export default connect()(Map)
