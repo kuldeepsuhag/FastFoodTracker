@@ -19,12 +19,21 @@ export default (state, action) => {
                 stepData: action.payload.stepData
             }
         case "CURRENT_GOAL":
-            console.log(state)
-            console.log(action.payload.currentGoal)
-            var userDetails = state.state;
             return {
                 ...state,
                 currentGoal: action.payload.currentGoal
+            }
+        case "UPDATE_HEIGHT":
+            console.log(action.payload.updatedHeight)
+            return {
+                ...state,
+                height: action.payload.updatedHeight
+            }
+        case "UPDATE_WEIGHT":
+            console.log(action.payload.updatedWeight)
+            return {
+                ...state,
+                weight: action.payload.updatedWeight
             }
         default:
             return state;

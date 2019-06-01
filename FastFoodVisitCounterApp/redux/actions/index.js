@@ -32,3 +32,17 @@ export const currentGoal = (currentGoal) => ({
         currentGoal
     }
 })
+
+export const setHeight = (updatedHeight) => ({
+    type: "UPDATE_HEIGHT",
+    payload: {
+        updatedHeight
+    }
+})
+
+export const setWeight = (updatedWeight) => ({
+    type: "UPDATE_WEIGHT",
+    payload: {
+        updatedWeight
+    }
+})

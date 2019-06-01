@@ -11,6 +11,7 @@ import DialogInput from 'react-native-dialog-input';
 import ip from '../../config';
 import axios from "axios";
 import AnimatedLoader from "react-native-animated-loader";
+import {setHeight , setWeight} from '../../redux/actions/index'
 
 const { width: WIDTH } = Dimensions.get('window')
 class Profile extends React.Component {
@@ -75,6 +76,12 @@ class Profile extends React.Component {
                     visible: false
                 })
                 console.log(response.data);
+                if(isHeight){
+                    this.props.dispatch(setHeight(inputText))
+                }else{
+                    this.props.dispatch(setWeight(inputText))
+                }
+                
                 //save the updated goal in profile redux!!
             }).catch((error) => {
                 that.setState({
