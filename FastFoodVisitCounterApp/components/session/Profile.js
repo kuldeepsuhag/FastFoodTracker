@@ -98,7 +98,7 @@ class Profile extends React.Component {
             console.log(this.props.userData.email)
             const username = ["@username", this.props.userData.email]
             const password = ["@password", this.props.userData.password]
-            let akshay = await AsyncStorage.multiSet([username, password], function () {
+            await AsyncStorage.multiSet([username, password], function () {
                 console.log("Saved");
                 that.props.dispatch(loggedIn(true));
                 that.props.history.push("/map");
