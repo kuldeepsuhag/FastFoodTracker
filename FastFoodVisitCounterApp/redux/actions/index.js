@@ -25,3 +25,10 @@ export const stepData = (stepData) => ({
         stepData
     }
 })
+
+export const currentGoal = (currentGoal) => ({
+    type: "CURRENT_GOAL",
+    payload: {
+        currentGoal
+    }
+})

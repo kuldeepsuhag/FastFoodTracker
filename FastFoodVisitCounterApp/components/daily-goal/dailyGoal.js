@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { Icon } from 'react-native-elements';
 import { Pedometer } from "expo";
+import { connect } from 'react-redux'
 
 const tintColor = "#16d353";
 const backgroundColor = "#c4c4c4";
@@ -14,7 +15,7 @@ const dayDim = {
     iconSize: 50
 };
 
-export default class DailyGoal extends React.Component{
+class DailyGoal extends React.Component{
     constructor(props, { }) {
         super(props);
         this.state = {
@@ -28,6 +29,9 @@ export default class DailyGoal extends React.Component{
     componentWillMount(){
         this._subscribe();
         this.setState({ showGoalModal: false });
+        this.setState({
+            goal: (this.props.currentGoal) ? this.props.currentGoal : 10000
+        })
     }
 
     componentWillUnmount() {
@@ -134,3 +138,11 @@ const styles = StyleSheet.create({
         color: '#0365d6'
     }
 });
+
+const mapStateToProps = (userDetails) => {
+    return {
+        currentGoal: userDetails.currentGoal
+    }
+}
+
+export default connect(mapStateToProps)(DailyGoal);

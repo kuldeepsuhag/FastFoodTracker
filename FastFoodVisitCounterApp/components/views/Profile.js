@@ -146,12 +146,12 @@ class Profile extends React.Component {
                 <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundImage}>
 
                     <View style={{ marginLeft: 20, justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
-                        {this.props.userDetails.state.image ?
+                        {this.props.userDetails.image ?
                             <Image
                                 style={styles.image}
                                 source={{
                                     uri:
-                                        'data:text/plain;base64,' + this.props.userDetails.state.image,
+                                        'data:text/plain;base64,' + this.props.userDetails.image,
                                 }}
                             /> : <Text>""</Text>}
                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Personal Details</Text>
@@ -169,7 +169,7 @@ class Profile extends React.Component {
                                     editable={false}
                                     label='PatientID'
 
-                                    value={this.props.userDetails.state.PatientID} />
+                                    value={this.props.userDetails.PatientID} />
                             </View>
                             <View style={{ marginLeft: 20 }}>
                                 {/* <Text>PatientID : </Text> */}
@@ -178,7 +178,7 @@ class Profile extends React.Component {
                                     editable={false}
                                     label='Name'
 
-                                    value={this.props.userDetails.state.name} />
+                                    value={this.props.userDetails.name} />
                             </View>
                             <View style={{ marginLeft: 20 }}>
                                 {/* <Text>PatientID : </Text> */}
@@ -187,7 +187,7 @@ class Profile extends React.Component {
                                     editable={false}
                                     label='Email ID'
 
-                                    value={this.props.userDetails.state.Email} />
+                                    value={this.props.userDetails.Email} />
                             </View>
                             <View style={{ flex: 1, flexDirection: "row", alignItems: 'flex-start' }}>
                                 <View style={styles.inputWrap}>
@@ -197,7 +197,7 @@ class Profile extends React.Component {
                                         editable={false}
                                         label='Height in cm'
 
-                                        value={this.props.userDetails.state.height} />
+                                        value={this.props.userDetails.height} />
                                 </View>
                                 <View style={styles.inputWrap}>
                                     <TouchableOpacity
@@ -233,7 +233,7 @@ class Profile extends React.Component {
                                         editable={false}
                                         label='Weight in KG'
 
-                                        value={this.props.userDetails.state.weight} />
+                                        value={this.props.userDetails.weight} />
                                 </View>
 
                                 <View style={styles.inputWrap}>

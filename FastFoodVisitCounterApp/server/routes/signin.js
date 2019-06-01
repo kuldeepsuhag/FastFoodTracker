@@ -63,7 +63,8 @@ async function getImage(url, data, res, uid) {
     height: data.height,
     weight: data.weight,
     image: image,
-    userID: uid
+    userID: uid,
+    currentGoal: 200
   }
   console.log("Sending data" + perdata.Email);
   res.status(200).send(perdata);

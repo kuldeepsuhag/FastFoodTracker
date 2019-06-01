@@ -9,44 +9,58 @@ import ip from '../../config';
 import image from '../../Images/back.jpg'
 import axios from "axios";
 import Toast, { DURATION } from 'react-native-easy-toast'
+import { connect } from 'react-redux'
+import { currentGoal } from '../../redux/actions/index'
 import { Header } from 'react-native-elements'
 
-export default class Settings extends React.Component {
+ class Settings extends React.Component {
     constructor(props, { }) {
         super(props);
         this.state = {
-            showGoalModal: false
+            showGoalModal: false,
+            reload: false
         };
-        this.showGoalDialog = this.showGoalDialog.bind(this);
+        this.showGoalChangeDialog = this.showGoalChangeDialog.bind(this);
     }
 
-    showGoalDialog() {
-        this.setState({ showGoalModal: !(this.state.showGoalModal) });
+    showGoalChangeDialog(){
+        this.setState({ showGoalModal: !(this.state.showGoalModal)});
     }
-    sendInput = async (inputText) => {
-        console.log("new goal", inputText)
-        console.log("new goal int", parseInt(inputText, 10))
+
+    sendInput(inputText){
+        let stepGoal = parseInt(inputText, 10)
+        let that = this
         this.setState({ showGoalModal: !(this.state.showGoalModal) });
         if (isNaN(parseInt(inputText, 10))) {
             this.refs.toast.show('Enter a valid number')
         }
-        else {
+        else{
+            console.log(that.props.currentGoal)
+            console.log(stepGoal)
+            that.props.dispatch(currentGoal(stepGoal))
             var url = ip.ip.address;
             axios({
                 method: 'post',
                 url: url + "/new-step-goal",
                 data: {
-                    stepGoal: "test"
+                    stepGoal: stepGoal
                 }
             }).then((response) => {
                 console.log(response.data);
-                //save the updated goal in profile redux!!
+                that.props.dispatch(userData(that.props.userDetails.state.currentGoal))
             }).catch((error) => {
                 console.log(error);
             });
+            that.setState({
+                reload: !(that.state.reload)
+            })
         }
     }
     componentDidMount() {
+        console.log(this.props.currentGoal);
+        if(this.props.currentGoal == null) {
+            this.raisePopupForInitialStep();
+        }
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
 
@@ -58,6 +72,7 @@ export default class Settings extends React.Component {
         this.props.history.goBack();
         return true;
     }
+
 
     render() {
 
@@ -84,13 +99,13 @@ export default class Settings extends React.Component {
                             <DailyGoal></DailyGoal>
                         </View>
                         <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 10 }}>
-                            <Button onPress={this.showGoalDialog} title="Update Goal"></Button>
+                            <Button onPress={this.showGoalChangeDialog} title="Update Goal"></Button>
                             <DialogInput isDialogVisible={this.state.showGoalModal}
                                 title={"Change Daily Step Goal"}
                                 message={"Enter the new goal"}
                                 hintInput={"Eg. 5000"}
                                 submitInput={(inputText) => { this.sendInput(inputText) }}
-                                closeDialog={() => { this.showGoalDialog() }}>
+                                closeDialog={() => { this.showGoalChangeDialog() }}>
                             </DialogInput>
                         </View>
                     
@@ -128,3 +143,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     }
 });
+
+const mapStateToProps = (userDetails) => {
+    console.log(userDetails)
+    return {
+        currentGoal: userDetails.currentGoal
+    }
+}
+
+export default connect(mapStateToProps)(Settings); 
