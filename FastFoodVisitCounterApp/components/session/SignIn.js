@@ -161,23 +161,13 @@ class SignIn extends React.Component {
                                 onChange={this.handlePasswordChange}
                             />
                     </View>
-                    <View style={{
-                        width: '100%',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginBottom: '1%'
-                    }}>
-                        {/* <Button title="Login" raised onPress={this.validate} style={styles.loginButton}></Button> */}
-                        <TouchableOpacity onPress={this.validate} style={styles.btnlogin}>
+                    <View style={styles.action}>
+                        <Button title="Login" raised onPress={this.validate} buttonStyle={styles.nextButton}></Button>
+                        {/* <TouchableOpacity onPress={this.validate} style={styles.btnlogin}>
                             <Text style={styles.text}>Login</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
-                    <View style={{
-                        width: '100%',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center'}}>
+                    <View style={styles.alternate}>
                         <Button title="New User" type="outline" onPress={this.signup} style={styles.loginButton}></Button>
                     </View>
                 </KeyboardAvoidingView>
@@ -211,8 +201,19 @@ const styles = StyleSheet.create({
         // background Color: '#3066c9',
         height: '100%'
     },
-    wrapper: {
-        alignItems: 'center', paddingBottom: 40, paddingTop: 40
+    action: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: '2%',
+        marginTop: '3%'
+    },
+    alternate: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     logotext:{
           color: 'red',
@@ -240,25 +241,31 @@ const styles = StyleSheet.create({
         marginHorizontal: 25,
         marginBottom: '2%'
     },
-    btnlogin: {
-        width: WIDTH - 250,
-        height: 45,
-        borderRadius: 45,
-        backgroundColor: 'rgb(36,133,202)',
-        justifyContent: 'center',
-        marginTop: 20,
-        marginBottom: '2%',
-        // marginLeft: 130
+    // btnlogin: {
+    //     width: WIDTH - 250,
+    //     height: 45,
+    //     borderRadius: 45,
+    //     backgroundColor: 'rgb(36,133,202)',
+    //     justifyContent: 'center',
+    //     marginTop: 20,
+    //     marginBottom: '2%',
+    //     // marginLeft: 130
 
-    },
-    text:{
-        color: "rgb(245,245,245)",
-        fontSize: 16,
-        textAlign: 'center',
-    },
+    // },
+    // text:{
+    //     color: "rgb(245,245,245)",
+    //     fontSize: 16,
+    //     textAlign: 'center',
+    // },
     loginButton: {
         backgroundColor: 'red',
         color: 'white'
+    },
+    nextButton: {
+        backgroundColor: 'rgb(36,133,202)',
+        borderRadius: 45,
+        paddingLeft: 40,
+        paddingRight: 40
     }
 });
 
