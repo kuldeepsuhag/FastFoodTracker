@@ -1,10 +1,10 @@
 {
-  "devToolsPort": 19004,
+  "devToolsPort": 19002,
   "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 9228,
-  "expoServerNgrokUrl": "https://dr-ij2.anonymous.fastfoodvisitcounterapp.exp.direct",
-  "packagerNgrokUrl": "https://packager.dr-ij2.anonymous.fastfoodvisitcounterapp.exp.direct",
-  "ngrokPid": 9249,
+  "packagerPort": 19003,
+  "packagerPid": 17025,
+  "expoServerNgrokUrl": "https://x8-8rn.anonymous.fastfoodvisitcounterapp.exp.direct",
+  "packagerNgrokUrl": "https://packager.x8-8rn.anonymous.fastfoodvisitcounterapp.exp.direct",
+  "ngrokPid": 17036,
   "webpackServerPort": null
 }

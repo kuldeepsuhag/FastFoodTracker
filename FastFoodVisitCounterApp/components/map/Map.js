@@ -177,7 +177,7 @@ class Map extends React.Component {
 
   sendMapData(lat, lon, city) {
     var url = ip.ip.address;
-
+    console.log("map data sent")
     axios({
       method: 'post',
       url: url + "/map-data",

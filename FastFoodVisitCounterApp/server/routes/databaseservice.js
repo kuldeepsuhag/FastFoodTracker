@@ -2,10 +2,6 @@ require('firebase/database')
 firebase1 = require('firebase/app');
 var json = require('../data/places.json')
 const calltime = new Date();
-const googleclient = require('@google/maps').createClient({
-    key: 'AIzaSyB2F2xMPDKHtOuEGTAR5rvJfeN0mZJbKVw'
-});
-var inside = require('point-in-polygon')
 module.exports = (req, res) => {
     if (req.body) {
 
