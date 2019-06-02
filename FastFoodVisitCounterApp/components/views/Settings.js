@@ -13,6 +13,7 @@ import { connect } from 'react-redux'
 import { currentGoal } from '../../redux/actions/index'
 import { Header } from 'react-native-elements'
 import AnimatedLoader from "react-native-animated-loader";
+import { ScrollView } from 'react-native-gesture-handler';
 
  class Settings extends React.Component {
     constructor(props, { }) {
@@ -100,26 +101,28 @@ import AnimatedLoader from "react-native-animated-loader";
                         source={require("../../Images/loader.json")}
                         animationStyle={styles.lottie}
                         speed={1}
-                    />    
-                <View style={{ flex: 1}}>
-                    <View>
-                        <StepCounter />
-                        <Text style={{ marginLeft: 130}}>Weekly Steps</Text>
-                    </View>
-                    <View style={{ flexDirection: "row" }}>
-                        <DailyGoal />
-                    </View>
-                    <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 10 }}>
-                        <Button onPress={this.showGoalChangeDialog} title="Update Goal"></Button>
-                        <DialogInput isDialogVisible={this.state.showGoalModal}
-                            title={"Change Daily Step Goal"}
-                            message={"Enter the new goal"}
-                            hintInput={"Eg. 5000"}
-                            submitInput={(inputText) => { this.sendInput(inputText) }}
-                            closeDialog={() => { this.showGoalChangeDialog() }}>
-                        </DialogInput>
-                    </View>
-                </View>
+                    />
+                    <ScrollView>
+                        <View style={{ flex: 1 }}>
+                            <View>
+                                <StepCounter />
+                                {/* <Text style={{ marginLeft: 130}}>Weekly Steps</Text> */}
+                            </View>
+                            <View style={{ flexDirection: "row" }}>
+                                <DailyGoal />
+                            </View>
+                            <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 10 }}>
+                                <Button onPress={this.showGoalChangeDialog} title="Update Goal"></Button>
+                                <DialogInput isDialogVisible={this.state.showGoalModal}
+                                    title={"Change Daily Step Goal"}
+                                    message={"Enter the new goal"}
+                                    hintInput={"Eg. 5000"}
+                                    submitInput={(inputText) => { this.sendInput(inputText) }}
+                                    closeDialog={() => { this.showGoalChangeDialog() }}>
+                                </DialogInput>
+                            </View>
+                        </View>
+                    </ScrollView>
                 </ImageBackground>
                 <View style={{ height: 50, backgroundColor: '#ecf0f1' }}>
                     <AppFooter props={this.props} />

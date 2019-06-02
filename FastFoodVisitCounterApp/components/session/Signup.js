@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'native-base';
 import { Button } from 'react-native-elements';
-import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, TouchableOpacity ,KeyboardAvoidingView, BackHandler} from 'react-native';
+import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, Keyboard ,KeyboardAvoidingView, BackHandler} from 'react-native';
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
 import { connect } from 'react-redux'
@@ -63,7 +63,7 @@ class Signup extends React.Component {
 
     signupUser() {
         console.log("Pressed btn");
-       
+        Keyboard.dismiss()
         console.log(this.state.patient);
         if (!this.validate()) {
             var data = {

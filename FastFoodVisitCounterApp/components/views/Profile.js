@@ -168,7 +168,7 @@ class Profile extends React.Component {
                                         'data:text/plain;base64,' + this.props.userDetails.image,
                                 }}
                             /> : <Text></Text>}
-                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Personal Details</Text>
+                        {/* <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Personal Details</Text> */}
                     </View>
                     <ScrollView>
                         <View style={{ flex: 1 }}>
@@ -187,7 +187,7 @@ class Profile extends React.Component {
                                 </View>
                                 <View style={styles.inputWrap}>
                                     <TouchableOpacity style={styles.updateBtn} onPress={this.showHeightDialog}>
-                                        <Text> Update </Text>
+                                        <Text style={styles.buttonText}> Update </Text>
                                     </TouchableOpacity>
                                     <DialogInput isDialogVisible={this.state.showHeightModal}
                                         title={"Height Update"}
@@ -204,7 +204,7 @@ class Profile extends React.Component {
                                 </View>
                                 <View style={styles.inputWrap}>
                                     <TouchableOpacity style={styles.updateBtn} onPress={this.showWeightDialog}>
-                                        <Text>Update</Text>
+                                        <Text style={styles.buttonText}>Update</Text>
                                     </TouchableOpacity>
                                     <DialogInput isDialogVisible={this.state.showWeightModal}
                                         title={"Weight Update"}
@@ -217,12 +217,12 @@ class Profile extends React.Component {
                             </View>
                             <View>
                                 <TouchableOpacity style={styles.updateBtn} onPress={this.signout}>
-                                    <Text> Logout </Text>
+                                    <Text style={styles.buttonText}> Logout </Text>
                                 </TouchableOpacity>
                             </View>
                             <View>
-                                <TouchableOpacity style={styles.updateBtn} onPress={this.disable}>
-                                    <Text> Deactivate Account </Text>
+                                <TouchableOpacity style={styles.actionBtn} onPress={this.disable}>
+                                    <Text style={styles.buttonText}> Deactivate Account </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -247,10 +247,22 @@ const styles = StyleSheet.create({
         marginLeft: 20
     },
     updateBtn:{
-        backgroundColor: '#DDDDDD',
+        backgroundColor: 'rgb(67,167,238)',
         padding: 10,
         marginLeft: 20,
-        marginTop: 15
+        marginRight: 20,
+        marginTop: 15,
+        borderRadius: 45,
+        justifyContent: 'center',
+    },
+    actionBtn:{
+        backgroundColor: 'rgb(255,69,96)',
+        padding: 10,
+        marginLeft: 20,
+        marginRight: 20,
+        marginTop: 15,
+        borderRadius: 45,
+        justifyContent: 'center',
     },
     profile: {
         backgroundColor: 'white',
@@ -299,6 +311,11 @@ const styles = StyleSheet.create({
     lottie: {
         width: 400,
         height: 400
+    },
+    buttonText: {
+        color: "white",
+        fontSize: 16,
+        textAlign: 'center',
     }
 });
 
