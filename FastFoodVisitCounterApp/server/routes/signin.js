@@ -10,7 +10,6 @@ module.exports = (req, res) => {
   const timeOut = 500;
   setTimeout((function () {
     if (req.body) {
-      console.log(req.body);
       var id = req.body.id;
       var email = req.body.email;
       var password = req.body.password;
@@ -19,13 +18,10 @@ module.exports = (req, res) => {
         .then(function (user) {
           firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-              // User logged in already or has just logged in.
-              console.log(user.uid);
               console.log("Database created")
               var ref = firebase.database().ref('users');
               nextref = ref.child(user.uid).on("value", function (childSnapshot) {
                 data = childSnapshot.val();
-                console.log("Email ID " + data);
                 console.log(JSON.stringify(childSnapshot));
                 var firebaseStorage = firebase.storage().ref();
                 console.log(user.uid);
@@ -34,6 +30,7 @@ module.exports = (req, res) => {
                   getImage(url, data, res, user.uid);
                 }).catch(function (error) {
                   console.log(error);
+                  getImage(null, data, res, user.uid);
                 });
               });
 
@@ -51,8 +48,13 @@ module.exports = (req, res) => {
 async function getImage(url, data, res, uid) {
   var ref = firebase.database().ref('users');
   ref.child(uid).off("value");
-  var urlFirebase = await fetch(url);
-  var image = await urlFirebase.text();
+  if(url != null){
+    var urlFirebase = await fetch(url);
+    var image = await urlFirebase.text();
+  }else{
+    var image = null;
+  }
+
   let perdata = {
     name: data.name,
     Email: data.Email,
@@ -64,6 +66,5 @@ async function getImage(url, data, res, uid) {
     userID: uid,
     currentGoal: data.currentGoal
   }
-  console.log("Sending data" + perdata.Email);
   res.status(200).send(perdata);
 }

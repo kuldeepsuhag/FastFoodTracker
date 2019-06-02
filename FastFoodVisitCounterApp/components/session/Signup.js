@@ -62,9 +62,7 @@ class Signup extends React.Component {
     }
 
     signupUser() {
-        console.log("Pressed btn");
         Keyboard.dismiss()
-        console.log(this.state.patient);
         if (!this.validate()) {
             var data = {
                 id: this.state.patient,
@@ -99,7 +97,6 @@ class Signup extends React.Component {
 
 
     render() {
-        //  console.log(this.state.email);
         return (
             <ImageBackground source = {image} style={styles.backgroundcontainer}>
             

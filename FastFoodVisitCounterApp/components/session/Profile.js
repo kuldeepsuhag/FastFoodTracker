@@ -8,7 +8,7 @@ import { ImagePicker, Permissions } from 'expo';
 import ip from '../../config';
 import axios from "axios";
 import { connect } from 'react-redux'
-import { loggedIn } from '../../redux/actions/index'
+import { loggedIn, userData } from '../../redux/actions/index'
 import logo from '../../Images/logo.gif'
 import Toast, { DURATION } from 'react-native-easy-toast'
 import { Button } from 'react-native-elements';
@@ -24,7 +24,8 @@ class Profile extends React.Component {
             weight: 0,
             bmi: 0,
             image: null,
-            visible: false
+            visible: false,
+            base64: null
         };
         this.height = this.height.bind(this);
         this.bmi = this.bmi.bind(this);
@@ -102,7 +103,7 @@ class Profile extends React.Component {
             const password = ["@password", this.props.userData.password]
             await AsyncStorage.multiSet([username, password], function () {
                 console.log("Saved");
-                that.props.dispatch(loggedIn(true));
+                // that.props.dispatch(loggedIn(true));
                 that.props.history.push("/map");
             })
             console.log(akshay);
@@ -113,9 +114,7 @@ class Profile extends React.Component {
 
     submitProfile() {
         Keyboard.dismiss()
-        this.setState({
-            visible:true
-        })
+        this.setState({visible:true})
         let that = this
         var url = ip.ip.address;
         axios({
@@ -132,22 +131,19 @@ class Profile extends React.Component {
                 image: this.state.base64
             }
         }).then((response) => {
-            that.setState({
-                visible: false
-            })
+            console.log("SIGN UP DONE !!")
+            that.setState({visible: false})
             console.log(response.data);
+            that.props.dispatch(userData(response.data));
             this.storeData();
         }).catch((error) => {
-            that.setState({
-                visible: false
-            })
+            that.setState({visible: false})
             console.log(error);
         });
     }
 
     setImage(result){
         if (!result.cancelled) {
-            console.log(result.uri);
             this.setState({ base64: result.base64.replace(/(?:\r\n|\r|\n)/g, '') })
             this.setState({ image: result.uri });
         }
@@ -214,14 +210,6 @@ class Profile extends React.Component {
                             <View style={styles.imageContainer}>
                                 {this.state.image &&
                                     <Image source={{ uri: this.state.image }} style={styles.image} />}
-                                    {/* <Image source={{ uri: this.state.image }} style={[styles.image, { marginLeft: 80 }]} />} */}
-                                {/* <TouchableOpacity
-                                    style={styles.imagebutton}
-                                    title="Profile Image"
-                                    onPress={this._pickImage}
-                                    >
-                                    <Text style={styles.whiteText}>Profile Picture</Text>
-                                </TouchableOpacity> */}
                                     <Button title="Profile Picture" raised onPress={this._pickImage} buttonStyle={styles.nextButton}></Button>
                             </View>
                             <View>
@@ -264,7 +252,6 @@ class Profile extends React.Component {
                                     style={styles.input}
                                     placeholderTextColor={'rgb(36,133,202)'}
                                     underlineColorAndroid='transparent'
-
                                     value={String(this.state.weight)}
                                     keyboardType="numeric"
                                     onChange={this.handleWeighttChange}
@@ -275,9 +262,6 @@ class Profile extends React.Component {
                                 <Text style={{ marginLeft: 30 }}>{this.state.bmi}</Text>
                             </View>
                             <View style={styles.action}>
-                                {/* <TouchableOpacity style={styles.btnsubmit} onPress={this.submitProfile}>
-                                    <Text style={styles.whiteText}>Submit</Text>
-                                </TouchableOpacity> */}
                                 <Button title="Submit" raised onPress={this.submitProfile} buttonStyle={styles.nextButton}></Button>
                             </View>
                         </View >

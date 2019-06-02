@@ -45,9 +45,11 @@ module.exports = (req, res) => {
             contentType: 'image/jpeg',
           };
           // global.atob = base64.encode;
-          firebaseStorage.child(user.uid).putString(req.body.image, 'raw', metadata).then(function (snapshot) {
-            console.log('Uploaded a data_url string!');
-          });
+          if(req.body.image != null){
+            firebaseStorage.child(user.uid).putString(req.body.image, 'raw', metadata).then(function (snapshot) {
+              console.log('Uploaded a data_url string!');
+            });
+          }
           firebase.database().ref('PatientID/' + req.body.patientId).set({
             UID: user.uid,
             Email: req.body.email,
@@ -61,18 +63,17 @@ module.exports = (req, res) => {
             console.log(JSON.stringify(childSnapshot));
             let perdata = {
               name: data.name, //getting
-              email: data.Email, //getting
-              patientID: data.PatientID, 
+              Email: data.Email, //getting
+              PatientID: data.PatientID, 
               doctorId: data.doctorId, //getting
               height: data.height, //getting
               weight: data.weight, //getting
-              image: data.image,
+              image: req.body.image,
               rest: data.countRest,
               park: data.countPark
-
             }
             ref.child(user.uid).off("value")
-            console.log("Sending data" + perdata.email);
+            console.log("Sending data" + perdata);
             res.status(200).send(perdata);
 
           });
@@ -80,7 +81,7 @@ module.exports = (req, res) => {
       });
     }
     else {
-      res.status(403).end();
+      res.status(400).send(error);
     }
   }), timeOut);
 };
