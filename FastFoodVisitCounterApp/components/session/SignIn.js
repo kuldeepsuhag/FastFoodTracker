@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text} from 'native-base';
+import { Text } from 'native-base';
+import { Button } from 'react-native-elements';
 import { View, StyleSheet,AsyncStorage, ImageBackground, Image, Dimensions, 
     TextInput, TouchableOpacity, BackHandler, KeyboardAvoidingView, Keyboard } from 'react-native';
 import axios from "axios";
@@ -11,6 +12,7 @@ import image from '../../Images/back.jpg'
 import logo from '../../Images/logo.gif'
 const { width : WIDTH} = Dimensions.get('window')
 import Toast, { DURATION } from 'react-native-easy-toast'
+import AnimatedLoader from "react-native-animated-loader";
 class SignIn extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -18,6 +20,7 @@ class SignIn extends React.Component {
             email: "",
             password: "",
             errors: "",
+            visible: false
             // base64: null
         };
         this.signinUser = this.signinUser.bind(this);
@@ -83,11 +86,12 @@ class SignIn extends React.Component {
                 that.props.dispatch(userData(response.data));
                 that.props.history.push("/map");
             })
-        }
-
+        }    
     }
 
     signinUser(stored, username, password)  {
+        this.setState({visible: true})
+        let that = this
         var url = ip.ip.address;
         axios({
             method: 'post',
@@ -97,9 +101,11 @@ class SignIn extends React.Component {
                 password: stored ? password : this.state.password
             }
         }).then((response) => {
+            that.setState({visible: false})
             this.setDetail(response);
         }).catch((error) => {
             console.log("error")
+            that.setState({ visible: false })
             this.refs.toast.show(error.response.data.message)
         });
     }
@@ -124,47 +130,56 @@ class SignIn extends React.Component {
     render() {
         return (
             <ImageBackground source = {image} style={styles.backgroundcontainer}>
+                <AnimatedLoader
+                    visible={this.state.visible}
+                    overlayColor="rgba(255,255,255,1)"
+                    source={require("../../Images/loader.json")}
+                    animationStyle={styles.lottie}
+                    speed={1}
+                />
                  <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-            <View style={styles.logocontainer}>
-                    <Image source={logo} style={styles.logo}/> 
-                    <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
-                </View>
+                    <View style={styles.logocontainer}>
+                        <Image source={logo} style={styles.logo}/> 
+                    </View>
+                    <View style={styles.logocontainer}>
+                        <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
+                    </View>
+                    <View style={styles.logocontainer}>
+                        <Text style={styles.logotext}>Sign In</Text>
+                    </View>
                 {/* <View>
                 <ValidateForm errors={this.state.errors} />
                 </View> */}
-
-                <View>
-                    <TextInput 
-                         style={styles.input}
-                         placeholder={'Email'}
-                         placeholderTextColor={'rgb(36,133,202)'}
-                         underlineColorAndroid='transparent'
-                         value={this.state.email}
-                         onChange={this.handleEmailChange}
-                     />
-                </View>
-                
-                <View>
-                <TextInput 
-                         style={styles.input}
-                         placeholder={'Password'}
-                         placeholderTextColor={'rgb(36,133,202)'}
-                         underlineColorAndroid='transparent'
-                         secureTextEntry={true} 
-                         value={this.state.password}
-                         onChange={this.handlePasswordChange}
-                     />
-
-                </View>
-                <TouchableOpacity style = {styles.btnlogin} onPress={this.validate}>
-                    <Text style={styles.text}>Login</Text>
-
-                </TouchableOpacity>
-                <View>
-                <Text onPress={this.signup}>New User? &nbsp;</Text>
-                        {/* <Button title="Sign Up" >
-                        </Button> */}
-                </View>
+                    <View>
+                        <TextInput 
+                            style={styles.input}
+                            placeholder={'Email'}
+                            placeholderTextColor={'rgb(36,133,202)'}
+                            underlineColorAndroid='transparent'
+                            value={this.state.email}
+                            onChange={this.handleEmailChange}
+                        />
+                    </View>
+                    <View>
+                        <TextInput 
+                                style={styles.input}
+                                placeholder={'Password'}
+                                placeholderTextColor={'rgb(36,133,202)'}
+                                underlineColorAndroid='transparent'
+                                secureTextEntry={true} 
+                                value={this.state.password}
+                                onChange={this.handlePasswordChange}
+                            />
+                    </View>
+                    <View style={styles.action}>
+                        <Button title="Login" raised onPress={this.validate} buttonStyle={styles.nextButton}></Button>
+                        {/* <TouchableOpacity onPress={this.validate} style={styles.btnlogin}>
+                            <Text style={styles.text}>Login</Text>
+                        </TouchableOpacity> */}
+                    </View>
+                    <View style={styles.alternate}>
+                        <Button title="New User" type="outline" onPress={this.signup}></Button>
+                    </View>
                 </KeyboardAvoidingView>
                 <Toast ref="toast" textStyle={{ color: 'red' }} fadeOutDuration={1000} fadeInDuration={2500} />
             </ImageBackground>
@@ -196,8 +211,19 @@ const styles = StyleSheet.create({
         // background Color: '#3066c9',
         height: '100%'
     },
-    wrapper: {
-        alignItems: 'center', paddingBottom: 40, paddingTop: 40
+    action: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: '2%',
+        marginTop: '3%'
+    },
+    alternate: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     logotext:{
           color: 'red',
@@ -225,21 +251,35 @@ const styles = StyleSheet.create({
         marginHorizontal: 25,
         marginBottom: '2%'
     },
-    btnlogin: {
-        width: WIDTH - 250,
-        height: 45,
-        borderRadius: 45,
-        backgroundColor: "#432577",
-        justifyContent: 'center',
-        marginTop: 20,
-        marginBottom: '2%',
-        marginLeft: 130
+    // btnlogin: {
+    //     width: WIDTH - 250,
+    //     height: 45,
+    //     borderRadius: 45,
+    //     backgroundColor: 'rgb(36,133,202)',
+    //     justifyContent: 'center',
+    //     marginTop: 20,
+    //     marginBottom: '2%',
+    //     // marginLeft: 130
 
+    // },
+    // text:{
+    //     color: "rgb(245,245,245)",
+    //     fontSize: 16,
+    //     textAlign: 'center',
+    // },
+    // loginButton: {
+    //     backgroundColor: 'red',
+    //     color: 'white'
+    // },
+    nextButton: {
+        backgroundColor: 'rgb(36,133,202)',
+        borderRadius: 45,
+        paddingLeft: 40,
+        paddingRight: 40
     },
-    text:{
-        color: "rgb(36,133,202)",
-        fontSize: 16,
-        textAlign: 'center',
+    lottie: {
+        width: 400,
+        height: 400
     }
 });
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text } from 'native-base';
+import { Button } from 'react-native-elements';
 import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, TouchableOpacity ,KeyboardAvoidingView, BackHandler} from 'react-native';
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
@@ -105,15 +106,17 @@ class Signup extends React.Component {
             <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
             <View style={styles.logocontainer}>
                     <Image source={logo} style={styles.logo}/> 
-                    <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
-                </View>
-            <View>
-                <Text style={styles.text}>Register</Text>
+            </View>
+            <View style={styles.logocontainer}>
+                <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
+            </View>
+            <View style={styles.logocontainer}>
+                        <Text style={styles.logotext}>Create a New Account</Text>
             </View>
             {/* <View>
                  <ValidateForm errors={this.state.errors} />
             </View> */}
-            <View>
+            <View style={{marginTop: '1%'}}>
                     <TextInput 
                          style={styles.input}
                          placeholder={'Patient ID'}
@@ -145,16 +148,17 @@ class Signup extends React.Component {
                          secureTextEntry={true}
                      />
                 </View>
-                <View>
-                <TouchableOpacity style = {styles.btnlogin} onPress={this.signupUser}>
+                <View style={styles.action}>
+                        <Button title="Next" raised onPress={this.signupUser} buttonStyle={styles.nextButton}></Button>
+                {/* <TouchableOpacity style = {styles.btnlogin} onPress={this.signupUser}>
                     <Text style={styles.logintext}>Next</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 </View>
-                <View>
-                <Text onPress={this.login}>Already have an account</Text>
-                        {/* <Button title="Sign Up" >
-                        </Button> */}
-                </View>
+                {/* <View> */}
+                        <View style={styles.alternate}>
+                        <Button title="Already Have An Account" type="outline" onPress={this.login} style={styles.loginButton}></Button>
+                        </View>
+                {/* </View> */}
                 </KeyboardAvoidingView >
                 <Toast ref="toast" textStyle={{ color: 'red' }} fadeOutDuration={1000} fadeInDuration={2500} />
             </ImageBackground>
@@ -178,8 +182,19 @@ const styles = StyleSheet.create({
         // backgroundColor: '#3066c9',
         height: '100%'
     },
-    wrapper: {
-        alignItems: 'center', paddingBottom: 40, paddingTop: 40
+    action: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: '2%',
+        marginTop: '3%'
+    },
+    alternate: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     card: {
         flexDirection: 'column',
@@ -188,13 +203,13 @@ const styles = StyleSheet.create({
         marginRight: '5%',
         maxWidth: '100%'
     },
-    tb5: {
-        marginBottom: '2%',
+    // tb5: {
+    //     marginBottom: '2%',
        
-         borderColor: '#7a42f4',
-      borderWidth: 1
+    //      borderColor: '#7a42f4',
+    //   borderWidth: 1
        
-    },
+    // },
     input: {
         width: WIDTH - 55,
         height: 45,
@@ -212,8 +227,16 @@ const styles = StyleSheet.create({
         height: 120,
         borderRadius: 130
     },
+    logotext: {
+        color: 'red',
+        fontSize: 20,
+        fontWeight: '500',
+        marginTop: 10,
+        opacity: 0.5
+    },
     logocontainer:{
-        alignItems: 'center'
+        alignItems: 'center',
+        // flexDirection: 'row'
     },
     text: {
         justifyContent: 'center',
@@ -222,21 +245,29 @@ const styles = StyleSheet.create({
         marginLeft: 130
         
     },
-    btnlogin: {
-        width: 100,
-        height: 45,
-        borderRadius: 45,
-        backgroundColor: "#432577",
-        justifyContent: 'center',
-        marginTop: 20,
-        marginBottom: '2%',
-        marginLeft: 130
+    // btnlogin: {
+    //     width: 100,
+    //     height: 45,
+    //     borderRadius: 45,
+    //     backgroundColor: 'rgb(36,133,202)',
+    //     justifyContent: 'center',
+    //     marginTop: 20,
+    //     marginBottom: '2%',
+    //     paddingBottom: 10
+    //     // marginLeft: 130
 
-    },
-    logintext:{
-        color: "rgb(36,133,202)",
-        fontSize: 16,
-        textAlign: 'center'
+    // },
+    // logintext:{
+    //     color: "rgb(245,245,245)",
+    //     fontSize: 16,
+    //     textAlign: 'center',
+    //     paddingBottom: 10
+    // },
+    nextButton: { 
+        backgroundColor: 'rgb(36,133,202)', 
+        borderRadius: 45, 
+        paddingLeft: 40, 
+        paddingRight: 40
     }
 });
 

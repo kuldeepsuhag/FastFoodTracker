@@ -11,8 +11,9 @@ import { connect } from 'react-redux'
 import { loggedIn } from '../../redux/actions/index'
 import logo from '../../Images/logo.gif'
 import Toast, { DURATION } from 'react-native-easy-toast'
+import { Button } from 'react-native-elements';
+import AnimatedLoader from "react-native-animated-loader";
 const { width: WIDTH } = Dimensions.get('window')
-
 class Profile extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -22,7 +23,8 @@ class Profile extends React.Component {
             height: 0,
             weight: 0,
             bmi: 0,
-            image: null
+            image: null,
+            visible: false
         };
         this.height = this.height.bind(this);
         this.bmi = this.bmi.bind(this);
@@ -110,6 +112,10 @@ class Profile extends React.Component {
     }
 
     submitProfile() {
+        this.setState({
+            visible:true
+        })
+        let that = this
         var url = ip.ip.address;
         axios({
             method: 'post',
@@ -125,10 +131,15 @@ class Profile extends React.Component {
                 image: this.state.base64
             }
         }).then((response) => {
+            that.setState({
+                visible: false
+            })
             console.log(response.data);
             this.storeData();
         }).catch((error) => {
-
+            that.setState({
+                visible: false
+            })
             console.log(error);
         });
     }
@@ -180,27 +191,37 @@ class Profile extends React.Component {
         //  console.log(this.state.email);
         return (
             <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundcontainer}>
+                <AnimatedLoader
+                    visible={this.state.visible}
+                    overlayColor="rgba(255,255,255,1)"
+                    source={require("../../Images/loader.json")}
+                    animationStyle={styles.lottie}
+                    speed={1}
+                />
                 <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={1}>
                     <ScrollView>
                         <View style={styles.container}>
                             <View style={styles.logocontainer}>
                                 <Image source={logo} style={styles.logo} />
+                            </View>
+                            <View style={styles.logocontainer}>
                                 <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
                             </View>
-                            <View>
-                                <Text style={styles.text}>Register</Text>
+                            <View style={styles.logocontainer}>
+                                <Text style={styles.logotext}>Patient Info</Text>
                             </View>
-                            {this.state.image &&
-                                <Image source={{ uri: this.state.image }} style={[styles.image, { marginLeft: 80 }]} />}
-                            <TouchableOpacity
-                                style={styles.imagebutton}
-                                title="Profile Image"
-                                onPress={this._pickImage}
-
-
-                            >
-                                <Text style={styles.logintext}>Profile Picture</Text>
-                            </TouchableOpacity>
+                            <View style={styles.imageContainer}>
+                                {this.state.image &&
+                                    <Image source={{ uri: this.state.image }} style={[styles.image, { marginLeft: 80 }]} />}
+                                {/* <TouchableOpacity
+                                    style={styles.imagebutton}
+                                    title="Profile Image"
+                                    onPress={this._pickImage}
+                                    >
+                                    <Text style={styles.whiteText}>Profile Picture</Text>
+                                </TouchableOpacity> */}
+                                    <Button title="Profile Picture" raised onPress={this._pickImage} buttonStyle={styles.nextButton}></Button>
+                            </View>
                             <View>
                                 <TextInput
                                     style={styles.input}
@@ -251,10 +272,11 @@ class Profile extends React.Component {
                                 <Label style={styles.label}> BMI (Body Mass Index)</Label>
                                 <Text style={{ marginLeft: 30 }}>{this.state.bmi}</Text>
                             </View>
-                            <View>
-                                <TouchableOpacity style={styles.btnsubmit} onPress={this.submitProfile}>
-                                    <Text style={styles.logintext}>Submit</Text>
-                                </TouchableOpacity>
+                            <View style={styles.action}>
+                                {/* <TouchableOpacity style={styles.btnsubmit} onPress={this.submitProfile}>
+                                    <Text style={styles.whiteText}>Submit</Text>
+                                </TouchableOpacity> */}
+                                <Button title="Submit" raised onPress={this.submitProfile} buttonStyle={styles.nextButton}></Button>
                             </View>
                         </View >
                     </ScrollView>
@@ -279,14 +301,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-
     container: {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'stretch',
         // paddingTop: 40,
         // backgroundColor: '#3066c9',
-        height: '100%'
+        height: '100%',
+        marginBottom: 30,
+        marginTop: 10
     },
     input: {
         width: WIDTH - 55,
@@ -305,8 +328,20 @@ const styles = StyleSheet.create({
         height: 120,
         borderRadius: 130
     },
+    logotext: {
+        color: 'red',
+        fontSize: 20,
+        fontWeight: '500',
+        marginTop: 10,
+        opacity: 0.5
+    },
     logocontainer: {
         alignItems: 'center'
+    },
+    imageContainer: {
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 10
     },
     text: {
         justifyContent: 'center',
@@ -318,17 +353,16 @@ const styles = StyleSheet.create({
     label: {
         marginLeft: 30,
         fontSize: 15,
-
     },
     imagebutton: {
         width: 150,
         height: 45,
         borderRadius: 45,
-        backgroundColor: "green",
+        backgroundColor: 'rgb(36,133,202)',
         justifyContent: 'center',
         marginTop: 20,
         marginBottom: '2%',
-        marginLeft: 100
+        // marginLeft: 100
 
     },
     btnsubmit: {
@@ -342,16 +376,37 @@ const styles = StyleSheet.create({
         marginLeft: 130
 
     },
+    action: {
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: '2%',
+        marginTop: '3%'
+    },
     logintext: {
         color: "rgb(36,133,202)",
         fontSize: 16,
         textAlign: 'center'
+    },
+    whiteText: {
+        color: "white"
     },
     image: {
         width: 200,
         height: 200,
         borderRadius: 100,
         justifyContent: 'center'
+    },
+    nextButton: {
+        backgroundColor: 'rgb(36,133,202)',
+        borderRadius: 45,
+        paddingLeft: 40,
+        paddingRight: 40,
+    },
+    lottie: {
+        width: 400,
+        height: 400
     }
 });
 
