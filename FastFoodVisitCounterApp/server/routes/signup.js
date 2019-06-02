@@ -34,7 +34,8 @@ module.exports = (req, res) => {
             height: req.body.height,
             weight: req.body.weight,
             countRest: 0,
-            countPark: 0
+            countPark: 0,
+            currentGoal: 10000
           });
 
           console.log("User Data Completed");
