@@ -2,7 +2,7 @@ import React from 'react';
 import { Label, Text } from 'native-base';
 import {
     View, StyleSheet, Image, AsyncStorage, ImageBackground, TextInput, Dimensions,
-    TouchableOpacity, ScrollView, BackHandler, KeyboardAvoidingView, Alert
+    Keyboard, ScrollView, BackHandler, KeyboardAvoidingView, Alert
 } from 'react-native';
 import { ImagePicker, Permissions } from 'expo';
 import ip from '../../config';
@@ -112,6 +112,7 @@ class Profile extends React.Component {
     }
 
     submitProfile() {
+        Keyboard.dismiss()
         this.setState({
             visible:true
         })
@@ -212,7 +213,8 @@ class Profile extends React.Component {
                             </View>
                             <View style={styles.imageContainer}>
                                 {this.state.image &&
-                                    <Image source={{ uri: this.state.image }} style={[styles.image, { marginLeft: 80 }]} />}
+                                    <Image source={{ uri: this.state.image }} style={styles.image} />}
+                                    {/* <Image source={{ uri: this.state.image }} style={[styles.image, { marginLeft: 80 }]} />} */}
                                 {/* <TouchableOpacity
                                     style={styles.imagebutton}
                                     title="Profile Image"

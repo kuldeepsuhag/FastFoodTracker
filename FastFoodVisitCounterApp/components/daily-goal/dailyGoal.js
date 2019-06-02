@@ -111,7 +111,7 @@ class DailyGoal extends React.Component{
                                         {(this.state.currentStepCount > this.state.pastStepCount)? this.state.currentStepCount : this.state.pastStepCount} Steps
                                     </Text>
                                     <Text style={styles.goal}>
-                                        Goal: {this.state.goal}
+                                        Daily Goal: {this.state.goal}
                                     </Text>
                                 </View>
                             )
