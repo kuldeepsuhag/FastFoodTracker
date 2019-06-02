@@ -1,18 +1,15 @@
 require('firebase/database')
 require('firebase/auth')
 firebase1 = require('firebase/app')
-const calltime = new Date();
+var calltime
 var category;
 var uid;
 var place;
 var prevtime;
 module.exports = (req, res) => {
-    let test = {
-        latitude: -37.800527,
-      longitude: 144.9636918
-    }
+    calltime = new Date();
     if (req.body) {
-        inKFCorPark(test, res)
+        inKFCorPark(req.body, res)
     }
 }
 async function inKFCorPark(req, res) {
@@ -61,11 +58,21 @@ async function inKFCorPark(req, res) {
             countRest: snapshot.val().countRest,
             countPark: snapshot.val().countPark
         }
-        console.log('In data', sen)
+        console.log('In data', snapshot.val().countRest)
         console.log(sen)
+       
 
     });
-    res.status(200).send("yesss");
+    if(sen.countRest === undefined){
+        sen = {
+            countRest: 0,
+            countPark: 0
+        }
+        res.status(200).send(sen);
+    }else{
+        res.status(200).send(sen);
+    }
+    
     
 }
 async function timevalidation(req) {
@@ -92,7 +99,7 @@ async function timevalidation(req) {
             console.log("Current time is ", new Date(now).getMinutes())
             console.log("Previous time is", new Date(prevtime).getMinutes())
             console.log("Difference in time is", (Math.abs(new Date(now).getMinutes() - new Date(prevtime).getMinutes())));
-            if ((Math.abs(new Date(now).getMinutes() - new Date(prevtime).getMinutes()) >= 1) && (prevplace === place)) {
+            if ((Math.abs(new Date(now).getMinutes() - new Date(prevtime).getMinutes()) >= 3) && (prevplace === place)) {
                 updatevalues();
             }
         }
@@ -125,7 +132,7 @@ async function updatingRest() {
                 data = childSnapshot.val();
                 console.log("getting value", childSnapshot.val());
                 var histimestamp;
-                var place;
+             //   var place;
                 for (var key in data) {
                     histimestamp = parseInt(key);
                     histplace = data[key]["place"]
@@ -133,15 +140,21 @@ async function updatingRest() {
                 var histtime = new Date(histimestamp).getMinutes();
                 console.log("Hist TIme", histtime)
                 var calledtime = calltime.getMinutes();
+                console.log("Call Time", calledtime)
                 console.log("Present TIme", Math.abs(calledtime - histtime));
 
-                if (Math.abs(calledtime - histtime) >= 20 && Math.abs(new Date(histimestamp).getHours()) - new Date(histimestamp).getHours() == 0) {
+                if (Math.abs(calledtime - histtime) >= 2 && Math.abs(new Date(histimestamp).getHours()) - new Date(histimestamp).getHours() == 0) {
+                    console.log("FIRST ONE")
                     updateRestcounting();
                 }
                 if (Math.abs(new Date(histimestamp).getHours()) - new Date(histimestamp).getHours() > 0) {
+                    console.log("SECOND ONE")
                     updateRestcounting()
                 }
+                console.log(histplace)
+                console.log(place)
                 if (histplace != place) {
+                    console.log("THIRD ONE")
                     updateRestcounting()
                 }
 
@@ -251,6 +264,8 @@ async function updatingcount() {
 async function updateRestcounting() {
     let count = await getRestCount(uid)
     var updatecount = firebase1.database().ref("users");
+    firebase1.database().ref("users").child(uid).off("value");
+    firebase1.database().ref("users").child(uid).child('HistoryRest').orderByKey().limitToLast(1).off('value')
     updatecount.child(uid).off("value")
     console.log("TIME TO UPDATE")
     console.log(count)
