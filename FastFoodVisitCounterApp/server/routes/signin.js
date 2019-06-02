@@ -21,7 +21,6 @@ module.exports = (req, res) => {
             if (user) {
               // User logged in already or has just logged in.
               console.log(user.uid);
-              console.log("Database created")
               var ref = firebase.database().ref('users');
               nextref = ref.child(user.uid).on("value", function (childSnapshot) {
                 data = childSnapshot.val();
