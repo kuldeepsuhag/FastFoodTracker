@@ -32,8 +32,8 @@ class Map extends React.Component {
       visible: true,
       showRestModal: false,
       showParkModal: false,
-      parkData: [],
-      restData: []
+      parkData: null,
+      restData: null
     };
   }
 
@@ -84,16 +84,18 @@ class Map extends React.Component {
     );
     
     getRestHistory = () =>{
-      // var url = ip.ip.address;
-      // var that = this;
-      // axios.get(url + "/get-rest-history").then((response) => {
-      //   console.log(response.data);
-      //   this.setState({
-      //     restData: response.data
-      //   })
-      // }).catch((error) => {
-      //   console.log(error);
-      // });
+      if(this.state.restData == null){
+        // var url = ip.ip.address;
+        // var that = this;
+        // axios.get(url + "/get-rest-history").then((response) => {
+        //   console.log(response.data);
+        //   this.setState({
+        //     restData: response.data
+        //   })
+        // }).catch((error) => {
+        //   console.log(error);
+        // });
+      }
       this.setState({
         restData: [
         {
@@ -128,19 +130,20 @@ class Map extends React.Component {
         },
         ]
       })
-      return
     }
 
     getParkHistory = () => {
-      // var url = ip.ip.address;
-      // var that = this;
-      // axios.get(url + "/get-park-history").then((response) => {
-      //   this.setState({
-      //     parkData: response.data
-      //   })
-      // }).catch((error) => {
-      //   console.log(error);
-      // });
+      if (this.state.parkData == null) {
+        // var url = ip.ip.address;
+        // var that = this;
+        // axios.get(url + "/get-park-history").then((response) => {
+        //   this.setState({
+        //     parkData: response.data
+        //   })
+        // }).catch((error) => {
+        //   console.log(error);
+        // });
+      }
       this.setState({
         parkData: [
           {
@@ -175,7 +178,6 @@ class Map extends React.Component {
           },
         ]
       })
-      return
     }
 
     //Creating the data step data for the last week
@@ -303,30 +305,24 @@ class Map extends React.Component {
   sendMapData(lat, lon) {
     var url = ip.ip.address;
     console.log("map data sent")
-    axios({
-      method: 'post',
-      url: url + "/map-data",
-      data: {
-        latitude: lat,
-        longitude: lon
-        // place: city
-      }
-    }).then((response) => {
-      console.log(response.data);
-    }).catch((error) => {
-      console.log(error);
-    });
+    if(lat != null && lon!= null && lat != "" && lon!= ""){
+      axios({
+        method: 'post',
+        url: url + "/map-data",
+        data: {
+          latitude: lat,
+          longitude: lon
+          // place: city
+        }
+      }).then((response) => {
+        console.log(response.data);
+      }).catch((error) => {
+        console.log(error);
+      });
+    }
   }
 
-  renderRestRow({ item }) {
-    return (
-      <ListItem
-        title={item.name}
-        subtitle={item.date}
-      />
-    )
-  }
-  renderParkRow({ item }) {
+  renderRow({ item }) {
     return (
       <ListItem
         title={item.name}
@@ -421,7 +417,7 @@ class Map extends React.Component {
                       <FlatList
                         // data={dataRest}
                         data={this.state.restData}
-                        renderItem={this.renderRestRow}
+                        renderItem={this.renderRow}
                         keyExtractor={item => item.index.toString()}
                       />
                     {/* </List> */}
@@ -441,7 +437,7 @@ class Map extends React.Component {
                   <FlatList
                     data={this.state.parkData}
                     // data={dataPark}
-                    renderItem={this.renderParkRow}
+                    renderItem={this.renderRow}
                     keyExtractor={item => item.index.toString()}
                   />
                 {/* </List> */}
