@@ -42,7 +42,6 @@ import AnimatedLoader from "react-native-animated-loader";
             that.setState({
                 visible: true
             })
-            that.props.dispatch(currentGoal(stepGoal))
             var url = ip.ip.address;
             axios({
                 method: 'post',
@@ -53,21 +52,18 @@ import AnimatedLoader from "react-native-animated-loader";
                 }
             }).then((response) => {
                 console.log(response.data);
-                that.setState({
-                    visible: true
-                })
-               // that.props.dispatch(userData(that.props.userDetails.state.currentGoal))
+                that.props.dispatch(currentGoal(stepGoal))
+                that.setState({visible: false})
             }).catch((error) => {
                 console.log(error);
-                that.setState({
-                    visible: true
-                })
+                that.setState({visible: false})
             });
             that.setState({
                 reload: !(that.state.reload)
             })
         }
     }
+
     componentDidMount() {
         console.log(this.props.currentGoal);
         if(this.props.currentGoal == null) {
@@ -85,11 +81,8 @@ import AnimatedLoader from "react-native-animated-loader";
         return true;
     }
 
-
     render() {
-
         return (
-
             <View style={{ flex: 1 }}>
                 <Header centerComponent={{
                     text: 'Analysis', style: {
@@ -109,29 +102,27 @@ import AnimatedLoader from "react-native-animated-loader";
                         speed={1}
                     />    
                 <View style={{ flex: 1}}>
-                    
-                        <View>
-                            <StepCounter></StepCounter>
-                            <Text style={{ marginLeft: 130}}>Weekly Steps</Text>
-                        </View>
-                        <View style={{ flexDirection: "row" }}>
-                            <DailyGoal></DailyGoal>
-                        </View>
-                        <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 10 }}>
-                            <Button onPress={this.showGoalChangeDialog} title="Update Goal"></Button>
-                            <DialogInput isDialogVisible={this.state.showGoalModal}
-                                title={"Change Daily Step Goal"}
-                                message={"Enter the new goal"}
-                                hintInput={"Eg. 5000"}
-                                submitInput={(inputText) => { this.sendInput(inputText) }}
-                                closeDialog={() => { this.showGoalChangeDialog() }}>
-                            </DialogInput>
-                        </View>
-                    
+                    <View>
+                        <StepCounter />
+                        <Text style={{ marginLeft: 130}}>Weekly Steps</Text>
+                    </View>
+                    <View style={{ flexDirection: "row" }}>
+                        <DailyGoal />
+                    </View>
+                    <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 10 }}>
+                        <Button onPress={this.showGoalChangeDialog} title="Update Goal"></Button>
+                        <DialogInput isDialogVisible={this.state.showGoalModal}
+                            title={"Change Daily Step Goal"}
+                            message={"Enter the new goal"}
+                            hintInput={"Eg. 5000"}
+                            submitInput={(inputText) => { this.sendInput(inputText) }}
+                            closeDialog={() => { this.showGoalChangeDialog() }}>
+                        </DialogInput>
+                    </View>
                 </View>
                 </ImageBackground>
                 <View style={{ height: 50, backgroundColor: '#ecf0f1' }}>
-                    < AppFooter props={this.props} />
+                    <AppFooter props={this.props} />
                 </View>
                 <Toast ref="toast" textStyle={{ color: 'red' }} fadeOutDuration={2000} fadeInDuration={1000} />
             </View>

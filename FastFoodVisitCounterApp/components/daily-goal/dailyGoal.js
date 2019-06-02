@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { Icon } from 'react-native-elements';
 import { Pedometer } from "expo";
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 
 const tintColor = "#16d353";
 const backgroundColor = "#c4c4c4";
@@ -30,8 +30,18 @@ class DailyGoal extends React.Component{
         this._subscribe();
         this.setState({ showGoalModal: false });
         this.setState({
-            goal: (this.props.currentGoal) ? this.props.currentGoal : 10000
+            goal: this.props.currentGoal
         })
+    }
+
+    componentDidUpdate(prevProps, prevState,){
+        if(prevState.goal !== this.props.currentGoal){
+            this._subscribe();
+            this.setState({ showGoalModal: false });
+            this.setState({
+                goal: this.props.currentGoal
+            })
+        }
     }
 
     componentWillUnmount() {
@@ -65,7 +75,7 @@ class DailyGoal extends React.Component{
             },
             error => {
                 this.setState({
-                    pastStepCount: "Could not get stepCount: " + error
+                    pastStepCount: "Could not get stepCount: " + error 
                 });
             }
         );
