@@ -1,9 +1,9 @@
 import React from 'react';
 import { Constants, MapView, Location, Permissions, Pedometer, TaskManager } from 'expo';
-import { StyleSheet, View, Alert, BackHandler, ImageBackground } from 'react-native';
+import { StyleSheet, View, Alert, BackHandler, ImageBackground, FlatList } from 'react-native';
 import AppFooter from '../footer/AppFooter'
 import { Card, CardItem, Text } from 'native-base';
-import { Button } from 'react-native-elements';
+import { Button, ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ip from '../../config';
 import axios from "axios";
@@ -11,6 +11,7 @@ import {connect} from 'react-redux'
 import { stepData } from '../../redux/actions/index'
 import {Header} from 'react-native-elements'
 import AnimatedLoader from "react-native-animated-loader";
+import Modal from "react-native-modal";
 
 const LOCATION_TASK_NAME = 'background-location-task';
 class Map extends React.Component {
@@ -28,9 +29,23 @@ class Map extends React.Component {
       isPedometerAvailable: "",
       countFastFood: 0,
       countPark: 0,
-      visible: true
+      visible: true,
+      showRestModal: false,
+      showParkModal: false,
+      parkData: [],
+      restData: []
     };
   }
+
+  toggleRestModal = () => {
+    this.setState({ showRestModal: !this.state.showRestModal });
+    getRestHistory()
+  };
+  
+  toggleParkModal = () => {
+    this.setState({ showParkModal: !this.state.showParkModal });
+    getParkHistory()
+  };
 
   async componentDidMount() {
     this._getLocationAsync();
@@ -67,6 +82,101 @@ class Map extends React.Component {
         console.log("Error with Pedometer: " + error)
       }
     );
+    
+    getRestHistory = () =>{
+      // var url = ip.ip.address;
+      // var that = this;
+      // axios.get(url + "/get-rest-history").then((response) => {
+      //   console.log(response.data);
+      //   this.setState({
+      //     restData: response.data
+      //   })
+      // }).catch((error) => {
+      //   console.log(error);
+      // });
+      this.setState({
+        restData: [
+        {
+          index: 1,
+          name: 'KFC Carlton',
+          date: '02/05/3028',
+          time: '8:00 AM'
+        },
+        {
+          index: 2,
+          name: 'KFC Carlton',
+          date: '05/05/3028',
+          time: '8:00 AM'
+        },
+        {
+          index: 3,
+          name: 'KFC Carlton',
+          date: '06/05/3028',
+          time: '8:00 AM'
+        },
+        {
+          index: 4,
+          name: 'KFC Carlton',
+          date: '08/05/3028',
+          time: '8:00 AM'
+        },
+        {
+          index: 5,
+          name: 'KFC Carlton',
+          date: '02/04/3028',
+          time: '8:00 AM'
+        },
+        ]
+      })
+      return
+    }
+
+    getParkHistory = () => {
+      // var url = ip.ip.address;
+      // var that = this;
+      // axios.get(url + "/get-park-history").then((response) => {
+      //   this.setState({
+      //     parkData: response.data
+      //   })
+      // }).catch((error) => {
+      //   console.log(error);
+      // });
+      this.setState({
+        parkData: [
+          {
+            index: 1,
+            name: 'Lincoln Garden',
+            date: '02/03/3028',
+            time: '8:00 AM'
+          },
+          {
+            index: 2,
+            name: 'Lincoln Garden',
+            date: '05/06/3028',
+            time: '8:00 AM'
+          },
+          {
+            index: 3,
+            name: 'Lincoln Garden',
+            date: '04/05/3028',
+            time: '8:00 AM'
+          },
+          {
+            index: 4,
+            name: 'Carlton Garden',
+            date: '01/05/3028',
+            time: '8:00 AM'
+          },
+          {
+            index: 5,
+            name: 'Carlton Garden',
+            date: '02/05/3028',
+            time: '8:00 AM'
+          },
+        ]
+      })
+      return
+    }
 
     //Creating the data step data for the last week
     const today = new Date();
@@ -208,7 +318,24 @@ class Map extends React.Component {
     });
   }
 
+  renderRestRow({ item }) {
+    return (
+      <ListItem
+        title={item.name}
+        subtitle={item.date}
+      />
+    )
+  }
+  renderParkRow({ item }) {
+    return (
+      <ListItem
+        title={item.name}
+        subtitle={item.date}
+      />
+    )
+  }
   render() {
+
     return (
       <>
         <View style={{flex: 1}}>
@@ -252,7 +379,7 @@ class Map extends React.Component {
               <Card style={styles.card} transparent>
                 <CardItem>
                   <Button
-                    buttonStyle={{ backgroundColor: "red" }}
+                    buttonStyle={{ backgroundColor: "red" , width: 50, marginRight: 5}}
                     icon={
                       <Icon
                         name="md-pizza"
@@ -260,11 +387,11 @@ class Map extends React.Component {
                         color="white"
                       />
                     }
-                    color="green"
-                    title={this.state.countFastFood.toString()}
+                    onPress={this.toggleRestModal}
+                    title={" " + this.state.countFastFood.toString()}
                   />
                   <Button
-                    buttonStyle={{ backgroundColor: "green" }}
+                    buttonStyle={{ backgroundColor: "green", width: 50, marginLeft: 5}}
                     icon={
                       <Icon
                         name="ios-american-football"
@@ -272,6 +399,7 @@ class Map extends React.Component {
                         color="white"
                       />
                     }
+                    onPress={this.toggleParkModal}
                     title={" " + this.state.countPark.toString()}
                   />
                 </CardItem>
@@ -283,6 +411,46 @@ class Map extends React.Component {
               </Card>
             </View>
           </ImageBackground>
+          <Modal isVisible={this.state.showRestModal}>
+            <Card>
+              <CardItem header>
+                <Text>Restaurant History</Text>
+              </CardItem>
+              <CardItem>
+                    {/* <List> */}
+                      <FlatList
+                        // data={dataRest}
+                        data={this.state.restData}
+                        renderItem={this.renderRestRow}
+                        keyExtractor={item => item.index.toString()}
+                      />
+                    {/* </List> */}
+              </CardItem>
+              <CardItem>
+                <Button title="Hide modal" onPress={this.toggleRestModal} /> 
+              </CardItem>
+            </Card>
+          </Modal>
+          <Modal isVisible={this.state.showParkModal}>
+            <Card>
+              <CardItem header>
+                <Text>Park History</Text>
+              </CardItem>
+              <CardItem>
+                {/* <List> */}
+                  <FlatList
+                    data={this.state.parkData}
+                    // data={dataPark}
+                    renderItem={this.renderParkRow}
+                    keyExtractor={item => item.index.toString()}
+                  />
+                {/* </List> */}
+              </CardItem>
+              <CardItem>
+                <Button title="Hide modal" onPress={this.toggleParkModal} />
+              </CardItem>
+            </Card>
+          </Modal>
         </View>
         <AppFooter props={this.props}/>
       </>
