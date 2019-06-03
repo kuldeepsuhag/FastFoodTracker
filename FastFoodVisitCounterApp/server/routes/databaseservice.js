@@ -8,6 +8,10 @@ var place;
 var prevtime;
 module.exports = (req, res) => {
     calltime = new Date();
+    // var test ={
+    //     latitude: -37.8006245,
+    //     longitude: 144.9650827
+    // }
     if (req.body) {
         inKFCorPark(req.body, res)
     }
@@ -33,7 +37,7 @@ async function inKFCorPark(req, res) {
     await firebase.database().ref("Parks").on('value', async function (snapshot) {
         snapshot.forEach(function (child) {
             data = child.val();
-            if (req.latitude > data.swlat && req.latitude < data.nelat && req.longitude > data.swlong && req.longitude < data.nelong) {
+            if ((Math.abs(req.latitude.toFixed(4) - data.lat.toFixed(4)) <= 0.005) && (Math.abs(req.longitude.toFixed(4) - data.long.toFixed(4)) <= 0.002)) {
                 category = "Parks"
                 place = data.place
                 console.log("place", place)
@@ -54,19 +58,19 @@ async function inKFCorPark(req, res) {
     var sen;
     await firebase.database().ref("users").child(uid).on("value", function (snapshot) {
         console.log(snapshot.val().countRest)
+       
         sen = {
             countRest: snapshot.val().countRest,
-            countPark: snapshot.val().countPark
+            countPark: snapshot.val().countPark,
         }
-        console.log('In data', snapshot.val().countRest)
         console.log(sen)
        
 
     });
-    if(sen.countRest === undefined){
+    if(sen === undefined){
         sen = {
             countRest: 0,
-            countPark: 0
+            countPark: 0,  
         }
         res.status(200).send(sen);
     }else{
@@ -91,8 +95,14 @@ async function timevalidation(req) {
             console.log("DOne")
             //firebase.database().ref()
         }
-        else {
-            var currenttime = new Date()
+        else if(childSnapshot.val().previousplace != place){
+            firebase1.database().ref('users').child(uid).update({
+                previoustime: time,
+                previousplace: place
+            });
+        }
+            else{
+             var currenttime = new Date()
             var now = currenttime.getTime("en-US", { timeZone: "Australia/Brisbane" });
             prevtime = childSnapshot.val().previoustime;
             prevplace = childSnapshot.val().previousplace
@@ -180,7 +190,6 @@ async function updatingPark() {
                 data = childSnapshot.val();
                 console.log("getting value", childSnapshot.val());
                 var histimestamp;
-                var place;
                 for (var key in data) {
                     histimestamp = parseInt(key);
                     histplace = data[key]["place"]
@@ -310,6 +319,8 @@ async function parking(req, uid) {
 async function updateParkcounting() {
     let count = await getParkCount(uid)
     var updatecount = firebase1.database().ref("users");
+    firebase1.database().ref("users").child(uid).off("value");
+    firebase1.database().ref("users").child(uid).child('HistoryPark').orderByKey().limitToLast(1).off('value')
     updatecount.child(uid).off("value")
     console.log("TIME TO UPDATE")
     console.log(count)
