@@ -18,7 +18,7 @@ module.exports = (req, res) => {
           }
           console.log(err.code);
         }).then(function (user) {
-          console.log(user);
+          //  console.log(user);
         });
 
       firebase.auth().onAuthStateChanged((user) => {
@@ -35,7 +35,7 @@ module.exports = (req, res) => {
             weight: req.body.weight,
             countRest: 0,
             countPark: 0,
-            currentGoal: 10000
+            previoustime: null
           });
 
           console.log("User Data Completed");
@@ -70,7 +70,7 @@ module.exports = (req, res) => {
               weight: data.weight, //getting
               image: req.body.image,
               rest: data.countRest,
-              park: data.countPark
+              park: data.countPark,
             }
             ref.child(user.uid).off("value")
             console.log("Sending data" + perdata);

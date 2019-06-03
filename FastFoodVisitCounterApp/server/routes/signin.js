@@ -18,7 +18,8 @@ module.exports = (req, res) => {
         .then(function (user) {
           firebase.auth().onAuthStateChanged((user) => {
             if (user) {
-              console.log("Database created")
+              // User logged in already or has just logged in.
+              console.log(user.uid);
               var ref = firebase.database().ref('users');
               nextref = ref.child(user.uid).on("value", function (childSnapshot) {
                 data = childSnapshot.val();
