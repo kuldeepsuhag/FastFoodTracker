@@ -38,16 +38,6 @@ class Map extends React.Component {
     };
   }
 
-  toggleRestModal = () => {
-    this.setState({ showRestModal: !this.state.showRestModal });
-    this.getRestHistory()
-  };
-
-  toggleParkModal = () => {
-    this.setState({ showParkModal: !this.state.showParkModal });
-    this.getParkHistory()
-  };
-
   async componentDidMount() {
     this._getLocationAsync();
     this._getStepCounterData();
@@ -131,101 +121,71 @@ class Map extends React.Component {
     }, 2000);
   }
 
-  getParkHistory = () => {
-    if (this.state.parkData == null) {
-      // var url = ip.ip.address;
-      // var that = this;
-      // axios.get(url + "/get-park-history").then((response) => {
-      //   this.setState({
-      //     parkData: response.data
-      //   })
-      // }).catch((error) => {
-      //   console.log(error);
-      // });
+  formatDataForModal(historyData) {
+    // console.log(historyData)
+    for (let i = 0; i < historyData.length; i++) {
+      historyData[i].index = i;
+      let date = new Date(historyData[i].histimestamp)
+      date = date.getDate("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getMonth("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getYear("en-US", { timeZone: "Australia/Brisbane" })
+      historyData[i].date = date;
     }
-    this.setState({
-      parkData: [
-        {
-          index: 1,
-          name: 'Lincoln Garden',
-          date: '02/03/3028',
-          time: '8:00 AM'
-        },
-        {
-          index: 2,
-          name: 'Lincoln Garden',
-          date: '05/06/3028',
-          time: '8:00 AM'
-        },
-        {
-          index: 3,
-          name: 'Lincoln Garden',
-          date: '04/05/3028',
-          time: '8:00 AM'
-        },
-        {
-          index: 4,
-          name: 'Carlton Garden',
-          date: '01/05/3028',
-          time: '8:00 AM'
-        },
-        {
-          index: 5,
-          name: 'Carlton Garden',
-          date: '02/05/3028',
-          time: '8:00 AM'
-        },
-      ]
-    })
+    return historyData
+  }
+
+  getParkHistory = () => {
+    // if (this.state.parkData == null) {
+    var url = ip.ip.address;
+    let historyData = []
+    axios({
+      method: 'post',
+      url: url + "/getHistPark",
+      data: {
+        // latitude: lat,
+        // longitude: lon
+        // place: city
+      }
+    }).then((response) => {
+      console.log(response.data);
+      for (let i = 0; i < response.data.length; i++) {
+        historyData.push(response.data[i])
+      }
+      historyData = this.formatDataForModal(historyData);
+      console.log(historyData[0])
+      this.setState({ 
+        showParkModal: true,
+        parkData: historyData
+       });
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
   getRestHistory = () => {
-    if (this.state.restData == null) {
-      // var url = ip.ip.address;
-      // var that = this;
-      // axios.get(url + "/get-rest-history").then((response) => {
-      //   console.log(response.data);
-      //   this.setState({
-      //     restData: response.data
-      //   })
-      // }).catch((error) => {
-      //   console.log(error);
-      // });
-    }
-    this.setState({
-      restData: [
-        {
-          index: 1,
-          name: 'KFC Carlton',
-          date: '02/05/3028',
-          time: '8:00 AM'
-        },
-        {
-          index: 2,
-          name: 'KFC Carlton',
-          date: '05/05/3028',
-          time: '8:00 AM'
-        },
-        {
-          index: 3,
-          name: 'KFC Carlton',
-          date: '06/05/3028',
-          time: '8:00 AM'
-        },
-        {
-          index: 4,
-          name: 'KFC Carlton',
-          date: '08/05/3028',
-          time: '8:00 AM'
-        },
-        {
-          index: 5,
-          name: 'KFC Carlton',
-          date: '02/04/3028',
-          time: '8:00 AM'
-        },
-      ]
-    })
+    // if (this.state.restData == null) {
+    var url = ip.ip.address;
+    let historyData = []
+    axios({
+      method: 'post',
+      url: url + "/getHistRest",
+      data: {
+        // latitude: lat,
+        // longitude: lon
+        // place: city
+      }
+    }).then((response) => {
+      console.log(response.data);
+      for (let i = 0; i < response.data.length; i++) {
+        historyData.push(response.data[i])
+      }
+      historyData = this.formatDataForModal(historyData);
+      this.setState({
+        showRestModal: true,
+        restData: historyData
+      });
+      console.log(historyData[0])
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
   sendStepData() {
@@ -267,22 +227,22 @@ class Map extends React.Component {
         console.log("Error with Pedometer: " + error)
       }
     );
-    
+
     let dataForServer = []
     let today = new Date()
     today = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
     let nextRequiredDate = this.state.lastStepDataDate
     nextRequiredDate = nextRequiredDate.split("-")
     nextRequiredDate = new Date(parseInt(nextRequiredDate[2]), parseInt(nextRequiredDate[1]) - 1, parseInt(nextRequiredDate[0])+1, 0, 0, 0, 0)
-    
+
     let numberOfDays = Math.round((today - nextRequiredDate) / (1000 * 60 * 60 * 24))
-    
+
     for(let i= numberOfDays; i>0; i--){
       let stepDataObject = {}
       let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
       let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
       stepDataObject.date = start.getDate() + '-' + (start.getMonth() + 1) + '-' + start.getFullYear();
-      
+
       Pedometer.getStepCountAsync(start, end).then(
         result => {
           stepDataObject.step = result.steps
@@ -322,21 +282,21 @@ class Map extends React.Component {
     this.setState({ locationResult: JSON.stringify(location) });
     let latitute = location.coords.latitude.toFixed(4)
     let longitude = location.coords.longitude.toFixed(4)
-
-    if (this.state.roundedLat == null && this.state.roundedLong == null) {
-      this.setState({
-        roundedLat: latitute,
-        roundedLong: longitude
-      })
-      this._getLocationAsync();
-    } else if (this.state.roundedLat !== latitute ||
-      this.state.roundedLong !== longitude) {
-      this.setState({
-        roundedLat: latitute,
-        roundedLong: longitude
-      })
-      this._getLocationAsync();
-    }
+    this._getLocationAsync();
+    // if (this.state.roundedLat == null && this.state.roundedLong == null) {
+    //   this.setState({
+    //     roundedLat: latitute,
+    //     roundedLong: longitude
+    //   })
+    //   this._getLocationAsync();
+    // } else if (this.state.roundedLat !== latitute ||
+    //   this.state.roundedLong !== longitude) {
+    //   this.setState({
+    //     roundedLat: latitute,
+    //     roundedLong: longitude
+    //   })
+    //   this._getLocationAsync();
+    // }
 
   };
 
@@ -378,7 +338,7 @@ class Map extends React.Component {
       // If the chosen value is latitudeDelta, then the bottom edge is latitude - latitudeDelta and the top edge is latitude + latitudeDelta. The left and right are whatever values are needed to fill the width without stretching the map.
       this.setState({ mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 } });
       // this.sendMapData(this.state.latitude, this.state.longitude, this.state.city)
-      this.sendMapData(this.state.lat, this.state.lon)
+      this.sendMapData(this.state.lat, this.state.long)
     } else {
       Alert.alert(
         'Location Services Are Disabled',
@@ -393,6 +353,7 @@ class Map extends React.Component {
 
   // sendMapData(lat, lon, city) {
   sendMapData(lat, lon) {
+    let that = this
     var url = ip.ip.address;
     console.log("map data sent")
     if (lat != null && lon != null && lat != "" && lon != "") {
@@ -405,7 +366,10 @@ class Map extends React.Component {
           // place: city
         }
       }).then((response) => {
-        console.log(response.data);
+        that.setState({
+          countFastFood: response.data.countRest,
+          countPark: response.data.countPark,
+        });
       }).catch((error) => {
         console.log(error);
       });
@@ -415,7 +379,7 @@ class Map extends React.Component {
   renderRow({ item }) {
     return (
       <ListItem
-        title={item.name}
+        title={item.histplace}
         subtitle={item.date}
       />
     )
@@ -473,7 +437,7 @@ class Map extends React.Component {
                         color="white"
                       />
                     }
-                    onPress={this.toggleRestModal}
+                    onPress={this.getRestHistory}
                     title={" " + this.state.countFastFood.toString()}
                   />
                   <Button
@@ -485,7 +449,7 @@ class Map extends React.Component {
                         color="white"
                       />
                     }
-                    onPress={this.toggleParkModal}
+                    onPress={this.getParkHistory}
                     title={" " + this.state.countPark.toString()}
                   />
                 </CardItem>
@@ -513,7 +477,7 @@ class Map extends React.Component {
                 {/* </List> */}
               </CardItem>
               <CardItem>
-                <Button title="Hide" onPress={this.toggleRestModal} />
+                <Button title="Hide" onPress={() => { this.state.showRestModal = false }} />
               </CardItem>
             </Card>
           </Modal>
@@ -533,7 +497,7 @@ class Map extends React.Component {
                 {/* </List> */}
               </CardItem>
               <CardItem>
-                <Button title="Hide" onPress={this.toggleParkModal} />
+                <Button title="Hide" onPress={() => { this.state.showParkModal = false }} />
               </CardItem>
             </Card>
           </Modal>
