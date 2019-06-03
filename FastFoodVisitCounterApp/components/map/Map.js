@@ -33,18 +33,19 @@ class Map extends React.Component {
       showRestModal: false,
       showParkModal: false,
       parkData: null,
-      restData: null
+      restData: null,
+      lastStepDataTimestamp: null
     };
   }
 
   toggleRestModal = () => {
     this.setState({ showRestModal: !this.state.showRestModal });
-    getRestHistory()
+    this.getRestHistory()
   };
-  
+
   toggleParkModal = () => {
     this.setState({ showParkModal: !this.state.showParkModal });
-    getParkHistory()
+    this.getParkHistory()
   };
 
   async componentDidMount() {
@@ -54,14 +55,15 @@ class Map extends React.Component {
     await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
       accuracy: Location.Accuracy.Balanced,
     });
+    this.sendStepData();
   }
   componentWillMount(){
     let that = this
     setTimeout(function () {
       that.setState({
-        visible: !that.state.visible
+        visible: false
       });
-    }, 5000); 
+    }, 5000);
   }
 
   handleBackPress = () => {
@@ -82,22 +84,116 @@ class Map extends React.Component {
         console.log("Error with Pedometer: " + error)
       }
     );
-    
-    getRestHistory = () =>{
-      if(this.state.restData == null){
-        // var url = ip.ip.address;
-        // var that = this;
-        // axios.get(url + "/get-rest-history").then((response) => {
-        //   console.log(response.data);
-        //   this.setState({
-        //     restData: response.data
-        //   })
-        // }).catch((error) => {
-        //   console.log(error);
-        // });
+    //Creating the data step data for the last week
+    const today = new Date();
+    let that = this;
+    let DataForGraph = {}
+    // Send datelabel if date is needed
+    // let dateLabels = []
+    let dayLabels = []
+    let noOfSteps = []
+    let weekDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    for (let i = 6; i > 0; i--) {
+
+      let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
+      let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
+      // Uncomment to get the state string
+      // let dateString = startInterval.getDate() + '/' + (startInterval.getMonth() + 1) + '/' + startInterval.getFullYear();
+
+      // let dayString = weekDay[prevDate.getDay()];
+      let dayString = weekDay[start.getDay()];
+
+      Pedometer.getStepCountAsync(start, end).then(
+        result => {
+          // Send datelabel if date is needed
+          // Send datelabel if date is neededpr
+          // dateLabels.push(dateString.toString());
+          noOfSteps.push(result.steps);
+        },
+        error => {
+          // Send datelabel if date is needed
+          // dateLabels.push(dateString.toString());
+          noOfSteps.push(0);
+          console.log("Step Data Not Available");
+        }
+      );
+      dayLabels.push(dayString)
+    }
+
+    setTimeout(function () {
+      DataForGraph = {
+        labels: dayLabels,
+        datasets: [{
+          data: noOfSteps
+        }]
       }
-      this.setState({
-        restData: [
+      that.props.dispatch(stepData(DataForGraph));
+    }, 2000);
+  }
+
+  getParkHistory = () => {
+    if (this.state.parkData == null) {
+      // var url = ip.ip.address;
+      // var that = this;
+      // axios.get(url + "/get-park-history").then((response) => {
+      //   this.setState({
+      //     parkData: response.data
+      //   })
+      // }).catch((error) => {
+      //   console.log(error);
+      // });
+    }
+    this.setState({
+      parkData: [
+        {
+          index: 1,
+          name: 'Lincoln Garden',
+          date: '02/03/3028',
+          time: '8:00 AM'
+        },
+        {
+          index: 2,
+          name: 'Lincoln Garden',
+          date: '05/06/3028',
+          time: '8:00 AM'
+        },
+        {
+          index: 3,
+          name: 'Lincoln Garden',
+          date: '04/05/3028',
+          time: '8:00 AM'
+        },
+        {
+          index: 4,
+          name: 'Carlton Garden',
+          date: '01/05/3028',
+          time: '8:00 AM'
+        },
+        {
+          index: 5,
+          name: 'Carlton Garden',
+          date: '02/05/3028',
+          time: '8:00 AM'
+        },
+      ]
+    })
+  }
+
+  getRestHistory = () => {
+    if (this.state.restData == null) {
+      // var url = ip.ip.address;
+      // var that = this;
+      // axios.get(url + "/get-rest-history").then((response) => {
+      //   console.log(response.data);
+      //   this.setState({
+      //     restData: response.data
+      //   })
+      // }).catch((error) => {
+      //   console.log(error);
+      // });
+    }
+    this.setState({
+      restData: [
         {
           index: 1,
           name: 'KFC Carlton',
@@ -128,103 +224,97 @@ class Map extends React.Component {
           date: '02/04/3028',
           time: '8:00 AM'
         },
-        ]
-      })
-    }
+      ]
+    })
+  }
 
-    getParkHistory = () => {
-      if (this.state.parkData == null) {
-        // var url = ip.ip.address;
-        // var that = this;
-        // axios.get(url + "/get-park-history").then((response) => {
-        //   this.setState({
-        //     parkData: response.data
-        //   })
-        // }).catch((error) => {
-        //   console.log(error);
-        // });
+  sendStepData() {
+    console.log("I am in")
+    this.getLastSavedData();
+    this.getDataForServer();
+  }
+
+  getLastSavedData() {
+    console.log("Veendum in")
+    // var url = ip.ip.address;
+    // var that = this;
+    // axios.get(url + "/get-last-date").then((response) => {
+    //   console.log(response.data);
+    //   this.setState({
+    //     lastStepDataTimestamp: response.data
+    //   })
+    // }).catch((error) => {
+    //   console.log(error);
+    // });
+    var myDate = "26-05-2019";
+    this.setState({
+      lastStepDataDate: myDate
+    })
+  }
+
+  async getDataForServer(){
+    let that = this
+    Pedometer.isAvailableAsync().then(
+      result => {
+        this.setState({
+          isPedometerAvailable: String(result)
+        });
+      },
+      error => {
+        this.setState({
+          isPedometerAvailable: "Could not get is PedometerAvailable: " + error
+        });
+        console.log("Error with Pedometer: " + error)
       }
-      this.setState({
-        parkData: [
-          {
-            index: 1,
-            name: 'Lincoln Garden',
-            date: '02/03/3028',
-            time: '8:00 AM'
-          },
-          {
-            index: 2,
-            name: 'Lincoln Garden',
-            date: '05/06/3028',
-            time: '8:00 AM'
-          },
-          {
-            index: 3,
-            name: 'Lincoln Garden',
-            date: '04/05/3028',
-            time: '8:00 AM'
-          },
-          {
-            index: 4,
-            name: 'Carlton Garden',
-            date: '01/05/3028',
-            time: '8:00 AM'
-          },
-          {
-            index: 5,
-            name: 'Carlton Garden',
-            date: '02/05/3028',
-            time: '8:00 AM'
-          },
-        ]
-      })
-    }
-
-    //Creating the data step data for the last week
-    const today = new Date();
-    let that = this;
-    let DataForGraph = {}
-    // Send datelabel if date is needed
-    // let dateLabels = []
-    let dayLabels = []
-    let noOfSteps = []
-    let weekDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    for (let i = 6; i > 0; i--) {
-      
+    );
+    
+    let dataForServer = []
+    let today = new Date()
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
+    let nextRequiredDate = this.state.lastStepDataDate
+    nextRequiredDate = nextRequiredDate.split("-")
+    nextRequiredDate = new Date(parseInt(nextRequiredDate[2]), parseInt(nextRequiredDate[1]) - 1, parseInt(nextRequiredDate[0])+1, 0, 0, 0, 0)
+    
+    let numberOfDays = Math.round((today - nextRequiredDate) / (1000 * 60 * 60 * 24))
+    
+    for(let i= numberOfDays; i>0; i--){
+      let stepDataObject = {}
       let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
       let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
-      // Uncomment to get the state string
-      // let dateString = startInterval.getDate() + '/' + (startInterval.getMonth() + 1) + '/' + startInterval.getFullYear();
+      stepDataObject.date = start.getDate() + '-' + (start.getMonth() + 1) + '-' + start.getFullYear();
       
-      // let dayString = weekDay[prevDate.getDay()];
-      let dayString = weekDay[start.getDay()];
-
       Pedometer.getStepCountAsync(start, end).then(
         result => {
-          // Send datelabel if date is needed
-          // Send datelabel if date is neededpr
-          // dateLabels.push(dateString.toString());
-          noOfSteps.push(result.steps);
+          stepDataObject.step = result.steps
         },
         error => {
-          // Send datelabel if date is needed
-          // dateLabels.push(dateString.toString());
-          noOfSteps.push(0);
-          console.log("Step Data Not Available");
+          console.log("error")
+          stepDataObject.step = 0
         }
       );
-      dayLabels.push(dayString)
+      dataForServer.push(stepDataObject);
     }
-    
     setTimeout(function () {
-      DataForGraph = {
-        labels: dayLabels,
-        datasets: [{
-          data: noOfSteps
-        }]
-      }
-      that.props.dispatch(stepData(DataForGraph));
+      // for (let i = 0; i < dataForServer.length; i++) {
+      //   console.log(dataForServer[i].date)
+      //   console.log(dataForServer[i].step)
+      // }
+      that._sendDataToServer(dataForServer)
     }, 2000);
+
+  }
+
+  _sendDataToServer = (stepDataForServer) => {
+    var url = ip.ip.address;
+    axios({
+      method: 'post',
+      url: url + "/step-data",
+      data: stepDataForServer
+    }).then((response) => {
+      console.log(response.data);
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
   _handleMapRegionChange = async () => {
@@ -280,7 +370,7 @@ class Map extends React.Component {
       this.setState({ lat: location.coords.latitude });
       this.setState({ long: location.coords.longitude });
       // this.setState({ city: (geoResult[0].city)?  geoResult[0].city: ""});
-      
+
       // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
       // The map computes two values, longitudeDelta/width and latitudeDelta/height, compares those 2 computed values, and takes the larger of the two.
       // The map is zoomed according to the value chosen in step 2 and the other value is ignored.
@@ -305,7 +395,7 @@ class Map extends React.Component {
   sendMapData(lat, lon) {
     var url = ip.ip.address;
     console.log("map data sent")
-    if(lat != null && lon!= null && lat != "" && lon!= ""){
+    if (lat != null && lon != null && lat != "" && lon != "") {
       axios({
         method: 'post',
         url: url + "/map-data",
@@ -335,16 +425,16 @@ class Map extends React.Component {
     return (
       <>
         <View style={{flex: 1}}>
-        <Header centerComponent={{
-                    text: 'Home Page', style: {
-                        margin: 24,
-                        fontSize: 15,
-                        fontWeight: 'bold',
-                        textAlign: 'center',
-                        color: '#34495e',
-                    }
-                }} />
-        <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundImage}>
+          <Header centerComponent={{
+            text: 'Home Page', style: {
+              margin: 24,
+              fontSize: 15,
+              fontWeight: 'bold',
+              textAlign: 'center',
+              color: '#34495e',
+            }
+          }} />
+          <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundImage}>
             <AnimatedLoader
               visible={this.state.visible}
               overlayColor="rgba(255,255,255,1)"
@@ -413,17 +503,17 @@ class Map extends React.Component {
                 <Text>Restaurant History</Text>
               </CardItem>
               <CardItem>
-                    {/* <List> */}
-                      <FlatList
-                        // data={dataRest}
-                        data={this.state.restData}
-                        renderItem={this.renderRow}
-                        keyExtractor={item => item.index.toString()}
-                      />
-                    {/* </List> */}
+                {/* <List> */}
+                <FlatList
+                  // data={dataRest}
+                  data={this.state.restData}
+                  renderItem={this.renderRow}
+                  keyExtractor={item => item.index.toString()}
+                />
+                {/* </List> */}
               </CardItem>
               <CardItem>
-                <Button title="Hide modal" onPress={this.toggleRestModal} /> 
+                <Button title="Hide" onPress={this.toggleRestModal} />
               </CardItem>
             </Card>
           </Modal>
@@ -434,16 +524,16 @@ class Map extends React.Component {
               </CardItem>
               <CardItem>
                 {/* <List> */}
-                  <FlatList
-                    data={this.state.parkData}
-                    // data={dataPark}
-                    renderItem={this.renderRow}
-                    keyExtractor={item => item.index.toString()}
-                  />
+                <FlatList
+                  data={this.state.parkData}
+                  // data={dataPark}
+                  renderItem={this.renderRow}
+                  keyExtractor={item => item.index.toString()}
+                />
                 {/* </List> */}
               </CardItem>
               <CardItem>
-                <Button title="Hide modal" onPress={this.toggleParkModal} />
+                <Button title="Hide" onPress={this.toggleParkModal} />
               </CardItem>
             </Card>
           </Modal>
@@ -485,7 +575,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
     }).catch((error) => {
       console.log(error);
     });
-    
+
   }
 });
 
