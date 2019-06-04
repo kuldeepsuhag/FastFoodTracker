@@ -24,7 +24,9 @@ class Profile extends React.Component {
             showPatientModal: false,
             showDoctorModal: false,
             visible: false,
-            bmi: 0
+            bmi: 0,
+            bmiString: "",
+            bmiColor: "white"
         };
         this.showWeightDialog = this.showWeightDialog.bind(this);
         this.showHeightDialog = this.showHeightDialog.bind(this);
@@ -34,19 +36,19 @@ class Profile extends React.Component {
         this.signout = this.signout.bind(this);
     }
     showWeightDialog(close) {
-        if(close){Keyboard.dismiss()}
+        if (close) { Keyboard.dismiss() }
         this.setState({ showWeightModal: !(this.state.showWeightModal) });
     }
     showHeightDialog(close) {
-        if(close){Keyboard.dismiss()}
+        if (close) { Keyboard.dismiss() }
         this.setState({ showHeightModal: !(this.state.showHeightModal) });
     }
     showPatientDialog(close) {
-        if(close){Keyboard.dismiss()}
+        if (close) { Keyboard.dismiss() }
         this.setState({ showPatientModal: !(this.state.showPatientModal) });
     }
     showDoctorDialog(close) {
-        if(close){Keyboard.dismiss()}
+        if (close) { Keyboard.dismiss() }
         this.setState({ showDoctorModal: !(this.state.showDoctorModal) });
     }
     componentDidMount() {
@@ -58,8 +60,8 @@ class Profile extends React.Component {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
-    componentDidUpdate(prevProps){
-        if(prevProps.userDetails.height != this.props.userDetails.height || prevProps.userDetails.weight != this.props.userDetails.weight){
+    componentDidUpdate(prevProps) {
+        if (prevProps.userDetails.height != this.props.userDetails.height || prevProps.userDetails.weight != this.props.userDetails.weight) {
             this.bmi(this.props.userDetails.height, this.props.userDetails.weight);
         }
     }
@@ -78,12 +80,26 @@ class Profile extends React.Component {
     bmi(height, weight) {
         if (height > 0 && weight > 0) {
             var bmi = 10000 * (weight / ((height) * (height)));
+            var bmiString, bmiColor;
             bmi = Math.round(bmi * 100) / 100
-            this.setState({ bmi: bmi })
+            if (bmi < 18.5) {
+                bmiString = "Underweight"
+                bmiColor = "#ffa300"
+            } else if (bmi >= 25) {
+                bmiString = "Overweight"
+                bmiColor = "#ff3d00"
+            } else if (bmi >= 30) {
+                bmiString = "Obese"
+                bmiColor = "#d31616"
+            } else {
+                bmiString = "Normal"
+                bmiColor = "#23a00c"
+            }
+            this.setState({ bmi: bmi, bmiString: bmiString, bmiColor: bmiColor })
         }
     }
 
-    updateRedux(inputText, updateValue){
+    updateRedux(inputText, updateValue) {
         switch (updateValue) {
             case "height":
                 this.props.dispatch(setHeight(inputText))
@@ -118,8 +134,8 @@ class Profile extends React.Component {
         }
         if (isNaN(parseInt(inputText, 10))) {
             this.refs.toast.show('Enter a valid number')
-        } 
-        else if(parseInt(inputText, 10) <= 0){
+        }
+        else if (parseInt(inputText, 10) <= 0) {
             this.refs.toast.show("The value can't be zero")
         }
         else {
@@ -295,8 +311,13 @@ class Profile extends React.Component {
                                     </DialogInput>
                                 </View>
                             </View>
-                            <View style={{ marginLeft: 20 }}>
-                                <TextField editable={false} label='BMI' value={this.state.bmi.toString()} />
+                            <View style={{ flex: 1, flexDirection: "row", alignItems: 'flex-start' }}>
+                                <View style={styles.inputWrap}>
+                                    <TextField editable={false} label='BMI' value={this.state.bmi.toString()} />
+                                </View>
+                                <View style={styles.BMILabelView}>
+                                    <Text style={[styles.BMILabel, { backgroundColor: this.state.bmiColor, }]}>{this.state.bmiString} </Text>
+                                </View>
                             </View>
                             <View>
                                 <TouchableOpacity style={styles.updateBtn} onPress={this.signout}>
@@ -400,6 +421,21 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 16,
         textAlign: 'center',
+    },
+    BMILabel: {
+        color: 'white',
+        padding: 10,
+        marginLeft: 20,
+        marginRight: 20,
+        marginTop: 15,
+        borderRadius: 45,
+        justifyContent: 'center',
+    },
+    BMILabelView: {
+        flex: 1,
+        justifyContent: 'center',
+        flexDirection: 'row',
+        marginLeft: 20
     }
 });
 
