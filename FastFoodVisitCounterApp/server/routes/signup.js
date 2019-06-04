@@ -14,7 +14,7 @@ module.exports = (req, res) => {
       firebaseApp.firebaseApp.auth().createUserWithEmailAndPassword(req.body.email, req.body.password)
         .catch(function (err) {
           if (err.code == 'auth/email-already-in-use') {
-            res.status(400).send(error);
+            res.status(400).send(err);
           }
           console.log(err.code);
         }).then(function (user) {
