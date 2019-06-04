@@ -83,19 +83,15 @@ class Profile extends React.Component {
             var bmiString, bmiColor;
             bmi = Math.round(bmi * 100) / 100
             if (bmi < 18.5) {
-                // bmi = bmi.toString() + " - Underweight"
                 bmiString = "Underweight"
                 bmiColor = "#ffa300"
             } else if (bmi >= 25) {
-                // bmi = bmi.toString() + " - Overweight"
                 bmiString = "Overweight"
                 bmiColor = "#ff3d00"
             } else if (bmi >= 30) {
-                // bmi = bmi.toString() + " - Obese"
                 bmiString = "Obese"
                 bmiColor = "#d31616"
             } else {
-                // bmi = bmi.toString() + " - Normal"
                 bmiString = "Normal"
                 bmiColor = "#23a00c"
             }
@@ -209,40 +205,6 @@ class Profile extends React.Component {
     }
 
     render() {
-        // renderBadge = (state) => {
-        //     return class extends React.Component {
-        //         render() {
-        //             console.log(this.state)
-        //             console.log(state)
-        //             // if (this.state.bmi < 18.5) {
-        //             //     // bmi = bmi.toString() + " - Underweight"
-        //             //     return (
-        //             //         <Badge info>Underweight</Badge>
-        //             //     )
-        //             // } else if (this.state.bmi >= 25) {
-        //             //     // bmi = bmi.toString() + " - Overweight"
-        //             //     return (
-        //             //         <Badge warning>Overweight</Badge>
-        //             //     )
-        //             // } else if (this.state.bmi >= 30) {
-        //             //     // bmi = bmi.toString() + " - Obese"
-        //             //     return (
-        //             //         <Badge danger>Obese</Badge>
-        //             //     )
-        //             // } else {
-        //             //     // bmi = bmi.toString() + " - Normal"
-        //             //     return (
-        //             //         <Badge success>Normal</Badge>
-        //             //     )
-        //             // }
-        //             return (
-        //                 <Badge success>Normal</Badge>
-        //             )
-        //         }
-        //     }
-        // }
-
-        // let BMIBadge = renderBadge(state)
         return (
             <View style={{ flex: 1, backgroundColor: '#00FFF' }}>
                 <Header centerComponent={{
@@ -352,14 +314,10 @@ class Profile extends React.Component {
                             <View style={{ flex: 1, flexDirection: "row", alignItems: 'flex-start' }}>
                                 <View style={styles.inputWrap}>
                                     <TextField editable={false} label='BMI' value={this.state.bmi.toString()} />
-                                    {/* <BMIBadge props={this.state}></BMIBadge> */}
                                 </View>
-                                {/* <Card style={styles.inputWrap} color={this.state.bmiColor}> */}
                                 <View style={styles.BMILabelView}>
                                     <Text style={[styles.BMILabel, { backgroundColor: this.state.bmiColor, }]}>{this.state.bmiString} </Text>
                                 </View>
-
-                                {/* </Card> */}
                             </View>
                             <View>
                                 <TouchableOpacity style={styles.updateBtn} onPress={this.signout}>
