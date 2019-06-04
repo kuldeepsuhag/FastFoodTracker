@@ -10,34 +10,35 @@ module.exports = (req, res) => {
                 updated = updateValue(user.uid, req.body.updateValue, req.body.label, res)
             }
         });
+        console.log(updated)
         if (updated) { res.status(200).send("updated"); }
     }
 }
-function updateValue(uid, updateValue, label, res) {
+async function updateValue(uid, updateValue, label, res) {
     console.log(label)
     switch (label) {
         case "height":
-            firebase1.database().ref('users').child(uid).update({
+            await firebase1.database().ref('users').child(uid).update({
                 height: updateValue
             })
             break;
         case "weight":
-            firebase1.database().ref('users').child(uid).update({
+            await firebase1.database().ref('users').child(uid).update({
                 weight: updateValue
             })
             break;
         case "currentGoal":
-            firebase1.database().ref('users').child(uid).update({
+            await firebase1.database().ref('users').child(uid).update({
                 currentGoal: updateValue
             })
             break;
         case "patient":
-            firebase1.database().ref('users').child(uid).update({
+            await firebase1.database().ref('users').child(uid).update({
                 PatientID: updateValue
             })
             break;
         case "doctor":
-            firebase1.database().ref('users').child(uid).update({
+            await firebase1.database().ref('users').child(uid).update({
                 doctorId: updateValue
             })
             break;
