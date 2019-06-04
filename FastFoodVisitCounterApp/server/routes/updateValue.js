@@ -12,26 +12,36 @@ module.exports = (req,res) => {
     }
 }
 function updateheight(uid, updateValue, label, res){
+    console.log(label)
     switch(label){
         case "height":
                 firebase1.database().ref('users').child(uid).update({
                     height: updateValue
                 })
-                res.status(200).send("updated");
                 break;
         case "weight":
                 firebase1.database().ref('users').child(uid).update({
                     weight: updateValue
                 })
-                res.status(200).send("updated");
                 break;
         case "currentGoal":
                 firebase1.database().ref('users').child(uid).update({
                     currentGoal: updateValue
                 })
+                break;
+        case "patient":
+                firebase1.database().ref('users').child(uid).update({
+                    PatientID: updateValue
+                })
                 res.status(200).send("updated");
                 break;
+        case "doctor":
+                firebase1.database().ref('users').child(uid).update({
+                    doctorId: updateValue
+                })
+                break;
     }
+    res.status(200).send("updated");
 
     
 }

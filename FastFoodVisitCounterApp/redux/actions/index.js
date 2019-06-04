@@ -46,3 +46,17 @@ export const setWeight = (updatedWeight) => ({
         updatedWeight
     }
 })
+
+export const setPatientID = (updatedPatientID) => ({
+    type: "UPDATE_PATIENT",
+    payload: {
+        updatedPatientID
+    }
+})
+
+export const setDoctorID = (updatedDoctorID) => ({
+    type: "UPDATE_DOCTOR",
+    payload: {
+        updatedDoctorID
+    }
+})
