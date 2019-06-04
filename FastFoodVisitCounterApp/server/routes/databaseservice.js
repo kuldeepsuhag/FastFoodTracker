@@ -13,16 +13,29 @@ module.exports = (req, res) => {
     calltime = new moment().parseZone("Australia/Melbourne").format();
     console.log("test: ", calltime)
     //console.log(moment(calltime))
-
-    
     if (req.body) {
-        inKFCorPark(req.body, res)
+        checkUser(req.body, res)
     }
 }
-async function inKFCorPark(req, res) {
+async function checkUser(req, res){
+    await firebase.auth().onAuthStateChanged(function (user) {
+        if(!user){
+            res.status(200).send("No user");
+            return;
+        }else{
+            uid = user.uid;
+            inKFCorPark(uid, req, res)
+        }
+    });
+}
+
+async function inKFCorPark(uid, req, res) {
     console.log(new moment())
     console.log(new moment().parseZone("Australia/Melbourne"))
     console.log("Coordinates are", req)
+
+    console.log("UID after", uid)
+
     await firebase.database().ref("Restaurants").on('value', async function (snapshot) {
         snapshot.forEach(function (child) {
             data = child.val();
@@ -53,11 +66,6 @@ async function inKFCorPark(req, res) {
         });
         firebase.database().ref("Parks").off("value");
     });
-
-    await firebase.auth().onAuthStateChanged(function (user) {
-        uid = user.uid;
-    });
-    console.log("UID after", uid)
 
     var countRest, countPark;
     var sen;

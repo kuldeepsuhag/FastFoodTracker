@@ -47,7 +47,7 @@ class Map extends React.Component {
     this._getStepCounterData();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-      accuracy: Location.Accuracy.Balanced,
+      accuracy: Location.Accuracy.Lowest,
     });
     this.sendStepData();
   }
@@ -525,40 +525,39 @@ class Map extends React.Component {
   }
 }
 
-TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
-  if (error) {
-    // Error occurred - check `error.message` for more details.
-    console.log("error" + error.message)
-    return;
-  }
-  if (data) {
-    const { locations } = data;
-    console.log('background locations', locations)
-    let lat = locations[0].coords.latitude
-    let lon = locations[0].coords.longitude
-    let locationObj = {
-      latitude: lat,
-      longitude: lon
-    }
+// TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
+//   if (error) {
+//     // Error occurred - check `error.message` for more details.
+//     console.log("error" + error.message)
+//     return;
+//   }
+//   if (data) {
+//     const { locations } = data;
+//     console.log('background locations', locations)
+//     let lat = locations[0].coords.latitude
+//     let lon = locations[0].coords.longitude
+//     let locationObj = {
+//       latitude: lat,
+//       longitude: lon
+//     }
 
-    var url = ip.ip.address;
+//     var url = ip.ip.address;
 
-    axios({
-      method: 'post',
-      url: url + "/map-data",
-      data: {
-        latitude: lat,
-        longitude: lon,
-        place: ""
-      }
-    }).then((response) => {
-      // console.log(response.data);
-    }).catch((error) => {
-      console.log(error);
-    });
+//     axios({
+//       method: 'post',
+//       url: url + "/map-data",
+//       data: {
+//         latitude: lat,
+//         longitude: lon
+//       }
+//     }).then((response) => {
+//        console.log(response.data);
+//     }).catch((error) => {
+//       console.log(error);
+//     });
 
-  }
-});
+//   }
+// });
 
 const styles = StyleSheet.create({
   container: {

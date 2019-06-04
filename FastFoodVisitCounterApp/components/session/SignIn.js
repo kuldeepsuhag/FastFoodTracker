@@ -6,7 +6,7 @@ import { View, StyleSheet,AsyncStorage, ImageBackground, Image, Dimensions,
 import axios from "axios";
 import ip from "../../config";
 import ValidateForm from "../validate/ValidateForm"
-import { userData } from '../../redux/actions/index'
+import { userData , loggedIn} from '../../redux/actions/index'
 import { connect } from 'react-redux'
 import image from '../../Images/back.jpg' 
 import logo from '../../Images/logo.gif'
@@ -74,6 +74,11 @@ class SignIn extends React.Component {
     setDetail = async (response) => {
         const username = await AsyncStorage.getItem('@username')
         const password = await AsyncStorage.getItem('@password')
+        console.log("SIGIN");
+        const isLoggedIn = await AsyncStorage.getItem('@loggedIn')
+        if(!isLoggedIn){
+            await AsyncStorage.setItem("@loggedIn", "true")
+        }
         if (username !== null && password !== null) {
             this.props.dispatch(userData(response.data));
             this.props.history.push("/map");
@@ -103,6 +108,7 @@ class SignIn extends React.Component {
             }
         }).then((response) => {
             that.setState({visible: false})
+         //   that.props.dispatch(loggedIn(true))
             this.setDetail(response);
         }).catch((error) => {
             console.log("error")
