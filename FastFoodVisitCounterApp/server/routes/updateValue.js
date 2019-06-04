@@ -4,17 +4,19 @@ require('firebase/auth')
 
 module.exports = (req, res) => {
     if (req.body) {
-        var updated;
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                updated = updateValue(user.uid, req.body.updateValue, req.body.label, res)
-            }
-        });
-        console.log(updated)
-        if (updated) { res.status(200).send("updated"); }
+        getValues(req.body.updateValue, req.body.label, res);
     }
 }
-async function updateValue(uid, updateValue, label, res) {
+
+async function getValues(updatedValue, label, res){
+    await firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            updated = updateValue(user.uid, updatedValue, label)
+        }
+    });
+    res.status(200).send("updated");
+}
+async function updateValue(uid, updateValue, label) {
     console.log(label)
     switch (label) {
         case "height":
