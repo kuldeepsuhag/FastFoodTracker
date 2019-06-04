@@ -8,9 +8,9 @@ module.exports = (req, res) => {
     }
 }
 
-async function getHistory(isPark, res){
+async function getHistory(isPark, res) {
     uid = await assignuid();
-    if(uid){
+    if (uid) {
         historyisPresent = await isHistory(uid, isPark);
         if (historyisPresent) {
             res.status(200).send(await getData(uid, isPark))
@@ -40,14 +40,14 @@ async function isHistory(uid, isPark) {
     return isPresent;
 }
 
- async function getData(uid, isPark){
+async function getData(uid, isPark) {
     var history = []
     let place = isPark ? 'HistoryPark' : 'HistoryRest'
-     await user.child(uid).child(place).orderByKey().on('value', function (childSnapshot) {
+    await user.child(uid).child(place).orderByKey().on('value', function (childSnapshot) {
         data = childSnapshot.val();
         for (var key in data) {
             let value = {
-                histimestamp: parseInt(key),
+                histimestamp: key,
                 histplace: data[key]["place"]
             }
             history.push(value);

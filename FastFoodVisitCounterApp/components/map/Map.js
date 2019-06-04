@@ -12,6 +12,7 @@ import { stepData } from '../../redux/actions/index'
 import { Header } from 'react-native-elements'
 import AnimatedLoader from "react-native-animated-loader";
 import Modal from "react-native-modal";
+import moment from "moment";
 
 
 const LOCATION_TASK_NAME = 'background-location-task';
@@ -56,6 +57,9 @@ class Map extends React.Component {
   }
 
   componentWillMount() {
+    console.log(moment())
+    console.log(moment().parseZone("Australia/Melbourne").format('YYYY:MM:DD HH:mm:ss'))
+    // let time = moment(date).parseZone("Australia/Melbourne");
     let that = this
     setTimeout(function () {
       that.setState({
@@ -132,10 +136,16 @@ class Map extends React.Component {
   formatDataForModal(historyData) {
     // console.log(historyData)
     for (let i = 0; i < historyData.length; i++) {
+      console.log(historyData[i])
       historyData[i].index = i;
-      let date = new Date(historyData[i].histimestamp)
-      date = date.getDate("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getMonth("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getFullYear("en-US", { timeZone: "Australia/Brisbane" })
-      historyData[i].date = date;
+      let date = new moment(historyData[i].histimestamp)
+      date = date.parseZone("Australia/Melbourne")
+      // console.log(date.date())
+      // console.log(date.month())
+      // console.log(date.year())
+      // let date = new Date(historyData[i].histimestamp)
+      // date = date.getDate("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getMonth("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getFullYear("en-US", { timeZone: "Australia/Brisbane" }) + ' - ' + date.getHours("en-US", { timeZone: "Australia/Brisbane" }) + ':' + date.getMinutes("en-US", { timeZone: "Australia/Brisbane" })
+      historyData[i].date = "Date: " + date.date() + '/' + (date.month() + 1) + '/' + date.year() + "         " + "Time: " + ((date.hour()+10 > 12) ? (date.hour()+10 - 12) : date.hour()+10) + ':' + ((date.minutes() < 10) ? ("0" + date.minutes()) : date.minutes()) + ((date.hour()+10 >= 12) ? " PM" : " AM");
     }
     return historyData
   }
@@ -147,18 +157,19 @@ class Map extends React.Component {
       method: 'post',
       url: url + "/getHistory",
       data: {
-        history : isPark
+        history: isPark
       }
     }).then((response) => {
-      if(response.data !== "No data"){
+      if (response.data !== "No data") {
         for (let i = 0; i < response.data.length; i++) {
           historyData.push(response.data[i])
         }
         historyData = this.formatDataForModal(historyData);
-        if(isPark){
-          this.setState({showParkModal: true,parkData: historyData});
-        }else{
-          this.setState({showRestModal: true,restData: historyData
+        if (isPark) {
+          this.setState({ showParkModal: true, parkData: historyData });
+        } else {
+          this.setState({
+            showRestModal: true, restData: historyData
           });
         }
       }
@@ -418,7 +429,7 @@ class Map extends React.Component {
                         color="white"
                       />
                     }
-                    onPress={() => { this.getParkHistory(false)}}
+                    onPress={() => { this.getParkHistory(false) }}
                     title={" " + this.state.countFastFood.toString()}
                   />
 
@@ -443,7 +454,7 @@ class Map extends React.Component {
                         color="white"
                       />
                     }
-                    onPress={() => { this.getParkHistory(true)}}
+                    onPress={() => { this.getParkHistory(true) }}
                     title={" " + this.state.countPark.toString()}
                   />
                   {/* <TouchableOpacity style={{ backgroundColor: "green", width: '100%', height: '100%', marginLeft: 5 }} onPress={this.getParkHistory}> */}
