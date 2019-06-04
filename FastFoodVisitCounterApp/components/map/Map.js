@@ -14,8 +14,10 @@ import AnimatedLoader from "react-native-animated-loader";
 import Modal from "react-native-modal";
 import moment from "moment";
 
+
 const LOCATION_TASK_NAME = 'background-location-task';
 class Map extends React.Component {
+  _isMounted = false;
   constructor(props, { }) {
     super(props);
     this.state = {
@@ -40,6 +42,7 @@ class Map extends React.Component {
   }
 
   async componentDidMount() {
+    this._isMounted = true;
     this._getLocationAsync();
     this._getStepCounterData();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
@@ -48,6 +51,11 @@ class Map extends React.Component {
     });
     this.sendStepData();
   }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   componentWillMount() {
     console.log(moment())
     console.log(moment().parseZone("Australia/Melbourne").format('YYYY:MM:DD HH:mm:ss'))
@@ -346,10 +354,12 @@ class Map extends React.Component {
           // place: city
         }
       }).then((response) => {
-        that.setState({
-          countFastFood: response.data.countRest,
-          countPark: response.data.countPark,
-        });
+        if (this._isMounted) {
+          that.setState({
+            countFastFood: response.data.countRest,
+            countPark: response.data.countPark,
+          });
+      }
       }).catch((error) => {
         console.log(error);
       });
