@@ -132,57 +132,26 @@ class Map extends React.Component {
     return historyData
   }
 
-  getParkHistory = () => {
-    // if (this.state.parkData == null) {
+  getParkHistory = (isPark) => {
     var url = ip.ip.address;
     let historyData = []
     axios({
       method: 'post',
-      url: url + "/getHistPark",
+      url: url + "/getHistory",
       data: {
-        // latitude: lat,
-        // longitude: lon
-        // place: city
+        history : isPark
       }
     }).then((response) => {
-      // console.log(response.data);
       for (let i = 0; i < response.data.length; i++) {
         historyData.push(response.data[i])
       }
       historyData = this.formatDataForModal(historyData);
-      // console.log(historyData[0])
-      this.setState({
-        showParkModal: true,
-        parkData: historyData
-      });
-    }).catch((error) => {
-      console.log(error);
-    });
-  }
-
-  getRestHistory = () => {
-    // if (this.state.restData == null) {
-    var url = ip.ip.address;
-    let historyData = []
-    axios({
-      method: 'post',
-      url: url + "/getHistRest",
-      data: {
-        // latitude: lat,
-        // longitude: lon
-        // place: city
+      if(isPark){
+        this.setState({showParkModal: true,parkData: historyData});
+      }else{
+        this.setState({showRestModal: true,restData: historyData
+        });
       }
-    }).then((response) => {
-      // console.log(response.data);
-      for (let i = 0; i < response.data.length; i++) {
-        historyData.push(response.data[i])
-      }
-      historyData = this.formatDataForModal(historyData);
-      this.setState({
-        showRestModal: true,
-        restData: historyData
-      });
-      // console.log(historyData[0])
     }).catch((error) => {
       console.log(error);
     });
@@ -437,7 +406,7 @@ class Map extends React.Component {
                         color="white"
                       />
                     }
-                    onPress={this.getRestHistory}
+                    onPress={() => { this.getParkHistory(false)}}
                     title={" " + this.state.countFastFood.toString()}
                   />
 
@@ -462,7 +431,7 @@ class Map extends React.Component {
                         color="white"
                       />
                     }
-                    onPress={this.getParkHistory}
+                    onPress={() => { this.getParkHistory(true)}}
                     title={" " + this.state.countPark.toString()}
                   />
                   {/* <TouchableOpacity style={{ backgroundColor: "green", width: '100%', height: '100%', marginLeft: 5 }} onPress={this.getParkHistory}> */}

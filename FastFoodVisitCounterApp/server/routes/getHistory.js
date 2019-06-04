@@ -3,16 +3,18 @@ require('firebase/auth');
 var uid;
 module.exports = (req, res) => {
     if (req.body) {
-        assignuid(res);
+        console.log(req.body.history)
+        assignuid(req.body.history, res);
     }
 }
-async function assignuid(res) {
+
+async function assignuid(isPark, res) {
     await firebase.auth().onAuthStateChanged(function (user) {
         uid = user.uid;
-        console.log("UID inside get Park", uid)
     });
     var history = []
-    await firebase1.database().ref("users").child(uid).child('HistoryPark').orderByKey().on('value', function (childSnapshot) {
+    let place = isPark ? 'HistoryPark' : 'HistoryRest'
+    await firebase1.database().ref("users").child(uid).child(place).orderByKey().on('value', function (childSnapshot) {
         console.log("SECOND FUNCTION")
         data = childSnapshot.val();
         
@@ -20,13 +22,14 @@ async function assignuid(res) {
         for (var key in data) {
             let value = {
                 histimestamp: parseInt(key),
-                histplace: data[key]["place"]   
+                histplace: data[key]["place"]
+                
             }
             history.push(value);
 
         }
     });
-    console.log("History data of Park", history);
+    console.log("History data", history);
     res.status(200).send(history);
 
 }

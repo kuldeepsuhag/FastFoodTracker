@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, BackHandler, Image, ImageBackground, TextInput, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, BackHandler, Image, ImageBackground, TextInput, Dimensions, ScrollView, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Card, Text } from 'native-base';
 import { Header, Button } from 'react-native-elements'
 import AppFooter from '../footer/AppFooter'
@@ -24,6 +24,7 @@ class Profile extends React.Component {
         };
         this.showWeightDialog = this.showWeightDialog.bind(this);
         this.showHeightDialog = this.showHeightDialog.bind(this);
+        this.signout = this.signout.bind(this);
     }
     showWeightDialog() {
         this.setState({ showWeightModal: !(this.state.showWeightModal) });
@@ -94,9 +95,7 @@ class Profile extends React.Component {
     }
 
     signout() {
-        this.setState({
-            visible: true
-        })
+        this.setState({visible: true})
         var url = ip.ip.address;
         var that = this;
         console.log("signout")
@@ -105,14 +104,11 @@ class Profile extends React.Component {
             url: url + "/signout",
         }).then((response) => {
             console.log(response.data)
-            that.setState({
-                visible: false
-            })
+            that.setState({visible: false})
+            AsyncStorage.clear();
             that.props.history.push("/");
         }).catch((error) => {
-            that.setState({
-                visible: false
-            })
+            that.setState({visible: false})
             console.log("error", error)
         });
 

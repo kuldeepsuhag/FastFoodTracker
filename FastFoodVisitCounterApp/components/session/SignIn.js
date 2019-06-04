@@ -107,7 +107,8 @@ class SignIn extends React.Component {
         }).catch((error) => {
             console.log("error")
             that.setState({ visible: false })
-           this.refs.toast.show(error.response.data.message)
+            this.refs.toast.show(error.response.data.message)
+            AsyncStorage.clear();
         });
     }
 

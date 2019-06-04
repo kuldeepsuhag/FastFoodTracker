@@ -18,8 +18,7 @@ app.post("/step-data", require("./routes/stepservicepost"));
 app.post("/updateValue", require("./routes/updateValue"));
 app.post("/signout", require("./routes/signout"));
 app.post("/disable", require("./routes/disableaccount"));
-app.post("/getHistRest", require("./routes/getResthist"));
-app.post("/getHistPark", require("./routes/getParkHist"));
+app.post("/getHistory", require("./routes/getHistory"));
 
 app.listen(port, (req, res) => {
 
