@@ -1,15 +1,15 @@
 import React from 'react';
 import { Constants, MapView, Location, Permissions, Pedometer, TaskManager } from 'expo';
-import { StyleSheet, View, Alert, BackHandler, ImageBackground, FlatList } from 'react-native';
+import { StyleSheet, View, Alert, BackHandler, ImageBackground, FlatList, TouchableOpacity } from 'react-native';
 import AppFooter from '../footer/AppFooter'
 import { Card, CardItem, Text } from 'native-base';
 import { Button, ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ip from '../../config';
 import axios from "axios";
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { stepData } from '../../redux/actions/index'
-import {Header} from 'react-native-elements'
+import { Header } from 'react-native-elements'
 import AnimatedLoader from "react-native-animated-loader";
 import Modal from "react-native-modal";
 
@@ -47,7 +47,7 @@ class Map extends React.Component {
     });
     this.sendStepData();
   }
-  componentWillMount(){
+  componentWillMount() {
     let that = this
     setTimeout(function () {
       that.setState({
@@ -126,7 +126,7 @@ class Map extends React.Component {
     for (let i = 0; i < historyData.length; i++) {
       historyData[i].index = i;
       let date = new Date(historyData[i].histimestamp)
-      date = date.getDate("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getMonth("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getYear("en-US", { timeZone: "Australia/Brisbane" })
+      date = date.getDate("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getMonth("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getFullYear("en-US", { timeZone: "Australia/Brisbane" })
       historyData[i].date = date;
     }
     return historyData
@@ -145,16 +145,16 @@ class Map extends React.Component {
         // place: city
       }
     }).then((response) => {
-      console.log(response.data);
+      // console.log(response.data);
       for (let i = 0; i < response.data.length; i++) {
         historyData.push(response.data[i])
       }
       historyData = this.formatDataForModal(historyData);
-      console.log(historyData[0])
-      this.setState({ 
+      // console.log(historyData[0])
+      this.setState({
         showParkModal: true,
         parkData: historyData
-       });
+      });
     }).catch((error) => {
       console.log(error);
     });
@@ -173,7 +173,7 @@ class Map extends React.Component {
         // place: city
       }
     }).then((response) => {
-      console.log(response.data);
+      // console.log(response.data);
       for (let i = 0; i < response.data.length; i++) {
         historyData.push(response.data[i])
       }
@@ -182,20 +182,18 @@ class Map extends React.Component {
         showRestModal: true,
         restData: historyData
       });
-      console.log(historyData[0])
+      // console.log(historyData[0])
     }).catch((error) => {
       console.log(error);
     });
   }
 
   sendStepData() {
-    console.log("I am in")
     this.getLastSavedData();
     this.getDataForServer();
   }
 
   getLastSavedData() {
-    console.log("Veendum in")
     // var url = ip.ip.address;
     // var that = this;
     // axios.get(url + "/get-last-date").then((response) => {
@@ -212,7 +210,7 @@ class Map extends React.Component {
     })
   }
 
-  async getDataForServer(){
+  async getDataForServer() {
     let that = this
     Pedometer.isAvailableAsync().then(
       result => {
@@ -233,11 +231,11 @@ class Map extends React.Component {
     today = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
     let nextRequiredDate = this.state.lastStepDataDate
     nextRequiredDate = nextRequiredDate.split("-")
-    nextRequiredDate = new Date(parseInt(nextRequiredDate[2]), parseInt(nextRequiredDate[1]) - 1, parseInt(nextRequiredDate[0])+1, 0, 0, 0, 0)
+    nextRequiredDate = new Date(parseInt(nextRequiredDate[2]), parseInt(nextRequiredDate[1]) - 1, parseInt(nextRequiredDate[0]) + 1, 0, 0, 0, 0)
 
     let numberOfDays = Math.round((today - nextRequiredDate) / (1000 * 60 * 60 * 24))
 
-    for(let i= numberOfDays; i>0; i--){
+    for (let i = numberOfDays; i > 0; i--) {
       let stepDataObject = {}
       let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
       let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
@@ -355,7 +353,7 @@ class Map extends React.Component {
   sendMapData(lat, lon) {
     let that = this
     var url = ip.ip.address;
-    console.log("map data sent")
+    // console.log("map data sent")
     if (lat != null && lon != null && lat != "" && lon != "") {
       axios({
         method: 'post',
@@ -388,7 +386,7 @@ class Map extends React.Component {
 
     return (
       <>
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <Header centerComponent={{
             text: 'Home Page', style: {
               margin: 24,
@@ -415,7 +413,7 @@ class Map extends React.Component {
                     this.state.mapRegion === null ?
                       <Text>Map region doesn't exist.</Text> :
                       <MapView
-                        style={{ alignSelf: 'stretch', height: '61.9%', marginTop: '-1%' }}
+                        style={{ alignSelf: 'stretch', height: '85%', marginTop: '-1%' }}
                         region={this.state.mapRegion}
                         showsUserLocation={true}
                         showsPointsOfInterest={false}
@@ -426,39 +424,66 @@ class Map extends React.Component {
                         onUserLocationChange={location => this._handleMapRegionChange(location)}
                       />
               }
-              <Card style={styles.card} transparent>
-                <CardItem>
+              {/* <Card style={styles.card} transparent> */}
+              {/* <CardItem> */}
+              <View style={{ flex: 1, flexDirection: "row", alignItems: 'center', marginTop: '2%' }}>
+                <View style={{ width: '50%' }}>
                   <Button
-                    buttonStyle={{ backgroundColor: "red" , width: 50, marginRight: 5}}
+                    buttonStyle={{ backgroundColor: "red", width: '100%', height: '100%', marginRight: 5 }}
                     icon={
                       <Icon
                         name="md-pizza"
-                        size={15}
+                        size={60}
                         color="white"
                       />
                     }
                     onPress={this.getRestHistory}
                     title={" " + this.state.countFastFood.toString()}
                   />
+
+                  {/* <TouchableOpacity style={{ backgroundColor: "red", width: '100%', height: '100%', marginRight: 5 }} onPress={this.getRestHistory}> */}
+                  {/* <Icon
+                    name="md-pizza"
+                    size={60}
+                    color="white"
+                  /> */}
+                  {/* <Text style={{ fontSize: '30px' }}>
+                    {this.state.countFastFood.toString()}
+                  </Text> */}
+                  {/* </TouchableOpacity> */}
+                </View>
+                <View style={{ width: '50%' }}>
                   <Button
-                    buttonStyle={{ backgroundColor: "green", width: 50, marginLeft: 5}}
+                    buttonStyle={{ backgroundColor: "green", width: '100%', height: '100%', marginLeft: 5 }}
                     icon={
                       <Icon
                         name="ios-american-football"
-                        size={15}
+                        size={60}
                         color="white"
                       />
                     }
                     onPress={this.getParkHistory}
                     title={" " + this.state.countPark.toString()}
                   />
-                </CardItem>
-              </Card>
-              <Card>
+                  {/* <TouchableOpacity style={{ backgroundColor: "green", width: '100%', height: '100%', marginLeft: 5 }} onPress={this.getParkHistory}> */}
+                  {/* <Icon
+                    name="ios-american-football"
+                    size={60}
+                    color="white"
+                  /> */}
+                  {/* <Text style={{ fontSize: '30px' }}>
+                    {this.state.countPark.toString()}
+                  </Text> */}
+                  {/* </TouchableOpacity> */}
+                </View>
+              </View>
+              {/* </CardItem> */}
+              {/* </Card> */}
+              {/* <Card>
                 <CardItem>
                   <Text>Location Data: {this.state.locationResult}</Text>
                 </CardItem>
-              </Card>
+              </Card> */}
             </View>
           </ImageBackground>
           <Modal isVisible={this.state.showRestModal}>
@@ -477,7 +502,7 @@ class Map extends React.Component {
                 {/* </List> */}
               </CardItem>
               <CardItem>
-                <Button title="Hide" onPress={() => { this.setState({ showRestModal : false })  }} />
+                <Button title="Hide" onPress={() => { this.setState({ showRestModal: false }) }} />
               </CardItem>
             </Card>
           </Modal>
@@ -497,12 +522,12 @@ class Map extends React.Component {
                 {/* </List> */}
               </CardItem>
               <CardItem>
-                <Button title="Hide" onPress={() => { this.setState({showParkModal : false}) }} />
+                <Button title="Hide" onPress={() => { this.setState({ showParkModal: false }) }} />
               </CardItem>
             </Card>
           </Modal>
         </View>
-        <AppFooter props={this.props}/>
+        <AppFooter props={this.props} />
       </>
     );
   }
@@ -535,7 +560,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
         place: ""
       }
     }).then((response) => {
-      console.log(response.data);
+      // console.log(response.data);
     }).catch((error) => {
       console.log(error);
     });
@@ -565,8 +590,8 @@ const styles = StyleSheet.create({
     marginRight: '5%',
     maxWidth: '100%'
   },
-  backgroundImage:{
-    flex:1,
+  backgroundImage: {
+    flex: 1,
     alignSelf: 'stretch',
     width: null,
     justifyContent: 'center'

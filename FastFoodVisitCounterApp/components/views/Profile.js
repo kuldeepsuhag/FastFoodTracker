@@ -11,7 +11,7 @@ import DialogInput from 'react-native-dialog-input';
 import ip from '../../config';
 import axios from "axios";
 import AnimatedLoader from "react-native-animated-loader";
-import {setHeight , setWeight} from '../../redux/actions/index'
+import { setHeight, setWeight } from '../../redux/actions/index'
 
 const { width: WIDTH } = Dimensions.get('window')
 class Profile extends React.Component {
@@ -19,7 +19,8 @@ class Profile extends React.Component {
         super(props);
         this.state = {
             showWeightModal: false,
-            showHeightModal: false
+            showHeightModal: false,
+            visible: false
         };
         this.showWeightDialog = this.showWeightDialog.bind(this);
         this.showHeightDialog = this.showHeightDialog.bind(this);
@@ -76,12 +77,12 @@ class Profile extends React.Component {
                     visible: false
                 })
                 console.log(response.data);
-                if(isHeight){
+                if (isHeight) {
                     this.props.dispatch(setHeight(inputText))
-                }else{
+                } else {
                     this.props.dispatch(setWeight(inputText))
                 }
-                
+
                 //save the updated goal in profile redux!!
             }).catch((error) => {
                 that.setState({
@@ -160,13 +161,13 @@ class Profile extends React.Component {
                         source={require("../../Images/loader.json")}
                         animationStyle={styles.lottie}
                         speed={1}
-                    />  
+                    />
                     <View style={{ marginLeft: 20, justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
                         {this.props.userDetails.image ?
                             <Image style={styles.image} source={{
-                                    uri:
-                                        'data:text/plain;base64,' + this.props.userDetails.image,
-                                }}
+                                uri:
+                                    'data:text/plain;base64,' + this.props.userDetails.image,
+                            }}
                             /> : <Text></Text>}
                         {/* <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Personal Details</Text> */}
                     </View>
@@ -194,7 +195,7 @@ class Profile extends React.Component {
                                         message={"Enter your current Height"}
                                         hintInput={"Eg. 60"}
                                         submitInput={(inputText) => this.updateValue(inputText, true)}
-                                        >
+                                    >
                                     </DialogInput>
                                 </View>
                             </View>
@@ -211,7 +212,7 @@ class Profile extends React.Component {
                                         message={"Enter your current Weight"}
                                         hintInput={"Eg. 60"}
                                         submitInput={(inputText) => this.updateValue(inputText, false)}
-                                        >
+                                    >
                                     </DialogInput>
                                 </View>
                             </View>
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         marginLeft: 20
     },
-    updateBtn:{
+    updateBtn: {
         backgroundColor: 'rgb(67,167,238)',
         padding: 10,
         marginLeft: 20,
@@ -255,7 +256,7 @@ const styles = StyleSheet.create({
         borderRadius: 45,
         justifyContent: 'center',
     },
-    actionBtn:{
+    actionBtn: {
         backgroundColor: 'rgb(255,69,96)',
         padding: 10,
         marginLeft: 20,
