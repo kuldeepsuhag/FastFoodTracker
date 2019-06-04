@@ -11,7 +11,7 @@ var calltime;
 var prevtime;
 module.exports = (req, res) => {
     calltime = new moment().parseZone("Australia/Melbourne").format();
-    console.log("hello", calltime)
+    console.log("test: ", calltime)
     //console.log(moment(calltime))
 
     var test = {
@@ -78,7 +78,7 @@ async function inKFCorPark(req, res) {
     if (sen === undefined) {
         sen = {
             countRest: 0,
-            countPark: 0
+            countPark: 0,
         }
         res.status(200).send(sen);
     } else {
@@ -95,7 +95,6 @@ async function timevalidation() {
     });
     await firebase.database().ref("users").child(uid).on("value", function (childSnapshot) {
         if (childSnapshot.hasChild('previoustime') == false || childSnapshot.val().previoustime == 0) {
-            console.log("Inside shit")
             firebase1.database().ref('users').child(uid).update({
                 previoustime: calltime,
                 previousplace: place

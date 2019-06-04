@@ -132,9 +132,9 @@ class Map extends React.Component {
       historyData[i].index = i;
       let date = new moment(historyData[i].histimestamp)
       date = date.parseZone("Australia/Melbourne")
-      console.log(date.date())
-      console.log(date.month())
-      console.log(date.year())
+      // console.log(date.date())
+      // console.log(date.month())
+      // console.log(date.year())
       // let date = new Date(historyData[i].histimestamp)
       // date = date.getDate("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getMonth("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getFullYear("en-US", { timeZone: "Australia/Brisbane" }) + ' - ' + date.getHours("en-US", { timeZone: "Australia/Brisbane" }) + ':' + date.getMinutes("en-US", { timeZone: "Australia/Brisbane" })
       historyData[i].date = "Date: " + date.date() + '/' + (date.month() + 1) + '/' + date.year() + "         " + "Time: " + ((date.hour() > 12) ? (date.hour() - 12) : date.hour()) + ':' + ((date.minutes() < 10) ? ("0" + date.minutes()) : date.minutes()) + ((date.hour() > 12) ? " PM" : " AM");
@@ -346,11 +346,6 @@ class Map extends React.Component {
           // place: city
         }
       }).then((response) => {
-        console.log(new moment())
-        console.log(new moment().minutes())
-        console.log(response.data)
-        console.log(response.data)
-        console.log(moment(response.data.testTimeMelbourne).format('DD/MM/YYYY HH:mm:ss'))
         that.setState({
           countFastFood: response.data.countRest,
           countPark: response.data.countPark,
