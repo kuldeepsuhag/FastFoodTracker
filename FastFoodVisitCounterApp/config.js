@@ -5,8 +5,9 @@ export default {
     //Kuldeep
     // address: "http://192.168.43.184:5000"
     //Rohit
-    address: "http://10.12.208.182:5000"
+  //  address: "http://10.12.208.182:5000"
     //Main
     // address: "http://43.240.98.141:5000"
+    address: "http://10.12.162.189:5000"
   }
 };

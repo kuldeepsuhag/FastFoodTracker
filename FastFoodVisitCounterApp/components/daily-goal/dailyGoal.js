@@ -28,7 +28,6 @@ class DailyGoal extends React.Component{
 
     componentWillMount(){
         this._subscribe();
-        this.setState({ showGoalModal: false });
         this.setState({
             goal: this.props.currentGoal
         })
@@ -36,10 +35,10 @@ class DailyGoal extends React.Component{
 
     componentDidUpdate(prevProps, prevState){
         if(prevState.goal !== this.props.currentGoal){
-            this._subscribe();
-            this.setState({ showGoalModal: false });
             this.setState({
                 goal: this.props.currentGoal
+            }, () => {
+                this._subscribe();
             })
         }
     }

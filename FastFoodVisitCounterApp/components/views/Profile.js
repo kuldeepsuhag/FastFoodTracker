@@ -86,19 +86,15 @@ class Profile extends React.Component {
     updateRedux(inputText, updateValue){
         switch (updateValue) {
             case "height":
-                this.setState({ showHeightModal: !(this.state.showHeightModal) });
                 this.props.dispatch(setHeight(inputText))
                 break;
             case "weight":
-                this.setState({ showWeightModal: !(this.state.showWeightModal) });
                 this.props.dispatch(setWeight(inputText))
                 break;
             case "patient":
-                this.setState({ showPatientModal: !(this.state.showPatientModal) });
                 this.props.dispatch(setPatientID(inputText))
                 break;
             case "doctor":
-                this.setState({ showDoctorModal: !(this.state.showDoctorModal) });
                 this.props.dispatch(setDoctorID(inputText))
                 break;
         }
