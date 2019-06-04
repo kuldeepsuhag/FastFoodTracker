@@ -65,7 +65,9 @@ async function getImage(url, data, res, uid) {
     weight: data.weight,
     image: image,
     userID: uid,
-    currentGoal: data.currentGoal
+    currentGoal: data.currentGoal,
+    rest: data.countRest,
+    park: data.countPark
   }
   res.status(200).send(perdata);
 }

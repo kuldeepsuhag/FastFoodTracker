@@ -70,7 +70,7 @@ module.exports = (req, res) => {
               weight: data.weight, //getting
               image: req.body.image,
               rest: data.countRest,
-              park: data.countPark,
+              park: data.countPark
             }
             ref.child(user.uid).off("value")
             console.log("Sending data" + perdata);
