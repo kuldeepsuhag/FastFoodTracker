@@ -1,29 +1,37 @@
 require('firebase/database')
 require('firebase/auth')
+var moment = require('moment')
 firebase1 = require('firebase/app')
 var calltime
 var category;
 var uid;
 var place;
+var calltime;
+// var calltime = new moment().parseZone("Australia/Melbourne").format('YYYY-MM-DDTHH:mm:ss:SSS');
 var prevtime;
 module.exports = (req, res) => {
-    calltime = new Date();
-    // var test ={
-    //     latitude: -37.8006245,
-    //     longitude: 144.9650827
-    // }
+    calltime = new moment().parseZone("Australia/Melbourne").format();
+    console.log("hello", calltime)
+    //console.log(moment(calltime))
+
+    var test = {
+        latitude: -37.8054312,
+        longitude: 144.9714124
+    }
     if (req.body) {
-        inKFCorPark(req.body, res)
+        inKFCorPark(test, res)
     }
 }
 async function inKFCorPark(req, res) {
-  
+    console.log(new moment())
+    console.log(new moment().parseZone("Australia/Melbourne"))
     console.log("Coordinates are", req)
     await firebase.database().ref("Restaurants").on('value', async function (snapshot) {
         snapshot.forEach(function (child) {
             data = child.val();
             if ((Math.abs(req.latitude.toFixed(4) - data.lat.toFixed(4)) <= 0.0002) && (Math.abs(req.longitude.toFixed(4) - data.long.toFixed(4)) <= 0.0002)) {
                 category = "Rest"
+                console.log(category)
                 place = data.place;
                 console.log("TESTTTTT")
                 timevalidation()
@@ -31,7 +39,7 @@ async function inKFCorPark(req, res) {
         });
         firebase.database().ref("Restaurants").off("value");
     });
- 
+
 
 
     await firebase.database().ref("Parks").on('value', async function (snapshot) {
@@ -43,12 +51,12 @@ async function inKFCorPark(req, res) {
                 console.log("place", place)
                 console.log("Worked")
                 timevalidation()
-                
+
             }
         });
         firebase.database().ref("Parks").off("value");
     });
-    
+
     await firebase.auth().onAuthStateChanged(function (user) {
         uid = user.uid;
     });
@@ -58,58 +66,64 @@ async function inKFCorPark(req, res) {
     var sen;
     await firebase.database().ref("users").child(uid).on("value", function (snapshot) {
         console.log(snapshot.val().countRest)
-       
+
         sen = {
             countRest: snapshot.val().countRest,
-            countPark: snapshot.val().countPark,
+            countPark: snapshot.val().countPark
         }
         console.log(sen)
-       
+
 
     });
-    if(sen === undefined){
+    if (sen === undefined) {
         sen = {
             countRest: 0,
-            countPark: 0,  
+            countPark: 0
         }
         res.status(200).send(sen);
-    }else{
+    } else {
         res.status(200).send(sen);
     }
-    
-    
+
+
 }
-async function timevalidation(req) {
+async function timevalidation() {
     console.log("palce nnnnn", place)
 
     await firebase.auth().onAuthStateChanged(function (user) {
         uid = user.uid;
     });
-    var time = calltime.getTime("en-US", { timeZone: "Australia/Brisbane" })
     await firebase.database().ref("users").child(uid).on("value", function (childSnapshot) {
         if (childSnapshot.hasChild('previoustime') == false || childSnapshot.val().previoustime == 0) {
+            console.log("Inside shit")
             firebase1.database().ref('users').child(uid).update({
-                previoustime: time,
+                previoustime: calltime,
                 previousplace: place
             });
             console.log("DOne")
             //firebase.database().ref()
         }
-        else if(childSnapshot.val().previousplace != place){
+        else if (childSnapshot.val().previousplace != place) {
             firebase1.database().ref('users').child(uid).update({
-                previoustime: time,
+                previoustime: calltime,
                 previousplace: place
             });
         }
-            else{
-             var currenttime = new Date()
-            var now = currenttime.getTime("en-US", { timeZone: "Australia/Brisbane" });
-            prevtime = childSnapshot.val().previoustime;
+        else {
+            var currenttime = new moment().parseZone("Australia/Melbourne")
+            // var now = currenttime.getTime("en-US", { timeZone: "Australia/Brisbane" });
+
+            prevtime = moment(childSnapshot.val().previoustime);
+            console.log("Previous Time", prevtime.format('YYYY-MM-DDTHH:mm:ss:SSS'))
+            currenttime = moment(calltime);
+            console.log("Current TIme", currenttime.format('YYYY-MM-DDTHH:mm:ss:SSS'))
             prevplace = childSnapshot.val().previousplace
-            console.log("Current time is ", new Date(now).getMinutes())
-            console.log("Previous time is", new Date(prevtime).getMinutes())
-            console.log("Difference in time is", (Math.abs(new Date(now).getMinutes() - new Date(prevtime).getMinutes())));
-            if ((Math.abs(new Date(now).getMinutes() - new Date(prevtime).getMinutes()) >= 3) && (prevplace === place)) {
+            const diff = currenttime.diff(prevtime);
+            const diffDuration = moment.duration(diff);
+            console.log("Minutes:", diffDuration.minutes());
+
+
+            if ((diffDuration >= 5) && (prevplace === place)) {
                 updatevalues();
             }
         }
@@ -142,22 +156,24 @@ async function updatingRest() {
                 data = childSnapshot.val();
                 console.log("getting value", childSnapshot.val());
                 var histimestamp;
-             //   var place;
+                //   var place;
                 for (var key in data) {
                     histimestamp = parseInt(key);
                     histplace = data[key]["place"]
                 }
-                var histtime = new Date(histimestamp).getMinutes();
-                console.log("Hist TIme", histtime)
-                var calledtime = calltime.getMinutes();
+                histime = moment(histimestamp);
+                console.log("Hist TIme", histime)
+                var calledtime = moment(calltime);
                 console.log("Call Time", calledtime)
-                console.log("Present TIme", Math.abs(calledtime - histtime));
+                const diff = histime.diff(calledtime);
+                const diffDuration = moment.duration(diff);
+                console.log("Present TIme", diffDuration.minutes());
 
-                if (Math.abs(calledtime - histtime) >= 2 && Math.abs(new Date(histimestamp).getHours()) - new Date(histimestamp).getHours() == 0) {
+                if (diffDuration.minutes >= 2 && diffDuration.hours == 0) {
                     console.log("FIRST ONE")
                     updateRestcounting();
                 }
-                if (Math.abs(new Date(histimestamp).getHours()) - new Date(histimestamp).getHours() > 0) {
+                if (diffDuration.hours > 0) {
                     console.log("SECOND ONE")
                     updateRestcounting()
                 }
@@ -194,12 +210,15 @@ async function updatingPark() {
                     histimestamp = parseInt(key);
                     histplace = data[key]["place"]
                 }
-                var histtime = new Date(histimestamp).getMinutes();
-                console.log("Hist TIme", histtime)
-                var calledtime = calltime.getMinutes();
-                console.log("Present TIme", Math.abs(calledtime - histtime));
+                histime = moment(histimestamp);
+                console.log("Hist TIme", histime)
+                var calledtime = moment(calltime);
+                console.log("Call Time", calledtime)
+                const diff = histime.diff(calledtime);
+                const diffDuration = moment.duration(diff);
+                console.log("Present TIme", diffDuration.minutes());
 
-                if ((histplace != place)) {
+                if (diffDuration.hours() > 4) {
                     updateParkcounting();
                 }
 
@@ -208,7 +227,7 @@ async function updatingPark() {
 
 
     });
-   
+
 }
 
 
@@ -282,9 +301,8 @@ async function updateRestcounting() {
     updatecount.child(uid).update({ countRest: count });
     updatecount.child(uid).update({ previousplace: "null" });
     updatecount.child(uid).update({ previoustime: 0 })
-    console.log(count)
-    var time = calltime.getTime("en-US", { timeZone: "Australia/Brisbane" })
-    updatecount.child(uid).child("HistoryRest").child(prevtime).set({
+    console.log("Previuos wwhileeeee", prevtime.format())
+    updatecount.child(uid).child("HistoryRest").child(prevtime.format()).set({
         place: prevplace
     });
     firebase1.database().ref("users").child(uid).off("value");
@@ -329,8 +347,7 @@ async function updateParkcounting() {
     updatecount.child(uid).update({ previousplace: "null" });
     updatecount.child(uid).update({ previoustime: 0 })
     console.log(count)
-    var time = calltime.getTime("en-US", { timeZone: "Australia/Brisbane" })
-    updatecount.child(uid).child("HistoryPark").child(time).set({
+    updatecount.child(uid).child("HistoryPark").child(prevtime.format()).set({
         place: place
     });
 }
