@@ -35,6 +35,18 @@ export default (state, action) => {
                 ...state,
                 weight: action.payload.updatedWeight
             }
+        case "UPDATE_PATIENT":
+            console.log(action.payload.updatedPatientID)
+            return {
+                ...state,
+                PatientID: action.payload.updatedPatientID
+            }
+        case "UPDATE_DOCTOR":
+            console.log(action.payload.updatedDoctorID)
+            return {
+                ...state,
+                doctorId: action.payload.updatedDoctorID
+            }
         default:
             return state;
     }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, BackHandler, Image, ImageBackground, TextInput, Dimensions, ScrollView, TouchableOpacity, AsyncStorage } from 'react-native';
+import { View, StyleSheet, BackHandler, Image, ImageBackground, Keyboard, Dimensions, ScrollView, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Card, Text } from 'native-base';
 import { Header, Button } from 'react-native-elements'
 import AppFooter from '../footer/AppFooter'
@@ -11,7 +11,8 @@ import DialogInput from 'react-native-dialog-input';
 import ip from '../../config';
 import axios from "axios";
 import AnimatedLoader from "react-native-animated-loader";
-import { setHeight, setWeight } from '../../redux/actions/index'
+import { setHeight, setWeight, setDoctorID, setPatientID } from '../../redux/actions/index'
+import Toast, { DURATION } from 'react-native-easy-toast'
 
 const { width: WIDTH } = Dimensions.get('window')
 class Profile extends React.Component {
@@ -20,24 +21,47 @@ class Profile extends React.Component {
         this.state = {
             showWeightModal: false,
             showHeightModal: false,
-            visible: false
+            showPatientModal: false,
+            showDoctorModal: false,
+            visible: false,
+            bmi: 0
         };
         this.showWeightDialog = this.showWeightDialog.bind(this);
         this.showHeightDialog = this.showHeightDialog.bind(this);
+        this.showPatientDialog = this.showPatientDialog.bind(this);
+        this.showDoctorDialog = this.showDoctorDialog.bind(this);
+        this.bmi = this.bmi.bind(this);
         this.signout = this.signout.bind(this);
     }
-    showWeightDialog() {
+    showWeightDialog(close) {
+        if(close){Keyboard.dismiss()}
         this.setState({ showWeightModal: !(this.state.showWeightModal) });
     }
-    showHeightDialog() {
+    showHeightDialog(close) {
+        if(close){Keyboard.dismiss()}
         this.setState({ showHeightModal: !(this.state.showHeightModal) });
     }
+    showPatientDialog(close) {
+        if(close){Keyboard.dismiss()}
+        this.setState({ showPatientModal: !(this.state.showPatientModal) });
+    }
+    showDoctorDialog(close) {
+        if(close){Keyboard.dismiss()}
+        this.setState({ showDoctorModal: !(this.state.showDoctorModal) });
+    }
     componentDidMount() {
+        this.bmi(this.props.userDetails.height, this.props.userDetails.weight);
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
 
     componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    }
+
+    componentDidUpdate(prevProps){
+        if(prevProps.userDetails.height != this.props.userDetails.height || prevProps.userDetails.weight != this.props.userDetails.weight){
+            this.bmi(this.props.userDetails.height, this.props.userDetails.weight);
+        }
     }
 
     handleBackPress = () => {
@@ -51,19 +75,59 @@ class Profile extends React.Component {
         })
     }
 
-    updateValue(inputText, isHeight) {
-        if (isHeight) {
-            this.setState({ showHeightModal: !(this.state.showHeightModal) });
-        } else {
-            this.setState({ showWeightModal: !(this.state.showWeightModal) });
+    bmi(height, weight) {
+        if (height > 0 && weight > 0) {
+            var bmi = 10000 * (weight / ((height) * (height)));
+            bmi = Math.round(bmi * 100) / 100
+            this.setState({ bmi: bmi })
+        }
+    }
+
+    updateRedux(inputText, updateValue){
+        switch (updateValue) {
+            case "height":
+                this.setState({ showHeightModal: !(this.state.showHeightModal) });
+                this.props.dispatch(setHeight(inputText))
+                break;
+            case "weight":
+                this.setState({ showWeightModal: !(this.state.showWeightModal) });
+                this.props.dispatch(setWeight(inputText))
+                break;
+            case "patient":
+                this.setState({ showPatientModal: !(this.state.showPatientModal) });
+                this.props.dispatch(setPatientID(inputText))
+                break;
+            case "doctor":
+                this.setState({ showDoctorModal: !(this.state.showDoctorModal) });
+                this.props.dispatch(setDoctorID(inputText))
+                break;
+        }
+    }
+
+
+    updateValue(inputText, updateValue) {
+        switch (updateValue) {
+            case "height":
+                this.setState({ showHeightModal: !(this.state.showHeightModal) });
+                break;
+            case "weight":
+                this.setState({ showWeightModal: !(this.state.showWeightModal) });
+                break;
+            case "patient":
+                this.setState({ showPatientModal: !(this.state.showPatientModal) });
+                break;
+            case "doctor":
+                this.setState({ showDoctorModal: !(this.state.showDoctorModal) });
+                break;
         }
         if (isNaN(parseInt(inputText, 10))) {
             this.refs.toast.show('Enter a valid number')
+        } 
+        else if(parseInt(inputText, 10) <= 0){
+            this.refs.toast.show("The value can't be zero")
         }
         else {
-            this.setState({
-                visible: true
-            })
+            this.setState({ visible: true })
             let that = this
             var url = ip.ip.address;
             axios({
@@ -71,31 +135,21 @@ class Profile extends React.Component {
                 url: url + "/updateValue",
                 data: {
                     updateValue: inputText,
-                    label: isHeight ? "height" : "weight"
+                    label: updateValue
                 }
             }).then((response) => {
-                that.setState({
-                    visible: false
-                })
+                that.setState({ visible: false })
+                this.updateRedux(inputText, updateValue)
                 console.log(response.data);
-                if (isHeight) {
-                    this.props.dispatch(setHeight(inputText))
-                } else {
-                    this.props.dispatch(setWeight(inputText))
-                }
-
-                //save the updated goal in profile redux!!
             }).catch((error) => {
-                that.setState({
-                    visible: false
-                })
+                that.setState({ visible: false })
                 console.log(error);
             });
         }
     }
 
     signout() {
-        this.setState({visible: true})
+        this.setState({ visible: true })
         var url = ip.ip.address;
         var that = this;
         console.log("signout")
@@ -104,11 +158,11 @@ class Profile extends React.Component {
             url: url + "/signout",
         }).then((response) => {
             console.log(response.data)
-            that.setState({visible: false})
+            that.setState({ visible: false })
             AsyncStorage.clear();
             that.props.history.push("/");
         }).catch((error) => {
-            that.setState({visible: false})
+            that.setState({ visible: false })
             console.log("error", error)
         });
 
@@ -170,9 +224,6 @@ class Profile extends React.Component {
                     <ScrollView>
                         <View style={{ flex: 1 }}>
                             <View style={{ marginLeft: 20 }}>
-                                <TextField editable={false} label='PatientID' value={this.props.userDetails.PatientID} />
-                            </View>
-                            <View style={{ marginLeft: 20 }}>
                                 <TextField editable={false} label='Name' value={this.props.userDetails.name} />
                             </View>
                             <View style={{ marginLeft: 20 }}>
@@ -180,7 +231,41 @@ class Profile extends React.Component {
                             </View>
                             <View style={{ flex: 1, flexDirection: "row", alignItems: 'flex-start' }}>
                                 <View style={styles.inputWrap}>
-                                    <TextField editable={false} label='Height in cm' value={this.props.userDetails.height} />
+                                    <TextField editable={false} label='Patient ID' value={this.props.userDetails.PatientID.toString()} />
+                                </View>
+                                <View style={styles.inputWrap}>
+                                    <TouchableOpacity style={styles.updateBtn} onPress={this.showPatientDialog}>
+                                        <Text style={styles.buttonText}> Update </Text>
+                                    </TouchableOpacity>
+                                    <DialogInput isDialogVisible={this.state.showPatientModal}
+                                        title={"Patient ID Update"}
+                                        message={"Enter your new Patient ID"}
+                                        submitInput={(inputText) => this.updateValue(inputText, "patient")}
+                                        closeDialog={() => { this.showPatientDialog(true) }}
+                                    >
+                                    </DialogInput>
+                                </View>
+                            </View>
+                            <View style={{ flex: 1, flexDirection: "row", alignItems: 'flex-start' }}>
+                                <View style={styles.inputWrap}>
+                                    <TextField editable={false} label='Doctor ID' value={this.props.userDetails.doctorId.toString()} />
+                                </View>
+                                <View style={styles.inputWrap}>
+                                    <TouchableOpacity style={styles.updateBtn} onPress={this.showDoctorDialog}>
+                                        <Text style={styles.buttonText}> Update </Text>
+                                    </TouchableOpacity>
+                                    <DialogInput isDialogVisible={this.state.showDoctorModal}
+                                        title={"Doctor ID Update"}
+                                        message={"Enter your new Doctor ID"}
+                                        submitInput={(inputText) => this.updateValue(inputText, "doctor")}
+                                        closeDialog={() => { this.showDoctorDialog(true) }}
+                                    >
+                                    </DialogInput>
+                                </View>
+                            </View>
+                            <View style={{ flex: 1, flexDirection: "row", alignItems: 'flex-start' }}>
+                                <View style={styles.inputWrap}>
+                                    <TextField editable={false} label='Height in cm' value={this.props.userDetails.height.toString()} />
                                 </View>
                                 <View style={styles.inputWrap}>
                                     <TouchableOpacity style={styles.updateBtn} onPress={this.showHeightDialog}>
@@ -190,14 +275,15 @@ class Profile extends React.Component {
                                         title={"Height Update"}
                                         message={"Enter your current Height"}
                                         hintInput={"Eg. 60"}
-                                        submitInput={(inputText) => this.updateValue(inputText, true)}
+                                        submitInput={(inputText) => this.updateValue(inputText, "height")}
+                                        closeDialog={() => { this.showHeightDialog(true) }}
                                     >
                                     </DialogInput>
                                 </View>
                             </View>
                             <View style={{ flex: 1, flexDirection: "row", alignItems: 'flex-start' }}>
                                 <View style={styles.inputWrap}>
-                                    <TextField editable={false} label='Weight in KG' value={this.props.userDetails.weight} />
+                                    <TextField editable={false} label='Weight in KG' value={this.props.userDetails.weight.toString()} />
                                 </View>
                                 <View style={styles.inputWrap}>
                                     <TouchableOpacity style={styles.updateBtn} onPress={this.showWeightDialog}>
@@ -207,10 +293,14 @@ class Profile extends React.Component {
                                         title={"Weight Update"}
                                         message={"Enter your current Weight"}
                                         hintInput={"Eg. 60"}
-                                        submitInput={(inputText) => this.updateValue(inputText, false)}
+                                        submitInput={(inputText) => this.updateValue(inputText, "weight")}
+                                        closeDialog={() => { this.showWeightDialog(true) }}
                                     >
                                     </DialogInput>
                                 </View>
+                            </View>
+                            <View style={{ marginLeft: 20 }}>
+                                <TextField editable={false} label='BMI' value={this.state.bmi.toString()} />
                             </View>
                             <View>
                                 <TouchableOpacity style={styles.updateBtn} onPress={this.signout}>
@@ -225,12 +315,13 @@ class Profile extends React.Component {
                         </View>
 
                     </ScrollView>
-                </ImageBackground>
+                    <Toast ref="toast" textStyle={{ color: 'red' }} fadeOutDuration={1000} fadeInDuration={2500} />
+                </ImageBackground >
                 <View style={{ height: 50, backgroundColor: '#ecf0f1' }}>
                     <AppFooter props={this.props} />
                 </View>
 
-            </View>
+            </View >
 
         );
     }
