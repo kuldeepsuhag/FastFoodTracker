@@ -142,15 +142,17 @@ class Map extends React.Component {
         history : isPark
       }
     }).then((response) => {
-      for (let i = 0; i < response.data.length; i++) {
-        historyData.push(response.data[i])
-      }
-      historyData = this.formatDataForModal(historyData);
-      if(isPark){
-        this.setState({showParkModal: true,parkData: historyData});
-      }else{
-        this.setState({showRestModal: true,restData: historyData
-        });
+      if(response.data !== "No data"){
+        for (let i = 0; i < response.data.length; i++) {
+          historyData.push(response.data[i])
+        }
+        historyData = this.formatDataForModal(historyData);
+        if(isPark){
+          this.setState({showParkModal: true,parkData: historyData});
+        }else{
+          this.setState({showRestModal: true,restData: historyData
+          });
+        }
       }
     }).catch((error) => {
       console.log(error);
