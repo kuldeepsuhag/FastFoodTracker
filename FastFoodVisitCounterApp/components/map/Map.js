@@ -477,7 +477,7 @@ class Map extends React.Component {
                 {/* </List> */}
               </CardItem>
               <CardItem>
-                <Button title="Hide" onPress={() => { this.state.showRestModal = false }} />
+                <Button title="Hide" onPress={() => { this.setState({ showRestModal : false })  }} />
               </CardItem>
             </Card>
           </Modal>
@@ -497,7 +497,7 @@ class Map extends React.Component {
                 {/* </List> */}
               </CardItem>
               <CardItem>
-                <Button title="Hide" onPress={() => { this.state.showParkModal = false }} />
+                <Button title="Hide" onPress={() => { this.setState({showParkModal : false}) }} />
               </CardItem>
             </Card>
           </Modal>
