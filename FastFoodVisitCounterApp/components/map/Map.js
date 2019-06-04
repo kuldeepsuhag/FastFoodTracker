@@ -137,7 +137,7 @@ class Map extends React.Component {
       // console.log(date.year())
       // let date = new Date(historyData[i].histimestamp)
       // date = date.getDate("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getMonth("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getFullYear("en-US", { timeZone: "Australia/Brisbane" }) + ' - ' + date.getHours("en-US", { timeZone: "Australia/Brisbane" }) + ':' + date.getMinutes("en-US", { timeZone: "Australia/Brisbane" })
-      historyData[i].date = "Date: " + date.date() + '/' + (date.month() + 1) + '/' + date.year() + "         " + "Time: " + ((date.hour() > 12) ? (date.hour() - 12) : date.hour()) + ':' + ((date.minutes() < 10) ? ("0" + date.minutes()) : date.minutes()) + ((date.hour() > 12) ? " PM" : " AM");
+      historyData[i].date = "Date: " + date.date() + '/' + (date.month() + 1) + '/' + date.year() + "         " + "Time: " + ((date.hour()+10 > 12) ? (date.hour()+10 - 12) : date.hour()+10) + ':' + ((date.minutes() < 10) ? ("0" + date.minutes()) : date.minutes()) + ((date.hour()+10 >= 12) ? " PM" : " AM");
     }
     return historyData
   }

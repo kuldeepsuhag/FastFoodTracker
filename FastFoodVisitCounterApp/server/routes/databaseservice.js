@@ -14,12 +14,9 @@ module.exports = (req, res) => {
     console.log("test: ", calltime)
     //console.log(moment(calltime))
 
-    var test = {
-        latitude: -37.8054312,
-        longitude: 144.9714124
-    }
+    
     if (req.body) {
-        inKFCorPark(test, res)
+        inKFCorPark(req.body, res)
     }
 }
 async function inKFCorPark(req, res) {
@@ -122,7 +119,7 @@ async function timevalidation() {
             console.log("Minutes:", diffDuration.minutes());
 
 
-            if ((diffDuration >= 5) && (prevplace === place)) {
+            if ((Math.abs(diffDuration.minutes()) >= 5) && (prevplace === place)) {
                 updatevalues();
             }
         }
@@ -168,7 +165,7 @@ async function updatingRest() {
                 const diffDuration = moment.duration(diff);
                 console.log("Present TIme", diffDuration.minutes());
 
-                if (diffDuration.minutes >= 2 && diffDuration.hours == 0) {
+                if (Math.abs(diffDuration.minutes()) >= 2 && (diffDuration.hours()) == 0) {
                     console.log("FIRST ONE")
                     updateRestcounting();
                 }
@@ -217,7 +214,7 @@ async function updatingPark() {
                 const diffDuration = moment.duration(diff);
                 console.log("Present TIme", diffDuration.minutes());
 
-                if (diffDuration.hours() > 4) {
+                if (Math.abs(diffDuration.hours()) > 4) {
                     updateParkcounting();
                 }
 

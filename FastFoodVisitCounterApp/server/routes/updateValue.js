@@ -33,7 +33,6 @@ function updateheight(uid, updateValue, label, res){
                 firebase1.database().ref('users').child(uid).update({
                     PatientID: updateValue
                 })
-                res.status(200).send("updated");
                 break;
         case "doctor":
                 firebase1.database().ref('users').child(uid).update({
