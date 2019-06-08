@@ -49,7 +49,8 @@ import { ScrollView } from 'react-native-gesture-handler';
                 url: url + "/updateValue",
                 data: {
                     updateValue: stepGoal,
-                    label: "currentGoal"
+                    label: "currentGoal",
+                    userId: this.props.userId
                 }
             }).then((response) => {
                 console.log(response.data);
@@ -163,7 +164,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (userDetails) => {
     return {
-        currentGoal: userDetails.currentGoal
+        currentGoal: userDetails.currentGoal,
+        userId: userDetails.userID
     }
 }
 

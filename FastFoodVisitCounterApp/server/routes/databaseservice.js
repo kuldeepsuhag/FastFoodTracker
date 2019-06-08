@@ -12,39 +12,37 @@ var prevtime;
 module.exports = (req, res) => {
     calltime = new moment().parseZone("Australia/Melbourne").format();
     console.log("test: ", calltime)
-    //console.log(moment(calltime))
     if (req.body) {
         checkUser(req.body, res)
     }
 }
-async function checkUser(req, res){
-    await firebase.auth().onAuthStateChanged(function (user) {
-        if(!user){
-            res.status(200).send("No user");
-            return;
-        }else{
-            uid = user.uid;
-            inKFCorPark(uid, req, res)
-        }
-    });
+
+function checkUser(data, res){
+    if(data.uid){
+        console.log(data)
+        inKFCorPark(data.uid, data.latitude, data.longitude, res)
+    }else{
+        res.status(200).send("No user");
+        return;
+    }
 }
 
-async function inKFCorPark(uid, req, res) {
+async function inKFCorPark(userID, userlatitude, userLongtitude, res) {
     console.log(new moment())
     console.log(new moment().parseZone("Australia/Melbourne"))
-    console.log("Coordinates are", req)
-
+   // console.log("Coordinates are", data)
+    uid = userID;
     console.log("UID after", uid)
 
     await firebase.database().ref("Restaurants").on('value', async function (snapshot) {
         snapshot.forEach(function (child) {
             data = child.val();
-            if ((Math.abs(req.latitude.toFixed(4) - data.lat.toFixed(4)) <= 0.0002) && (Math.abs(req.longitude.toFixed(4) - data.long.toFixed(4)) <= 0.0002)) {
+            if ((Math.abs(userlatitude.toFixed(4) - data.lat.toFixed(4)) <= 0.0002) && (Math.abs(userLongtitude.toFixed(4) - data.long.toFixed(4)) <= 0.0002)) {
                 category = "Rest"
                 console.log(category)
                 place = data.place;
                 console.log("TESTTTTT")
-                timevalidation()
+                timevalidation(uid)
             }
         });
         firebase.database().ref("Restaurants").off("value");
@@ -55,12 +53,12 @@ async function inKFCorPark(uid, req, res) {
     await firebase.database().ref("Parks").on('value', async function (snapshot) {
         snapshot.forEach(function (child) {
             data = child.val();
-            if ((Math.abs(req.latitude.toFixed(4) - data.lat.toFixed(4)) <= 0.005) && (Math.abs(req.longitude.toFixed(4) - data.long.toFixed(4)) <= 0.002)) {
+            if ((Math.abs(userlatitude.toFixed(4) - data.lat.toFixed(4)) <= 0.005) && (Math.abs(userLongtitude.toFixed(4) - data.long.toFixed(4)) <= 0.002)) {
                 category = "Parks"
                 place = data.place
                 console.log("place", place)
                 console.log("Worked")
-                timevalidation()
+                timevalidation(uid)
 
             }
         });
@@ -92,12 +90,9 @@ async function inKFCorPark(uid, req, res) {
 
 
 }
-async function timevalidation() {
+async function timevalidation(uid) {
     console.log("palce nnnnn", place)
 
-    await firebase.auth().onAuthStateChanged(function (user) {
-        uid = user.uid;
-    });
     await firebase.database().ref("users").child(uid).on("value", function (childSnapshot) {
         if (childSnapshot.hasChild('previoustime') == false || childSnapshot.val().previoustime == 0) {
             firebase1.database().ref('users').child(uid).update({
@@ -228,67 +223,7 @@ async function updatingPark() {
 
             });
         }
-
-
     });
-
-}
-
-
-
-async function updatingcount() {
-
-
-    await firebase1.database().ref("users").child(uid).on("value", function (childSnapshot) {
-        if (childSnapshot.hasChild('HistoryPark') == false) {
-            console.log("FIRSTTT FUNCTION")
-            parking(req, uid)
-        }
-        else {
-            firebase1.database().ref("users").child(uid).child('HistoryPark').orderByKey().limitToLast(1).on('value', function (childSnapshot) {
-                console.log("SECOND FUNCTION")
-                data = childSnapshot.val();
-                console.log("getting value", childSnapshot.val());
-                var histimestamp;
-                for (var key in data) {
-                    histimestamp = parseInt(key);
-                    place = data[key]["place"]
-                }
-                var histtime = new Date(histimestamp).getMinutes();
-                console.log("Hist TIme", histtime)
-                var calledtime = calltime.getMinutes();
-                console.log("Present TIme", Math.abs(calledtime - histtime));
-
-                if (Math.abs(calledtime - histtime) >= 45) {
-                    parking(req, uid);
-                }
-            });
-        }
-    });
-    firebase1.database().ref("users").child(uid).off("value")
-
-    var rest, park, histRest, histPark;
-    await firebase.database().ref("users").child(uid).on('value', function (snapshot) {
-        rest = snapshot.val().countRest;
-        park = snapshot.val().countPark;
-        if (snapshot.hasChild('HistoryPark') == false) {
-            histPark = null
-        } else {
-            histPark = snapshot.val().HistoryPark
-
-        }
-        if (snapshot.hasChild('HistoryRest') == false) {
-            histRest = null
-        } else {
-            histRest = snapshot.val().HistoryRest
-        }
-    });
-    firebase.database().ref("users").child(uid).off('value')
-    console.log("Park is ", park);
-    console.log("Rest is", rest);
-    console.log("")
-
-
 
 }
 
@@ -319,23 +254,6 @@ function getRestCount() {
     });
     updatecount.child(uid).off("value")
     return data.countRest;
-}
-
-async function parking(req, uid) {
-    // console.log("Inside Restaurant Function",req.body)
-    var ref = firebase1.database().ref("Parks");
-
-
-    await ref.on('value', async function (snapshot) {
-        snapshot.forEach(function (child) {
-            data = child.val();
-            if (lat > data.swlat && lat < data.nelat && long > data.swlong && long < data.nelong) {
-                console.log("Place", data.place)
-
-            }
-        });
-    });
-
 }
 
 async function updateParkcounting() {

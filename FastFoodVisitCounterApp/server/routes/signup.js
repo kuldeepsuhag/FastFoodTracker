@@ -12,21 +12,23 @@ module.exports = (req, res) => {
     if (req.body) {
       var data;
       firebaseApp.firebaseApp.auth().createUserWithEmailAndPassword(req.body.email, req.body.password)
+      .then(function (user) {
+        console.log(user.user.uid);
+        setUser(req, res, user.user.uid)
+      })
         .catch(function (err) {
           if (err.code == 'auth/email-already-in-use') {
             res.status(400).send(err);
           }
           console.log(err.code);
-        }).then(function (user) {
-          //  console.log(user);
-        });
+        })
+      }
+      }), timeOut);
+    }
 
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          // User logged in already or has just logged in.
-          //  var userId = user.uid
-
-          firebase.database().ref('users/' + user.uid).set({
+  function setUser(req, res, uid){
+        if (uid) {
+          firebase.database().ref('users/' + uid).set({
             name: req.body.name,
             Email: req.body.email,
             PatientID: req.body.patientId,
@@ -37,51 +39,39 @@ module.exports = (req, res) => {
             countPark: 0,
             previoustime: null
           });
-
           console.log("User Data Completed");
-          console.log(typeof req.body.image);
           var firebaseStorage = firebase.storage().ref();
           var metadata = {
             contentType: 'image/jpeg',
           };
-          // global.atob = base64.encode;
           if(req.body.image != null){
-            firebaseStorage.child(user.uid).putString(req.body.image, 'raw', metadata).then(function (snapshot) {
+            firebaseStorage.child(uid).putString(req.body.image, 'raw', metadata).then(function () {
               console.log('Uploaded a data_url string!');
             });
           }
-          firebase.database().ref('PatientID/' + req.body.patientId).set({
-            UID: user.uid,
-            Email: req.body.email,
-            doctorId: req.body.doctorId,
-            PatientName: req.body.name
-          });
-          var ref = firebase.database().ref('users');
-          nextref = ref.child(user.uid).on("value", function (childSnapshot) {
-            data = childSnapshot.val();
-            console.log("Email ID " + data.Email);
-            console.log(JSON.stringify(childSnapshot));
+          // var ref = firebase.database().ref('users');
+          // ref.child(user.uid).on("value", function (childSnapshot) {
+          //   data = childSnapshot.val();
+          //   console.log("Email ID " + data.Email);
+          //   console.log(JSON.stringify(childSnapshot));
             let perdata = {
-              name: data.name, //getting
-              Email: data.Email, //getting
-              PatientID: data.PatientID, 
-              doctorId: data.doctorId, //getting
-              height: data.height, //getting
-              weight: data.weight, //getting
+              name: req.body.name, //getting
+              Email: req.body.email, //getting
+              PatientID: req.body.patientId, 
+              doctorId: req.body.doctorId, //getting
+              height: req.body.height, //getting
+              weight: req.body.weight, //getting
               image: req.body.image,
-              rest: data.countRest,
-              park: data.countPark
+              userID: uid,
+              rest: 0,
+              park: 0
             }
-            ref.child(user.uid).off("value")
             console.log("Sending data" + perdata);
+            // ref.child(user.uid).off("value");
             res.status(200).send(perdata);
-
-          });
+          // });
         }
-      });
-    }
     else {
       res.status(400).send(error);
     }
-  }), timeOut);
-};
+  }

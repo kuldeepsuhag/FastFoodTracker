@@ -4,12 +4,11 @@ var uid;
 var user = firebase.database().ref("users");
 module.exports = (req, res) => {
     if (req.body) {
-        getHistory(req.body.history, res)
+        getHistory(req.body.history, req.body.uid, res)
     }
 }
 
-async function getHistory(isPark, res) {
-    uid = await assignuid();
+async function getHistory(isPark, uid, res) {
     if (uid) {
         historyisPresent = await isHistory(uid, isPark);
         if (historyisPresent) {
@@ -18,13 +17,6 @@ async function getHistory(isPark, res) {
             res.status(200).send("No data")
         }
     }
-}
-
-async function assignuid() {
-    await firebase.auth().onAuthStateChanged(function (user) {
-        uid = user.uid;
-    });
-    return uid;
 }
 
 async function isHistory(uid, isPark) {

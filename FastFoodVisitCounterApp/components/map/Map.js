@@ -152,7 +152,8 @@ class Map extends React.Component {
       method: 'post',
       url: url + "/getHistory",
       data: {
-        history: isPark
+        history: isPark,
+        uid: this.props.userDetails.userID
       }
     }).then((response) => {
       if (response.data !== "No data") {
@@ -342,8 +343,8 @@ class Map extends React.Component {
         url: url + "/map-data",
         data: {
           latitude: lat,
-          longitude: lon
-          // place: city
+          longitude: lon,
+          uid: this.props.userDetails.userID
         }
       }).then((response) => {
         if (this._isMounted) {
@@ -517,40 +518,6 @@ class Map extends React.Component {
   }
 }
 
-// TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
-//   if (error) {
-//     // Error occurred - check `error.message` for more details.
-//     console.log("error" + error.message)
-//     return;
-//   }
-//   if (data) {
-//     const { locations } = data;
-//     console.log('background locations', locations)
-//     let lat = locations[0].coords.latitude
-//     let lon = locations[0].coords.longitude
-//     let locationObj = {
-//       latitude: lat,
-//       longitude: lon
-//     }
-
-//     var url = ip.ip.address;
-
-//     axios({
-//       method: 'post',
-//       url: url + "/map-data",
-//       data: {
-//         latitude: lat,
-//         longitude: lon
-//       }
-//     }).then((response) => {
-//        console.log(response.data);
-//     }).catch((error) => {
-//       console.log(error);
-//     });
-
-//   }
-// });
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -585,4 +552,10 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connect()(Map)
+const mapStateToProps = (state) => {
+  return {
+      userDetails: state
+  }
+}
+
+export default connect(mapStateToProps)(Map)

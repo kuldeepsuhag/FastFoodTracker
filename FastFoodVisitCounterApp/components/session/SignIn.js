@@ -108,7 +108,8 @@ class SignIn extends React.Component {
         }).then((response) => {
             that.setState({visible: false})
          //   that.props.dispatch(loggedIn(true))
-            this.setDetail(response);
+         console.log("**************RESPONSE****", response.data.userID)
+        this.setDetail(response);
         }).catch((error) => {
             console.log("error")
             that.setState({ visible: false })
@@ -214,8 +215,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'stretch',
-        // paddingTop: 40,
-        // background Color: '#3066c9',
         height: '100%'
     },
     action: {
@@ -252,32 +251,11 @@ const styles = StyleSheet.create({
         borderRadius: 45,
         fontSize: 16,
         paddingLeft: 45,
-        // backgroundColor: 'rgb(151,214,240)',
         backgroundColor: 'rgb(255,255,255)',
         color: 'rgb(36,133,202)',
         marginHorizontal: 25,
         marginBottom: '2%'
     },
-    // btnlogin: {
-    //     width: WIDTH - 250,
-    //     height: 45,
-    //     borderRadius: 45,
-    //     backgroundColor: 'rgb(36,133,202)',
-    //     justifyContent: 'center',
-    //     marginTop: 20,
-    //     marginBottom: '2%',
-    //     // marginLeft: 130
-
-    // },
-    // text:{
-    //     color: "rgb(245,245,245)",
-    //     fontSize: 16,
-    //     textAlign: 'center',
-    // },
-    // loginButton: {
-    //     backgroundColor: 'red',
-    //     color: 'white'
-    // },
     nextButton: {
         backgroundColor: 'rgb(36,133,202)',
         borderRadius: 45,

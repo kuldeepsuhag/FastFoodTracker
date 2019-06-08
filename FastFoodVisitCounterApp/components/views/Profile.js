@@ -142,12 +142,14 @@ class Profile extends React.Component {
             this.setState({ visible: true })
             let that = this
             var url = ip.ip.address;
+            console.log("UPDATING !!!!!", this.props.userDetails.userID)
             axios({
                 method: 'post',
                 url: url + "/updateValue",
                 data: {
                     updateValue: inputText,
-                    label: updateValue
+                    label: updateValue,
+                    userId: this.props.userDetails.userID
                 }
             }).then((response) => {
                 that.setState({ visible: false })
@@ -205,6 +207,7 @@ class Profile extends React.Component {
     }
 
     render() {
+        console.log(this.props.userDetails)
         return (
             <View style={{ flex: 1, backgroundColor: '#00FFF' }}>
                 <Header centerComponent={{
