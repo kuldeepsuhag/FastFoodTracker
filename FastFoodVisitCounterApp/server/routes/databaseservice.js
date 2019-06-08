@@ -2,7 +2,6 @@ require('firebase/database')
 require('firebase/auth')
 var moment = require('moment')
 firebase1 = require('firebase/app')
-var calltime
 var category;
 var place;
 var calltime;
