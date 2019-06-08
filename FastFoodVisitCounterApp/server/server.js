@@ -15,7 +15,7 @@ app.use(bodyParser.json({ limit: '50mb', extended: true }));
 app.post("/signup", require("./routes/signup"));
 app.post("/signin", require("./routes/signin"));
 app.post("/map-data", require("./routes/databaseservice"));
-app.get("/step-data", require("./routes/stepservice"));
+app.post("/step-date", require("./routes/getDate"));
 app.post("/step-data", require("./routes/stepservicepost"));
 app.post("/updateValue", require("./routes/updateValue"));
 app.post("/signout", require("./routes/signout"));

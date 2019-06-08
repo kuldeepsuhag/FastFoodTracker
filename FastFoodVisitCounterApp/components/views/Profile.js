@@ -34,6 +34,7 @@ class Profile extends React.Component {
         this.showDoctorDialog = this.showDoctorDialog.bind(this);
         this.bmi = this.bmi.bind(this);
         this.signout = this.signout.bind(this);
+        this.disable = this.disable.bind(this);
     }
     showWeightDialog(close) {
         if (close) { Keyboard.dismiss() }
@@ -52,6 +53,7 @@ class Profile extends React.Component {
         this.setState({ showDoctorModal: !(this.state.showDoctorModal) });
     }
     componentDidMount() {
+        console.log("test")
         this.bmi(this.props.userDetails.height, this.props.userDetails.weight);
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
@@ -142,7 +144,6 @@ class Profile extends React.Component {
             this.setState({ visible: true })
             let that = this
             var url = ip.ip.address;
-            console.log("UPDATING !!!!!", this.props.userDetails.userID)
             axios({
                 method: 'post',
                 url: url + "/updateValue",
@@ -154,7 +155,6 @@ class Profile extends React.Component {
             }).then((response) => {
                 that.setState({ visible: false })
                 this.updateRedux(inputText, updateValue)
-                console.log(response.data);
             }).catch((error) => {
                 that.setState({ visible: false })
                 console.log(error);
@@ -166,12 +166,10 @@ class Profile extends React.Component {
         this.setState({ visible: true })
         var url = ip.ip.address;
         var that = this;
-        console.log("signout")
         axios({
             method: 'post',
-            url: url + "/signout",
+            url: url + "/signout"
         }).then((response) => {
-            console.log(response.data)
             that.setState({ visible: false })
             AsyncStorage.clear();
             that.props.history.push("/");
@@ -188,10 +186,12 @@ class Profile extends React.Component {
         })
         var url = ip.ip.address;
         var that = this;
-        console.log("Test")
         axios({
             method: 'post',
             url: url + "/disable",
+            data: {
+                userId: this.props.userDetails.userID
+            }
         }).then((response) => {
             console.log(response.data)
             that.setState({

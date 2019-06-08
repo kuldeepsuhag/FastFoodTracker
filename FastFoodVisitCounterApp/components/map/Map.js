@@ -8,7 +8,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import ip from '../../config';
 import axios from "axios";
 import { connect } from 'react-redux'
-import { stepData } from '../../redux/actions/index'
 import { Header } from 'react-native-elements'
 import AnimatedLoader from "react-native-animated-loader";
 import Modal from "react-native-modal";
@@ -24,9 +23,6 @@ class Map extends React.Component {
       locationResult: null,
       lat: null,
       long: null,
-      city: null,
-      roundedLat: null,
-      roundedLong: null,
       isPedometerAvailable: "",
       countFastFood: 0,
       countPark: 0,
@@ -39,12 +35,11 @@ class Map extends React.Component {
     };
   }
 
-   componentDidMount() {
+  componentDidMount() {
     this._isMounted = true;
     this._getLocationAsync();
-    this._getStepCounterData();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
-    this.sendStepData();
+    this.getLastSavedData();
   }
 
   componentWillUnmount() {
@@ -52,9 +47,6 @@ class Map extends React.Component {
   }
 
   componentWillMount() {
-    console.log(moment())
-    console.log(moment().parseZone("Australia/Melbourne").format('YYYY:MM:DD HH:mm:ss'))
-    // let time = moment(date).parseZone("Australia/Melbourne");
     let that = this
     setTimeout(function () {
       that.setState({
@@ -67,80 +59,13 @@ class Map extends React.Component {
     this.props.history.goBack();
     return true;
   }
-  _getStepCounterData = async () => {
-    Pedometer.isAvailableAsync().then(
-      result => {
-        this.setState({
-          isPedometerAvailable: String(result)
-        });
-      },
-      error => {
-        this.setState({
-          isPedometerAvailable: "Could not get is PedometerAvailable: " + error
-        });
-        console.log("Error with Pedometer: " + error)
-      }
-    );
-    //Creating the data step data for the last week
-    const today = new Date();
-    let that = this;
-    let DataForGraph = {}
-    // Send datelabel if date is needed
-    // let dateLabels = []
-    let dayLabels = []
-    let noOfSteps = []
-    let weekDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    for (let i = 6; i > 0; i--) {
-
-      let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
-      let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
-      // Uncomment to get the state string
-      // let dateString = startInterval.getDate() + '/' + (startInterval.getMonth() + 1) + '/' + startInterval.getFullYear();
-
-      // let dayString = weekDay[prevDate.getDay()];
-      let dayString = weekDay[start.getDay()];
-
-      Pedometer.getStepCountAsync(start, end).then(
-        result => {
-          // Send datelabel if date is needed
-          // Send datelabel if date is neededpr
-          // dateLabels.push(dateString.toString());
-          noOfSteps.push(result.steps);
-        },
-        error => {
-          // Send datelabel if date is needed
-          // dateLabels.push(dateString.toString());
-          noOfSteps.push(0);
-          console.log("Step Data Not Available");
-        }
-      );
-      dayLabels.push(dayString)
-    }
-
-    setTimeout(function () {
-      DataForGraph = {
-        labels: dayLabels,
-        datasets: [{
-          data: noOfSteps
-        }]
-      }
-      that.props.dispatch(stepData(DataForGraph));
-    }, 2000);
-  }
 
   formatDataForModal(historyData) {
-    // console.log(historyData)
     for (let i = 0; i < historyData.length; i++) {
-      console.log(historyData[i])
       historyData[i].index = i;
       let date = new moment(historyData[i].histimestamp)
       date = date.parseZone("Australia/Melbourne")
-      // console.log(date.date())
-      // console.log(date.month())
-      // console.log(date.year())
-      // let date = new Date(historyData[i].histimestamp)
-      // date = date.getDate("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getMonth("en-US", { timeZone: "Australia/Brisbane" }) + '/' + date.getFullYear("en-US", { timeZone: "Australia/Brisbane" }) + ' - ' + date.getHours("en-US", { timeZone: "Australia/Brisbane" }) + ':' + date.getMinutes("en-US", { timeZone: "Australia/Brisbane" })
-      historyData[i].date = "Date: " + date.date() + '/' + (date.month() + 1) + '/' + date.year() + "         " + "Time: " + ((date.hour()+10 > 12) ? (date.hour()+10 - 12) : date.hour()+10) + ':' + ((date.minutes() < 10) ? ("0" + date.minutes()) : date.minutes()) + ((date.hour()+10 >= 12) ? " PM" : " AM");
+      historyData[i].date = "Date: " + date.date() + '/' + (date.month() + 1) + '/' + date.year() + "         " + "Time: " + ((date.hour() + 10 > 12) ? (date.hour() + 10 - 12) : date.hour() + 10) + ':' + ((date.minutes() < 10) ? ("0" + date.minutes()) : date.minutes()) + ((date.hour() + 10 >= 12) ? " PM" : " AM");
     }
     return historyData
   }
@@ -174,23 +99,19 @@ class Map extends React.Component {
     });
   }
 
-  sendStepData() {
-    this.getLastSavedData();
-  }
-
   getLastSavedData() {
-    // var url = ip.ip.address;
-    // var that = this;
-    // axios.get(url + "/get-last-date").then((response) => {
-    //   console.log(response.data);
-    //   this.setState({
-    //     lastStepDataTimestamp: response.data
-    //   })
-    // }).catch((error) => {
-    //   console.log(error);
-    // });
-    var myDate = "26-05-2019";
-    this.setState({lastStepDataDate: myDate},() =>{ this.getDataForServer()})
+    var url = ip.ip.address;
+    axios({
+      method: 'post',
+      url: url + "/step-date",
+      data: {
+        uid: this.props.userDetails.userID
+      }
+    }).then((response) => {
+      this.setState({ lastStepDataDate: response.data }, () => { this.getDataForServer() })
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
   async getDataForServer() {
@@ -236,10 +157,6 @@ class Map extends React.Component {
       dataForServer.push(stepDataObject);
     }
     setTimeout(function () {
-      // for (let i = 0; i < dataForServer.length; i++) {
-      //   console.log(dataForServer[i].date)
-      //   console.log(dataForServer[i].step)
-      // }
       that._sendDataToServer(dataForServer)
     }, 2000);
 
@@ -250,7 +167,10 @@ class Map extends React.Component {
     axios({
       method: 'post',
       url: url + "/step-data",
-      data: stepDataForServer
+      data: {
+        stepData : stepDataForServer,
+        uid: this.props.userDetails.userID
+      }
     }).then((response) => {
       console.log(response.data);
     }).catch((error) => {
@@ -260,83 +180,57 @@ class Map extends React.Component {
 
   _handleMapRegionChange = async () => {
     let location = await Location.getCurrentPositionAsync({});
-    this.setState({ locationResult: JSON.stringify(location) });
-    let latitute = location.coords.latitude.toFixed(4)
-    let longitude = location.coords.longitude.toFixed(4)
-    this._getLocationAsync();
-    // if (this.state.roundedLat == null && this.state.roundedLong == null) {
-    //   this.setState({
-    //     roundedLat: latitute,
-    //     roundedLong: longitude
-    //   })
-    //   this._getLocationAsync();
-    // } else if (this.state.roundedLat !== latitute ||
-    //   this.state.roundedLong !== longitude) {
-    //   this.setState({
-    //     roundedLat: latitute,
-    //     roundedLong: longitude
-    //   })
-    //   this._getLocationAsync();
-    // }
-
+    if (this._isMounted) {
+      this.setState({ locationResult: JSON.stringify(location) });
+      this._getLocationAsync();
+    }
   };
 
   _getLocationAsync = async () => {
     let isGPSOn = await Location.hasServicesEnabledAsync();
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
-      this.setState({
-        locationResult: 'Location Permissions Needed to proceed',
-      });
-    } else {
-      this.setState({ hasLocationPermissions: true });
-    }
 
-    if (isGPSOn) {
-      let location = await Location.getCurrentPositionAsync({});
-      this.setState({ locationResult: JSON.stringify(location) });
+    if (this._isMounted) {
+      if (status !== 'granted') {
+        this.setState({
+          locationResult: 'Location Permissions Needed to proceed',
+        });
+      } else {
+        this.setState({ hasLocationPermissions: true });
+      }
 
-      // let latitute = location.coords.latitude
-      // let longitude = location.coords.longitude
-
-      // let locationObj = {
-      //   latitude: latitute,
-      //   longitude: longitude
-      // }
-
-      // let geoResult = await Location.reverseGeocodeAsync(locationObj)
-
-
-      // this.setState({ locationResult: JSON.stringify(location) });
-      this.setState({ lat: location.coords.latitude });
-      this.setState({ long: location.coords.longitude });
-      // this.setState({ city: (geoResult[0].city)?  geoResult[0].city: ""});
-
-      // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
-      // The map computes two values, longitudeDelta/width and latitudeDelta/height, compares those 2 computed values, and takes the larger of the two.
-      // The map is zoomed according to the value chosen in step 2 and the other value is ignored.
-      // If the chosen value is longitudeDelta, then the left edge is longitude - longitudeDelta and the right edge is longitude + longitudeDelta. The top and bottom are whatever values are needed to fill the height without stretching the map.
-      // If the chosen value is latitudeDelta, then the bottom edge is latitude - latitudeDelta and the top edge is latitude + latitudeDelta. The left and right are whatever values are needed to fill the width without stretching the map.
-      this.setState({ mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 } });
-      // this.sendMapData(this.state.latitude, this.state.longitude, this.state.city)
-      this.sendMapData(this.state.lat, this.state.long)
-    } else {
-      Alert.alert(
-        'Location Services Are Disabled',
-        'Please turn on location services to proceed.',
-        [
-          { text: 'Close App', onPress: () => BackHandler.exitApp() },
-        ],
-        { cancelable: false }
-      )
+      if (isGPSOn) {
+        let location = await Location.getCurrentPositionAsync({});
+        if (this._isMounted) {
+          this.setState({
+            locationResult: JSON.stringify(location),
+            lat: location.coords.latitude,
+            long: location.coords.longitude,
+            mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }
+          });
+          this.sendMapData(this.state.lat, this.state.long)
+        }
+        // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
+        // The map computes two values, longitudeDelta/width and latitudeDelta/height, compares those 2 computed values, and takes the larger of the two.
+        // The map is zoomed according to the value chosen in step 2 and the other value is ignored.
+        // If the chosen value is longitudeDelta, then the left edge is longitude - longitudeDelta and the right edge is longitude + longitudeDelta. The top and bottom are whatever values are needed to fill the height without stretching the map.
+        // If the chosen value is latitudeDelta, then the bottom edge is latitude - latitudeDelta and the top edge is latitude + latitudeDelta. The left and right are whatever values are needed to fill the width without stretching the map.
+      } else {
+        Alert.alert(
+          'Location Services Are Disabled',
+          'Please turn on location services to proceed.',
+          [
+            { text: 'Close App', onPress: () => BackHandler.exitApp() },
+          ],
+          { cancelable: false }
+        )
+      }
     }
   };
 
-  // sendMapData(lat, lon, city) {
   sendMapData(lat, lon) {
     let that = this
     var url = ip.ip.address;
-    // console.log("map data sent")
     if (lat != null && lon != null && lat != "" && lon != "") {
       axios({
         method: 'post',
@@ -352,7 +246,7 @@ class Map extends React.Component {
             countFastFood: response.data.countRest,
             countPark: response.data.countPark,
           });
-      }
+        }
       }).catch((error) => {
         console.log(error);
       });
@@ -367,6 +261,7 @@ class Map extends React.Component {
       />
     )
   }
+
   render() {
 
     return (
@@ -425,17 +320,6 @@ class Map extends React.Component {
                     onPress={() => { this.getParkHistory(false) }}
                     title={" " + this.state.countFastFood.toString()}
                   />
-
-                  {/* <TouchableOpacity style={{ backgroundColor: "red", width: '100%', height: '100%', marginRight: 5 }} onPress={this.getRestHistory}> */}
-                  {/* <Icon
-                    name="md-pizza"
-                    size={60}
-                    color="white"
-                  /> */}
-                  {/* <Text style={{ fontSize: '30px' }}>
-                    {this.state.countFastFood.toString()}
-                  </Text> */}
-                  {/* </TouchableOpacity> */}
                 </View>
                 <View style={{ width: '50%' }}>
                   <Button
@@ -450,25 +334,8 @@ class Map extends React.Component {
                     onPress={() => { this.getParkHistory(true) }}
                     title={" " + this.state.countPark.toString()}
                   />
-                  {/* <TouchableOpacity style={{ backgroundColor: "green", width: '100%', height: '100%', marginLeft: 5 }} onPress={this.getParkHistory}> */}
-                  {/* <Icon
-                    name="ios-american-football"
-                    size={60}
-                    color="white"
-                  /> */}
-                  {/* <Text style={{ fontSize: '30px' }}>
-                    {this.state.countPark.toString()}
-                  </Text> */}
-                  {/* </TouchableOpacity> */}
                 </View>
               </View>
-              {/* </CardItem> */}
-              {/* </Card> */}
-              {/* <Card>
-                <CardItem>
-                  <Text>Location Data: {this.state.locationResult}</Text>
-                </CardItem>
-              </Card> */}
             </View>
           </ImageBackground>
           <Modal isVisible={this.state.showRestModal}>
@@ -554,7 +421,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-      userDetails: state
+    userDetails: state
   }
 }
 

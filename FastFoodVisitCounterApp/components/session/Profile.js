@@ -94,7 +94,6 @@ class Profile extends React.Component {
     }
 
     storeData = async () => {
-        console.log("savingg");
         var that = this;
         const isLoggedIn = await AsyncStorage.getItem('@loggedIn')
         if(!isLoggedIn){
@@ -102,15 +101,11 @@ class Profile extends React.Component {
             await AsyncStorage.multiSet([isLoggedIn])
         }
         try {
-            console.log(this.props.userData.email)
             const username = ["@username", this.props.userData.email]
             const password = ["@password", this.props.userData.password]
             await AsyncStorage.multiSet([username, password], function () {
-                console.log("Saved");
-               //  that.props.dispatch(loggedIn(true));
                 that.props.history.push("/map");
             })
-            console.log(akshay);
         } catch (e) {
             // saving error
         }
@@ -135,9 +130,7 @@ class Profile extends React.Component {
                 image: this.state.base64
             }
         }).then((response) => {
-            console.log("SIGN UP DONE !!")
             that.setState({visible: false})
-            console.log(response.data);
             that.props.dispatch(userData(response.data));
             this.storeData();
         }).catch((error) => {
@@ -189,7 +182,6 @@ class Profile extends React.Component {
     };
 
     render() {
-        //  console.log(this.state.email);
         return (
             <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundcontainer}>
                 <AnimatedLoader

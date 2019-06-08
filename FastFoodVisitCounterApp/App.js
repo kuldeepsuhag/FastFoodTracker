@@ -33,20 +33,15 @@ export default class App extends React.Component {
     }
 
   async function checkUser(locations){
-    // console.log("Test")
     const isLoggedIn =   await AsyncStorage.getItem('@loggedIn')
-    // console.log(isLoggedIn)
     if(AppState.currentState === 'background' && isLoggedIn != null){
-        // console.log("BACKGROUND")
         var url =  ip.ip.address;
-        // console.log(locations[0].coords.latitude)
         axios({
           method: 'post',
           url: url + "/map-data",
           data: {
             latitude: locations[0].coords.latitude,
             longitude: locations[0].coords.longitude
-            // place: city
           }
         }).then((response) => {
           console.log(response)
@@ -60,9 +55,6 @@ export default class App extends React.Component {
       }
       if (data) {
         const { locations } = data;
-        // console.log("locations", locations)
-        // console.log(AppState.currentState)
         checkUser(locations);
-        // do something with the locations captured in the background
       }
     });

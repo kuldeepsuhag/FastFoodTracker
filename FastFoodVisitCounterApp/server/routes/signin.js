@@ -12,18 +12,14 @@ module.exports = (req, res) => {
     if (req.body) {
       var email = req.body.email;
       var password = req.body.password;
-      console.log(email)
       fire.firebaseApp.auth().signInWithEmailAndPassword(email, password)
         .then(function (user) {
             if (user) {
               var loggedInUser = user.user
-              console.log(loggedInUser.uid)
               var ref = firebase.database().ref('users');
               ref.child(loggedInUser.uid).once("value", function (childSnapshot) {
                 var data = childSnapshot.val();
-                console.log(JSON.stringify(childSnapshot));
                 firebaseStorage.child(loggedInUser.uid).getDownloadURL().then(function (url) {
-                  console.log(url)
                   getImage(url, data, res, loggedInUser.uid);
                 }).catch(function (error) {
                   console.log(error);
@@ -41,14 +37,12 @@ module.exports = (req, res) => {
 };
 
 async function getImage(url, data, res, uid) {
-  console.log(data)
   if(url != null){
     var urlFirebase = await fetch(url);
     var image = await urlFirebase.text();
   }else{
     var image = null;
   }
-  console.log("******* USER ID *******", uid)
 
   let perdata = {
     name: data.name,

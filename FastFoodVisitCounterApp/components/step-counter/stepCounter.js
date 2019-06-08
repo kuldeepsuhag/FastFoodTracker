@@ -16,34 +16,10 @@ class StepCounter extends React.Component {
     currentStepCount: 0
   };
   
-  _getDataFromServer = () =>{
-    var url = ip.ip.address;
-    var that = this;
-    axios.get(url + "/get-step-data").then((response) => {
-      console.log(response.data);
-    }).catch((error) => {
-      that.setState({dataAvailable: false});
-      console.log(error);
-    });
-  }
-
-  _sendDataToServer = (stepDataForServer) => {
-    var url = ip.ip.address;
-    axios({
-      method: 'post',
-      url: url + "/step-data",
-      data: stepDataForServer
-    }).then((response) => {
-      console.log(response.data);
-    }).catch((error) => {
-      console.log(error);
-    });
-  }
-
   render() {
 
     const data  = this.props.stepData
-
+console.log("STEP DATA" , data)
     const chartConfig = {
       backgroundGradientFrom: '#ffffff',
       backgroundGradientTo: '#ffffff',

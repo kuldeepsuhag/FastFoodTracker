@@ -73,7 +73,6 @@ class SignIn extends React.Component {
     setDetail = async (response) => {
         const username = await AsyncStorage.getItem('@username')
         const password = await AsyncStorage.getItem('@password')
-        console.log("SIGIN");
         const isLoggedIn = await AsyncStorage.getItem('@loggedIn')
         if(!isLoggedIn){
             await AsyncStorage.setItem("@loggedIn", "true")
@@ -86,7 +85,6 @@ class SignIn extends React.Component {
             const password = ["@password", this.state.password]
             var that = this;
             await AsyncStorage.multiSet([username, password], function () {
-                console.log("Saved");
                 that.props.dispatch(userData(response.data));
                 that.props.history.push("/map");
             })
@@ -107,9 +105,7 @@ class SignIn extends React.Component {
             }
         }).then((response) => {
             that.setState({visible: false})
-         //   that.props.dispatch(loggedIn(true))
-         console.log("**************RESPONSE****", response.data.userID)
-        this.setDetail(response);
+            this.setDetail(response);
         }).catch((error) => {
             console.log("error")
             that.setState({ visible: false })

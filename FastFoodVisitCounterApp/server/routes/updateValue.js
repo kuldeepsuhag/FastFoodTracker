@@ -18,7 +18,6 @@ async function getValues(uid, updatedValue, label, res){
     
 }
 async function updateValue(uid, updateValue, label) {
-    console.log(label)
     switch (label) {
         case "height":
             await firebase1.database().ref('users').child(uid).update({

@@ -19,6 +19,7 @@ export default class AppFooter extends React.Component {
         })
     } 
     profile() {
+        console.log("click")
         this.props.props.history.push({
             pathname: "/viewProfile"
         })
