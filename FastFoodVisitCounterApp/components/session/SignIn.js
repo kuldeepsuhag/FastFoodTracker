@@ -5,13 +5,12 @@ import { View, StyleSheet,AsyncStorage, ImageBackground, Image, Dimensions,
     TextInput, BackHandler, KeyboardAvoidingView, Keyboard } from 'react-native';
 import axios from "axios";
 import ip from "../../config";
-import ValidateForm from "../validate/ValidateForm"
-import { userData , loggedIn} from '../../redux/actions/index'
+import { userData } from '../../redux/actions/index'
 import { connect } from 'react-redux'
 import image from '../../Images/back.jpg' 
 import logo from '../../Images/logo.gif'
 const { width : WIDTH} = Dimensions.get('window')
-import Toast, { DURATION } from 'react-native-easy-toast'
+import Toast from 'react-native-easy-toast'
 import AnimatedLoader from "react-native-animated-loader";
 class SignIn extends React.Component {
     constructor(props, { }) {

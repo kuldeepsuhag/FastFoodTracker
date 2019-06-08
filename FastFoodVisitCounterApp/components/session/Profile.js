@@ -8,9 +8,8 @@ import { ImagePicker, Permissions } from 'expo';
 import ip from '../../config';
 import axios from "axios";
 import { connect } from 'react-redux'
-import { loggedIn, userData } from '../../redux/actions/index'
+import { userData } from '../../redux/actions/index'
 import logo from '../../Images/logo.gif'
-import Toast, { DURATION } from 'react-native-easy-toast'
 import { Button } from 'react-native-elements';
 import AnimatedLoader from "react-native-animated-loader";
 const { width: WIDTH } = Dimensions.get('window')

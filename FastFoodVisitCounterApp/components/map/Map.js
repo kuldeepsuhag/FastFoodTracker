@@ -1,6 +1,6 @@
 import React from 'react';
-import { Constants, MapView, Location, Permissions, Pedometer, TaskManager } from 'expo';
-import { StyleSheet, View, Alert, BackHandler, ImageBackground, FlatList, TouchableOpacity } from 'react-native';
+import { Constants, MapView, Location, Permissions, Pedometer } from 'expo';
+import { StyleSheet, View, Alert, BackHandler, ImageBackground, FlatList } from 'react-native';
 import AppFooter from '../footer/AppFooter'
 import { Card, CardItem, Text } from 'native-base';
 import { Button, ListItem } from 'react-native-elements';
@@ -14,8 +14,6 @@ import AnimatedLoader from "react-native-animated-loader";
 import Modal from "react-native-modal";
 import moment from "moment";
 
-
-const LOCATION_TASK_NAME = 'background-location-task';
 class Map extends React.Component {
   _isMounted = false;
   constructor(props, { }) {
@@ -41,14 +39,11 @@ class Map extends React.Component {
     };
   }
 
-  async componentDidMount() {
+   componentDidMount() {
     this._isMounted = true;
     this._getLocationAsync();
     this._getStepCounterData();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
-    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-      accuracy: Location.Accuracy.Lowest,
-    });
     this.sendStepData();
   }
 
@@ -180,7 +175,6 @@ class Map extends React.Component {
 
   sendStepData() {
     this.getLastSavedData();
-    this.getDataForServer();
   }
 
   getLastSavedData() {
@@ -195,9 +189,7 @@ class Map extends React.Component {
     //   console.log(error);
     // });
     var myDate = "26-05-2019";
-    this.setState({
-      lastStepDataDate: myDate
-    })
+    this.setState({lastStepDataDate: myDate},() =>{ this.getDataForServer()})
   }
 
   async getDataForServer() {

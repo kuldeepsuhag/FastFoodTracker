@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View } from 'react-native';
 import { Footer, FooterTab, Button, Icon } from 'native-base';
-import { Link } from "react-router-native";
 export default class AppFooter extends React.Component {
     constructor(props, { }) {
         super(props);

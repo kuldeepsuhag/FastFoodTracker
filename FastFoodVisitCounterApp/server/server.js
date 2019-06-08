@@ -2,9 +2,11 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
 const bodyParser = require("body-parser");
+var moment = require('moment-timezone')
 var authen = require('./routes/firebaseconfig')
 firebase = require('firebase/app');
 exports.firebaseApp = firebase.initializeApp(authen.config);
+moment.tz.setDefault("Australia/Melbourne");
 //Route setup
 // 
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
