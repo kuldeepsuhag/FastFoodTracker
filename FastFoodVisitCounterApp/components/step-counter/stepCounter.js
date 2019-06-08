@@ -17,9 +17,7 @@ class StepCounter extends React.Component {
   };
   
   render() {
-
     const data  = this.props.stepData
-console.log("STEP DATA" , data)
     const chartConfig = {
       backgroundGradientFrom: '#ffffff',
       backgroundGradientTo: '#ffffff',

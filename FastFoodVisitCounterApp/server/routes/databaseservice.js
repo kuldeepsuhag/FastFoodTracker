@@ -4,13 +4,13 @@ var moment = require('moment')
 firebase1 = require('firebase/app')
 var calltime
 var category;
-var uid;
 var place;
 var calltime;
-// var calltime = new moment().parseZone("Australia/Melbourne").format('YYYY-MM-DDTHH:mm:ss:SSS');
-var prevtime;
+
 module.exports = (req, res) => {
     calltime = new moment().parseZone("Australia/Melbourne").format();
+    console.log("CALLLL TIMEEEEE" , calltime)
+    console.log("UID" , req.body.uid)
     console.log("test: ", calltime)
     if (req.body) {
         checkUser(req.body, res)
@@ -31,28 +31,26 @@ async function inKFCorPark(userID, userlatitude, userLongtitude, res) {
     console.log(new moment())
     console.log(new moment().parseZone("Australia/Melbourne"))
    // console.log("Coordinates are", data)
-    uid = userID;
+    var uid = userID;
     console.log("UID after", uid)
 
-    await firebase.database().ref("Restaurants").on('value', async function (snapshot) {
+    await firebase.database().ref("Restaurants").once('value', async function (snapshot) {
         snapshot.forEach(function (child) {
-            data = child.val();
+            var data = child.val();
             if ((Math.abs(userlatitude.toFixed(4) - data.lat.toFixed(4)) <= 0.0002) && (Math.abs(userLongtitude.toFixed(4) - data.long.toFixed(4)) <= 0.0002)) {
                 category = "Rest"
-                console.log(category)
                 place = data.place;
                 console.log("TESTTTTT")
                 timevalidation(uid)
             }
         });
-        firebase.database().ref("Restaurants").off("value");
     });
 
 
 
-    await firebase.database().ref("Parks").on('value', async function (snapshot) {
+    await firebase.database().ref("Parks").once('value', async function (snapshot) {
         snapshot.forEach(function (child) {
-            data = child.val();
+            var data = child.val();
             if ((Math.abs(userlatitude.toFixed(4) - data.lat.toFixed(4)) <= 0.005) && (Math.abs(userLongtitude.toFixed(4) - data.long.toFixed(4)) <= 0.002)) {
                 category = "Parks"
                 place = data.place
@@ -62,38 +60,26 @@ async function inKFCorPark(userID, userlatitude, userLongtitude, res) {
 
             }
         });
-        firebase.database().ref("Parks").off("value");
     });
 
     var countRest, countPark;
     var sen;
-    await firebase.database().ref("users").child(uid).on("value", function (snapshot) {
+    await firebase.database().ref("users").child(uid).once("value", function (snapshot) {
         console.log(snapshot.val().countRest)
-
         sen = {
             countRest: snapshot.val().countRest,
             countPark: snapshot.val().countPark
         }
         console.log(sen)
-
+        res.status(200).send(sen);
 
     });
-    if (sen === undefined) {
-        sen = {
-            countRest: 0,
-            countPark: 0,
-        }
-        res.status(200).send(sen);
-    } else {
-        res.status(200).send(sen);
-    }
-
 
 }
 async function timevalidation(uid) {
     console.log("palce nnnnn", place)
 
-    await firebase.database().ref("users").child(uid).on("value", function (childSnapshot) {
+    await firebase.database().ref("users").child(uid).once("value", function (childSnapshot) {
         if (childSnapshot.hasChild('previoustime') == false || childSnapshot.val().previoustime == 0) {
             firebase1.database().ref('users').child(uid).update({
                 previoustime: calltime,
@@ -112,7 +98,7 @@ async function timevalidation(uid) {
             var currenttime = new moment().parseZone("Australia/Melbourne")
             // var now = currenttime.getTime("en-US", { timeZone: "Australia/Brisbane" });
 
-            prevtime = moment(childSnapshot.val().previoustime);
+            var prevtime = moment(childSnapshot.val().previoustime);
             console.log("Previous Time", prevtime.format('YYYY-MM-DDTHH:mm:ss:SSS'))
             currenttime = moment(calltime);
             console.log("Current TIme", currenttime.format('YYYY-MM-DDTHH:mm:ss:SSS'))
@@ -123,44 +109,46 @@ async function timevalidation(uid) {
 
 
             if ((Math.abs(diffDuration.minutes()) >= 5) && (prevplace === place)) {
-                updatevalues();
+                updatevalues(prevtime , uid);
             }
         }
     });
 
 }
 
-function updatevalues() {
+function updatevalues(prevtime, uid) {
     console.log("Inside Update")
     switch (category) {
-        case "Parks": updatingPark();
+        case "Parks": updatingPark(prevtime, uid);
             break;
 
-        case "Rest": updatingRest();
+        case "Rest": updatingRest(prevtime, uid);
             break
     }
 
 }
 
-async function updatingRest() {
+async function updatingRest(prevtime, uid) {
     console.log("UID is", uid)
-    await firebase1.database().ref("users").child(uid).on("value", function (childSnapshot) {
+    await firebase1.database().ref("users").child(uid).once("value", function (childSnapshot) {
         if (childSnapshot.hasChild('HistoryRest') == false) {
             console.log("FIRSTTT FUNCTION")
             updateRestcounting();
         }
         else {
-            firebase1.database().ref("users").child(uid).child('HistoryRest').orderByKey().limitToLast(1).on('value', function (childSnapshot) {
+            firebase1.database().ref("users").child(uid).child('HistoryRest').orderByKey().limitToLast(1).once('value', function (childSnapshot) {
                 console.log("SECOND FUNCTION")
-                data = childSnapshot.val();
+                var data = childSnapshot.val();
                 console.log("getting value", childSnapshot.val());
                 var histimestamp;
+                var histplace;
                 //   var place;
                 for (var key in data) {
-                    histimestamp = parseInt(key);
+                    histimestamp = key;
                     histplace = data[key]["place"]
                 }
-                histime = moment(histimestamp);
+                console.log(histimestamp)
+                var histime = moment(histimestamp);
                 console.log("Hist TIme", histime)
                 var calledtime = moment(calltime);
                 console.log("Call Time", calledtime)
@@ -168,19 +156,19 @@ async function updatingRest() {
                 const diffDuration = moment.duration(diff);
                 console.log("Present TIme", diffDuration.minutes());
 
-                if (Math.abs(diffDuration.minutes()) >= 2 && (diffDuration.hours()) == 0) {
+                if (Math.abs(diffDuration.minutes()) >= 20 && (diffDuration.hours()) == 0) {
                     console.log("FIRST ONE")
-                    updateRestcounting();
+                    updateRestcounting(prevtime, uid);
                 }
                 if (diffDuration.hours > 0) {
                     console.log("SECOND ONE")
-                    updateRestcounting()
+                    updateRestcounting(prevtime, uid)
                 }
                 console.log(histplace)
                 console.log(place)
                 if (histplace != place) {
                     console.log("THIRD ONE")
-                    updateRestcounting()
+                    updateRestcounting(prevtime, uid)
                 }
 
 
@@ -189,18 +177,17 @@ async function updatingRest() {
 
 
     });
-    firebase1.database().ref("users").child(uid).off("value")
 
 }
-async function updatingPark() {
+async function updatingPark(prevtime, uid) {
     console.log("UID in Rest is", uid)
-    await firebase1.database().ref("users").child(uid).on("value", function (childSnapshot) {
+    await firebase1.database().ref("users").child(uid).once("value", function (childSnapshot) {
         if (childSnapshot.hasChild('HistoryPark') == false) {
             console.log("FIRSTPark FUNCTION")
             updateParkcounting();
         }
         else {
-            firebase1.database().ref("users").child(uid).child('HistoryPark').orderByKey().limitToLast(1).on('value', function (childSnapshot) {
+            firebase1.database().ref("users").child(uid).child('HistoryPark').orderByKey().limitToLast(1).once('value', function (childSnapshot) {
                 console.log("SECOND FUNCTION")
                 data = childSnapshot.val();
                 console.log("getting value", childSnapshot.val());
@@ -218,7 +205,7 @@ async function updatingPark() {
                 console.log("Present TIme", diffDuration.minutes());
 
                 if (Math.abs(diffDuration.hours()) > 4) {
-                    updateParkcounting();
+                    updateParkcounting(prevtime);
                 }
 
             });
@@ -228,12 +215,9 @@ async function updatingPark() {
 }
 
 
-async function updateRestcounting() {
+async function updateRestcounting(prevtime, uid) {
     let count = await getRestCount(uid)
     var updatecount = firebase1.database().ref("users");
-    firebase1.database().ref("users").child(uid).off("value");
-    firebase1.database().ref("users").child(uid).child('HistoryRest').orderByKey().limitToLast(1).off('value')
-    updatecount.child(uid).off("value")
     console.log("TIME TO UPDATE")
     console.log(count)
     count = count + 1;
@@ -244,24 +228,19 @@ async function updateRestcounting() {
     updatecount.child(uid).child("HistoryRest").child(prevtime.format()).set({
         place: prevplace
     });
-    firebase1.database().ref("users").child(uid).off("value");
 }
-function getRestCount() {
+async function getRestCount(uid) {
     var updatecount = firebase1.database().ref("users");
-    updatecount.child(uid).on("value", function (snapshot) {
+    await updatecount.child(uid).once("value", function (snapshot) {
         data = snapshot.val();
         console.log(data)
     });
-    updatecount.child(uid).off("value")
-    return data.countRest;
+    return parseInt(data.countRest);
 }
 
-async function updateParkcounting() {
+async function updateParkcounting(prevtime, uid) {
     let count = await getParkCount(uid)
     var updatecount = firebase1.database().ref("users");
-    firebase1.database().ref("users").child(uid).off("value");
-    firebase1.database().ref("users").child(uid).child('HistoryPark').orderByKey().limitToLast(1).off('value')
-    updatecount.child(uid).off("value")
     console.log("TIME TO UPDATE")
     console.log(count)
     count = count + 1;
@@ -273,12 +252,12 @@ async function updateParkcounting() {
         place: place
     });
 }
-function getParkCount(uid) {
+async function getParkCount(uid) {
     console.log("Inside get park count")
     var updatecount = firebase1.database().ref("users");
-    updatecount.child(uid).on("value", function (snapshot) {
+   await updatecount.child(uid).once("value", function (snapshot) {
         data = snapshot.val();
         console.log(data)
     });
-    return data.countPark;
+    return parseInt(data.countPark);
 }

@@ -31,7 +31,6 @@ class Settings extends React.Component {
     }
 
     componentDidMount() {
-        console.log(this.props.currentGoal);
         if (this.props.currentGoal == null) {
             this.showGoalChangeDialog();
         }
@@ -106,8 +105,6 @@ class Settings extends React.Component {
             this.refs.toast.show('Enter a valid number')
         }
         else {
-            console.log(that.props.currentGoal)
-            console.log(stepGoal)
             that.setState({
                 visible: true
             })
@@ -121,7 +118,6 @@ class Settings extends React.Component {
                     userId: this.props.userId
                 }
             }).then((response) => {
-                console.log(response.data);
                 that.props.dispatch(currentGoal(stepGoal))
                 that.setState({ visible: false })
             }).catch((error) => {

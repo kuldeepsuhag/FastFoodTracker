@@ -65,7 +65,7 @@ class Map extends React.Component {
       historyData[i].index = i;
       let date = new moment(historyData[i].histimestamp)
       date = date.parseZone("Australia/Melbourne")
-      historyData[i].date = "Date: " + date.date() + '/' + (date.month() + 1) + '/' + date.year() + "         " + "Time: " + ((date.hour() + 10 > 12) ? (date.hour() + 10 - 12) : date.hour() + 10) + ':' + ((date.minutes() < 10) ? ("0" + date.minutes()) : date.minutes()) + ((date.hour() + 10 >= 12) ? " PM" : " AM");
+      historyData[i].date = "Date: " + date.date() + '/' + (date.month() + 1) + '/' + date.year() + "         " + "Time: " + ((date.hour() > 12) ? (date.hour() - 12) : date.hour()) + ':' + ((date.minutes() < 10) ? ("0" + date.minutes()) : date.minutes()) + ((date.hour() >= 12) ? " PM" : " AM");
     }
     return historyData
   }
@@ -242,6 +242,7 @@ class Map extends React.Component {
         }
       }).then((response) => {
         if (this._isMounted) {
+          console.log("COUNTER", response.data)
           that.setState({
             countFastFood: response.data.countRest,
             countPark: response.data.countPark,

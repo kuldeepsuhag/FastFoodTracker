@@ -53,7 +53,6 @@ class Profile extends React.Component {
         this.setState({ showDoctorModal: !(this.state.showDoctorModal) });
     }
     componentDidMount() {
-        console.log("test")
         this.bmi(this.props.userDetails.height, this.props.userDetails.weight);
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
@@ -193,7 +192,6 @@ class Profile extends React.Component {
                 userId: this.props.userDetails.userID
             }
         }).then((response) => {
-            console.log(response.data)
             that.setState({
                 visible: false
             })
