@@ -25,7 +25,8 @@ async function getLastDate(userRef , res){
             res.status(200).send(lastWeekDate);
         }else{
             for (var key in row) {
-                date = row[key]["date"]
+                // date = row[key]["date"]
+                date = row[key].date
                 res.status(200).send(date.toString());
             }
         }
