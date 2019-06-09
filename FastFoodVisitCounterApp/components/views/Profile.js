@@ -1,14 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, BackHandler, Image, ImageBackground, Keyboard, Dimensions, ScrollView, TouchableOpacity, AsyncStorage } from 'react-native';
-import { Card, Text } from 'native-base';
-import { Header, Button } from 'react-native-elements'
+import { Text } from 'native-base';
+import { Header } from 'react-native-elements'
 import AppFooter from '../footer/AppFooter'
 import { connect } from 'react-redux'
-// import { Route, Switch } from 'react-router-native'
-import StepCounter from '../step-counter/stepCounter';
 import { TextField } from 'react-native-material-textfield'
 import DialogInput from 'react-native-dialog-input';
-import ip from '../../config';
 import axios from "axios";
 import AnimatedLoader from "react-native-animated-loader";
 import { setHeight, setWeight, setDoctorID, setPatientId } from '../../redux/actions/index'
@@ -142,15 +139,10 @@ class Profile extends React.Component {
         else {
             this.setState({ visible: true })
             let that = this
-            var url = ip.ip.address;
-            axios({
-                method: 'post',
-                url: url + "/updateValue",
-                data: {
-                    updateValue: inputText,
-                    label: updateValue,
-                    userId: this.props.userDetails.userID
-                }
+            axios.post("/updateValue", {
+                updateValue: inputText,
+                label: updateValue,
+                userId: this.props.userDetails.userID
             }).then((response) => {
                 that.setState({ visible: false })
                 this.updateRedux(inputText, updateValue)
@@ -163,12 +155,8 @@ class Profile extends React.Component {
 
     signout() {
         this.setState({ visible: true })
-        var url = ip.ip.address;
         var that = this;
-        axios({
-            method: 'post',
-            url: url + "/signout"
-        }).then((response) => {
+        axios.post("/signout", {}).then((response) => {
             that.setState({ visible: false })
             AsyncStorage.clear();
             that.props.history.push("/");
@@ -183,14 +171,9 @@ class Profile extends React.Component {
         this.setState({
             visible: true
         })
-        var url = ip.ip.address;
         var that = this;
-        axios({
-            method: 'post',
-            url: url + "/disable",
-            data: {
-                userId: this.props.userDetails.userID
-            }
+        axios.post("/disable", {
+            userId: this.props.userDetails.userID
         }).then((response) => {
             that.setState({
                 visible: false

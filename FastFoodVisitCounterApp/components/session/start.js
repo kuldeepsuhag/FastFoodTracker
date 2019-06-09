@@ -5,7 +5,6 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { Location, TaskManager } from 'expo';
 import axios from "axios";
-import ip from "../../config";
 const { width: WIDTH } = Dimensions.get('window')
 const { height: HEIGHT } = Dimensions.get('window')
 let history;
@@ -97,15 +96,10 @@ async function checkUser(locations) {
     if (uid !== null) {
         if ((AppState.currentState === 'background' && uid !== "none") ||
             (AppState.currentState === 'active' && (path === 'settings' || path === 'viewProfile'))) {
-            var url = ip.ip.address;
-            axios({
-                method: 'post',
-                url: url + "/map-data",
-                data: {
+            axios.post("/map-data", {
                     latitude: locations[0].coords.latitude,
                     longitude: locations[0].coords.longitude,
                     uid: uid
-                }
             }).then((response) => {
 
             })

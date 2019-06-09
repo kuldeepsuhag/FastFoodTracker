@@ -5,7 +5,6 @@ import AppFooter from '../footer/AppFooter'
 import { Card, CardItem, Text } from 'native-base';
 import { Button, ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
-import ip from '../../config';
 import axios from "axios";
 import { connect } from 'react-redux'
 import { Header } from 'react-native-elements'
@@ -68,15 +67,10 @@ class Map extends React.Component {
   }
 
   getParkHistory = (isPark) => {
-    var url = ip.ip.address;
     let historyData = []
-    axios({
-      method: 'post',
-      url: url + "/getHistory",
-      data: {
-        history: isPark,
-        uid: this.props.userDetails.userID
-      }
+    axios.post("/getHistory", {
+      history: isPark,
+      uid: this.props.userDetails.userID
     }).then((response) => {
       if (response.data !== "No data") {
         for (let i = 0; i < response.data.length; i++) {
@@ -97,13 +91,8 @@ class Map extends React.Component {
   }
 
   getLastSavedData() {
-    var url = ip.ip.address;
-    axios({
-      method: 'post',
-      url: url + "/step-date",
-      data: {
-        uid: this.props.userDetails.userID
-      }
+    axios.post("/step-date", {
+      uid: this.props.userDetails.userID
     }).then((response) => {
       this.getDataForServer(response.data);
     }).catch((error) => {
@@ -160,14 +149,9 @@ class Map extends React.Component {
   }
 
   _sendDataToServer = (stepDataForServer) => {
-    var url = ip.ip.address;
-    axios({
-      method: 'post',
-      url: url + "/step-data",
-      data: {
-        stepData : stepDataForServer,
+    axios.post("/step-data", {
+        stepData: stepDataForServer,
         uid: this.props.userDetails.userID
-      }
     }).then((response) => {
     }).catch((error) => {
       console.log(error);
@@ -194,7 +178,7 @@ class Map extends React.Component {
             locationResult: location,
             mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }
           });
-          this.sendMapData(location.coords.latitude , location.coords.longitude)
+          this.sendMapData(location.coords.latitude, location.coords.longitude)
         }
         // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
         // The map computes two values, longitudeDelta/width and latitudeDelta/height, compares those 2 computed values, and takes the larger of the two.
@@ -216,19 +200,14 @@ class Map extends React.Component {
 
   sendMapData(lat, lon) {
     let that = this
-    var url = ip.ip.address;
     if (lat != null && lon != null && lat != "" && lon != "") {
-      axios({
-        method: 'post',
-        url: url + "/map-data",
-        data: {
+      axios.post("/map-data", {
           latitude: lat,
           longitude: lon,
           uid: this.props.userDetails.userID
-        }
       }).then((response) => {
         if (this._isMounted) {
-          if(that.state.restaurantCount !== response.data.restaurantCount || that.state.parkCount !== response.data.parkCount){
+          if (that.state.restaurantCount !== response.data.restaurantCount || that.state.parkCount !== response.data.parkCount) {
             that.setState({
               restaurantCount: response.data.restaurantCount,
               parkCount: response.data.parkCount,

@@ -4,7 +4,6 @@ import { Button } from 'react-native-elements';
 import { View, StyleSheet,AsyncStorage, ImageBackground, Image, Dimensions, 
     TextInput, BackHandler, KeyboardAvoidingView, Keyboard } from 'react-native';
 import axios from "axios";
-import ip from "../../config";
 import { userData } from '../../redux/actions/index'
 import { connect } from 'react-redux'
 import image from '../../Images/back.jpg' 
@@ -96,14 +95,9 @@ class SignIn extends React.Component {
         Keyboard.dismiss()
         this.setState({visible: true})
         let that = this
-        var url = ip.ip.address;
-        axios({
-            method: 'post',
-            url: url + "/signin",
-            data: {
-                email: stored ? username : this.state.email,
-                password: stored ? password : this.state.password
-            }
+        axios.post("/signin", {
+            email: stored ? username : this.state.email,
+            password: stored ? password : this.state.password
         }).then((response) => {
             this.setDetail(response);
         }).catch((error) => {

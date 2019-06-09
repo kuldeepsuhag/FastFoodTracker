@@ -1,11 +1,5 @@
-import Expo from "expo";
 import React from "react";
-import { Pedometer } from "expo";
-import { StyleSheet, Text, View } from "react-native";
-// import { BarChart, Grid, YAxis } from 'react-native-svg-charts'
-// import * as scale from 'd3-scale'
-import ip from '../../config';
-import axios from "axios";
+import { View } from "react-native";
 import {connect} from 'react-redux'
 import {Dimensions} from 'react-native';
 import {BarChart} from 'react-native-chart-kit'

@@ -5,7 +5,6 @@ import {
     Keyboard, ScrollView, BackHandler, KeyboardAvoidingView, Alert
 } from 'react-native';
 import { ImagePicker, Permissions } from 'expo';
-import ip from '../../config';
 import axios from "axios";
 import { connect } from 'react-redux'
 import { userData } from '../../redux/actions/index'
@@ -112,11 +111,7 @@ class Profile extends React.Component {
         Keyboard.dismiss()
         this.setState({visible:true})
         let that = this
-        var url = ip.ip.address;
-        axios({
-            method: 'post',
-            url: url + "/signup",
-            data: {
+        axios.post("/signup", {
                 email: this.props.userData.email,
                 password: this.props.userData.password,
                 patientId: this.props.userData.id,
@@ -125,7 +120,6 @@ class Profile extends React.Component {
                 height: this.state.height,
                 weight: this.state.weight,
                 image: this.state.base64
-            }
         }).then((response) => {
             that.setState({visible: false})
             that.props.dispatch(userData(response.data));

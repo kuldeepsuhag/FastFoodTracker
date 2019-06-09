@@ -5,7 +5,6 @@ import AppFooter from '../footer/AppFooter'
 import StepCounter from '../step-counter/stepCounter';
 import DailyGoal from '../daily-goal/dailyGoal'
 import DialogInput from 'react-native-dialog-input';
-import ip from '../../config';
 import image from '../../Images/back.jpg'
 import axios from "axios";
 import Toast, { DURATION } from 'react-native-easy-toast'
@@ -112,15 +111,10 @@ class Settings extends React.Component {
             that.setState({
                 visible: true
             })
-            var url = ip.ip.address;
-            axios({
-                method: 'post',
-                url: url + "/updateValue",
-                data: {
-                    updateValue: stepGoal,
-                    label: "currentGoal",
-                    userId: this.props.userId
-                }
+            axios.post("/updateValue", {
+                updateValue: stepGoal,
+                label: "currentGoal",
+                userId: this.props.userId
             }).then((response) => {
                 that.props.dispatch(currentGoal(stepGoal))
                 that.setState({ visible: false })
