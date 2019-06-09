@@ -2,16 +2,17 @@ require('firebase/auth')
 require('firebase/database')
 require('firebase/firestore');
 require('firebase/storage');
+var bleach = require('bleach');
 global.XMLHttpRequest = require("xhr2");
 var firebaseApp = require('../server');
-
 
 module.exports = (req, res) => {
   const timeOut = 500;
   setTimeout((function () {
     if (req.body) {
-      var data;
-      firebaseApp.firebaseApp.auth().createUserWithEmailAndPassword(req.body.email, req.body.password)
+      var email = bleach.sanitize(req.body.email)
+      var password = bleach.sanitize(req.body.password)
+      firebaseApp.firebaseApp.auth().createUserWithEmailAndPassword(email, password)
       .then(function (user) {
         setUser(req, res, user.user.uid)
       })
@@ -27,13 +28,14 @@ module.exports = (req, res) => {
 
   function setUser(req, res, uid){
         if (uid) {
+          console.log("NAMEEE" , req.body.name)
           firebase.database().ref('users/' + uid).set({
-            name: req.body.name,
-            Email: req.body.email,
-            PatientID: req.body.patientId,
-            doctorId: req.body.doctorId,
-            height: req.body.height,
-            weight: req.body.weight,
+            name: bleach.sanitize(req.body.name),
+            Email: bleach.sanitize(req.body.email),
+            PatientID: bleach.sanitize(req.body.patientId),
+            doctorId: bleach.sanitize(req.body.doctorId),
+            height: bleach.sanitize(req.body.height),
+            weight: bleach.sanitize(req.body.weight),
             countRest: 0,
             countPark: 0,
             previoustime: null
@@ -48,13 +50,13 @@ module.exports = (req, res) => {
             });
           }
             let perdata = {
-              name: req.body.name, //getting
-              Email: req.body.email, //getting
-              PatientID: req.body.patientId, 
-              doctorId: req.body.doctorId, //getting
-              height: req.body.height, //getting
-              weight: req.body.weight, //getting
-              image: req.body.image,
+              name: bleach.sanitize(req.body.name), //getting
+              Email: bleach.sanitize(req.body.email), //getting
+              PatientID: bleach.sanitize(req.body.patientId), 
+              doctorId: bleach.sanitize(req.body.doctorId), //getting
+              height: bleach.sanitize(req.body.height), //getting
+              weight: bleach.sanitize(req.body.weight), //getting
+              image: bleach.sanitize(req.body.image),
               userID: uid,
               rest: 0,
               park: 0

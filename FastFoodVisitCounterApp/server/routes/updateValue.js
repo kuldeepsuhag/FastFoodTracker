@@ -1,10 +1,11 @@
 require('firebase/database')
 firebase1 = require('firebase/app');
+var bleach = require('bleach');
 require('firebase/auth')
 
 module.exports = (req, res) => {
     if (req.body) {
-        getValues(req.body.userId, req.body.updateValue, req.body.label, res);
+        getValues(bleach.sanitize(req.body.userId),bleach.sanitize(req.body.updateValue), req.body.label, res);
     }
 }
 

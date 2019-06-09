@@ -1,10 +1,10 @@
 require('firebase/database');
 require('firebase/auth');
-var uid;
+var bleach = require('bleach');
 var user = firebase.database().ref("users");
 module.exports = (req, res) => {
     if (req.body) {
-        getHistory(req.body.history, req.body.uid, res)
+        getHistory(req.body.history, bleach.sanitize(req.body.uid), res)
     }
 }
 

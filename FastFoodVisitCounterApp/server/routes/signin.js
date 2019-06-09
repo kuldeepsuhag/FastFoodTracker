@@ -5,13 +5,14 @@ require('firebase/storage');
 const fetch = require('node-fetch');
 var fire = require('../server');
 var firebaseStorage = firebase.storage().ref();
+var bleach = require('bleach');
 
 module.exports = (req, res) => {
   const timeOut = 500;
   setTimeout((function () {
     if (req.body) {
-      var email = req.body.email;
-      var password = req.body.password;
+      var email = bleach.sanitize(req.body.email)
+      var password = bleach.sanitize(req.body.password)
       fire.firebaseApp.auth().signInWithEmailAndPassword(email, password)
         .then(function (user) {
             if (user) {

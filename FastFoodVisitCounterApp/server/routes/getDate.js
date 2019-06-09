@@ -1,10 +1,10 @@
 require('firebase/database')
 firebase = require('firebase/app');
+var bleach = require('bleach');
 module.exports = (req, res) => {
     if (req.body) {
         var ref = firebase.database().ref("StepData");
-        console.log("UID STEPS", req.body.uid)
-        userRef = ref.child(req.body.uid)
+        userRef = ref.child(bleach.sanitize(req.body.uid))
         getLastDate(userRef , res)
     } else {
         res.status(403).end();
@@ -25,8 +25,7 @@ async function getLastDate(userRef , res){
             res.status(200).send(lastWeekDate);
         }else{
             for (var key in row) {
-                // date = row[key]["date"]
-                date = row[key].date
+                 date = row[key]["date"]
                 res.status(200).send(date.toString());
             }
         }
