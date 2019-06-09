@@ -205,7 +205,6 @@ class Profile extends React.Component {
     }
 
     render() {
-        console.log(this.props.userDetails)
         return (
             <View style={{ flex: 1, backgroundColor: '#00FFF' }}>
                 <Header centerComponent={{

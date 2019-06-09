@@ -73,10 +73,11 @@ class SignIn extends React.Component {
     setDetail = async (response) => {
         const username = await AsyncStorage.getItem('@username')
         const password = await AsyncStorage.getItem('@password')
-        const isLoggedIn = await AsyncStorage.getItem('@loggedIn')
-        if(!isLoggedIn){
-            await AsyncStorage.setItem("@loggedIn", "true")
+        const userId = await AsyncStorage.getItem('@uid');
+        if(userId === null){
+            await AsyncStorage.setItem("@uid", response.data.userID)
         }
+        this.setState({visible: false})
         if (username !== null && password !== null) {
             this.props.dispatch(userData(response.data));
             this.props.history.push("/map");
@@ -104,7 +105,6 @@ class SignIn extends React.Component {
                 password: stored ? password : this.state.password
             }
         }).then((response) => {
-            that.setState({visible: false})
             this.setDetail(response);
         }).catch((error) => {
             console.log("error")

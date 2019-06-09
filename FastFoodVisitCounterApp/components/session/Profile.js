@@ -95,15 +95,12 @@ class Profile extends React.Component {
 
     storeData = async () => {
         var that = this;
-        const isLoggedIn = await AsyncStorage.getItem('@loggedIn')
-        if(!isLoggedIn){
-            const isLoggedIn = ["@loggedIn", "true"]
-            await AsyncStorage.multiSet([isLoggedIn])
-        }
+
         try {
             const username = ["@username", this.props.userData.email]
             const password = ["@password", this.props.userData.password]
-            await AsyncStorage.multiSet([username, password], function () {
+            const userId = ["@uid" , this.props.userData.userID]
+            await AsyncStorage.multiSet([username, password, userId], function () {
                 that.props.history.push("/map");
             })
         } catch (e) {

@@ -34,7 +34,11 @@ class Settings extends React.Component {
         if (this.props.currentGoal == null) {
             this.showGoalChangeDialog();
         }
-        this._getStepCounterData();
+        if(this.props.stepData == undefined){
+            this._getStepCounterData();
+        }else{
+            this.setState({loaded: false})
+        }
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
 
@@ -224,10 +228,11 @@ const styles = StyleSheet.create({
     }
 });
 
-const mapStateToProps = (userDetails) => {
+const mapStateToProps = (currentState) => {
     return {
-        currentGoal: userDetails.currentGoal,
-        userId: userDetails.userID
+        currentGoal: currentState.currentGoal,
+        userId: currentState.userID,
+        stepData: currentState.stepData
     }
 }
 

@@ -1,27 +1,27 @@
-import {
-    View,
-    StyleSheet,
-    ImageBackground,
-    Image,
-    Dimensions,
-
-    TextInput,
-    TouchableOpacity
-} from 'react-native';
-import { Content, Item, Label, Input, Text, Card, CardItem } from 'native-base';
+import { View, StyleSheet, ImageBackground, Image, Dimensions, TouchableOpacity, AppState, AsyncStorage } from 'react-native';
+import { Text } from 'native-base';
 import doc from '../../Images/doc.gif'
-import ip from "../../config";
 import React from 'react';
 import { connect } from 'react-redux'
-import { ThemeConsumer } from 'react-native-elements';
+import { Location, TaskManager } from 'expo';
+import axios from "axios";
+import ip from "../../config";
 const { width: WIDTH } = Dimensions.get('window')
 const { height: HEIGHT } = Dimensions.get('window')
+let history;
 
 class Start extends React.Component {
     constructor(props, { }) {
         super(props);
         this.signup = this.signup.bind(this);
         this.signin = this.signin.bind(this);
+    }
+
+    async componentDidMount() {
+        history = this.props.history;
+        await Location.startLocationUpdatesAsync('location', {
+            accuracy: Location.Accuracy.BestForNavigation
+        });
     }
 
     signup() {
@@ -40,8 +40,6 @@ class Start extends React.Component {
     render() {
         return (
             <ImageBackground backgroundColor='white' style={styles.backgroundcontainer}>
-
-
                 <View style={styles.logocontainer}>
                     <Image source={doc} style={styles.image} />
                 </View>
@@ -51,18 +49,13 @@ class Start extends React.Component {
                     </Text>
                 </View>
                 <View>
-
                     <TouchableOpacity style={styles.btnlogin} onPress={this.signin}>
                         <Text style={styles.text}>SignIn</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.btnlogin} onPress={this.signup}>
                         <Text style={styles.text}>Register</Text>
-
                     </TouchableOpacity>
-
                 </View>
-
-
             </ImageBackground>
         );
     }
@@ -97,4 +90,38 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     }
 });
+
+async function checkUser(locations) {
+    const uid = await AsyncStorage.getItem('@uid')
+    let path = history.location.pathname.slice(1);
+    if (uid !== null) {
+        if ((AppState.currentState === 'background' && uid !== "none") ||
+            (AppState.currentState === 'active' && (path === 'settings' || path === 'viewProfile'))) {
+            var url = ip.ip.address;
+            axios({
+                method: 'post',
+                url: url + "/map-data",
+                data: {
+                    latitude: locations[0].coords.latitude,
+                    longitude: locations[0].coords.longitude,
+                    uid: uid
+                }
+            }).then((response) => {
+
+            })
+        }
+    }
+
+}
+
+TaskManager.defineTask('location', ({ data, error }) => {
+    if (error) {
+        console.log(error.message)
+    }
+    if (data) {
+        const { locations } = data;
+        checkUser(locations);
+    }
+});
+
 export default connect()(Start)

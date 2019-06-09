@@ -21,8 +21,6 @@ class Map extends React.Component {
       mapRegion: null,
       hasLocationPermissions: false,
       locationResult: null,
-      lat: null,
-      long: null,
       isPedometerAvailable: "",
       countFastFood: 0,
       countPark: 0,
@@ -30,16 +28,15 @@ class Map extends React.Component {
       showRestModal: false,
       showParkModal: false,
       parkData: null,
-      restData: null,
-      lastStepDataTimestamp: null
+      restData: null
     };
   }
 
   componentDidMount() {
     this._isMounted = true;
     this._getLocationAsync();
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     this.getLastSavedData();
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
   }
 
   componentWillUnmount() {
@@ -108,13 +105,13 @@ class Map extends React.Component {
         uid: this.props.userDetails.userID
       }
     }).then((response) => {
-      this.setState({ lastStepDataDate: response.data }, () => { this.getDataForServer() })
+      this.getDataForServer(response.data);
     }).catch((error) => {
       console.log(error);
     });
   }
 
-  async getDataForServer() {
+  async getDataForServer(lastStepDataDate) {
     let that = this
     Pedometer.isAvailableAsync().then(
       result => {
@@ -133,7 +130,7 @@ class Map extends React.Component {
     let dataForServer = []
     let today = new Date()
     today = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
-    let nextRequiredDate = this.state.lastStepDataDate
+    let nextRequiredDate = lastStepDataDate
     nextRequiredDate = nextRequiredDate.split("-")
     nextRequiredDate = new Date(parseInt(nextRequiredDate[2]), parseInt(nextRequiredDate[1]) - 1, parseInt(nextRequiredDate[0]) + 1, 0, 0, 0, 0)
 
@@ -172,18 +169,13 @@ class Map extends React.Component {
         uid: this.props.userDetails.userID
       }
     }).then((response) => {
-      console.log(response.data);
     }).catch((error) => {
       console.log(error);
     });
   }
 
   _handleMapRegionChange = async () => {
-    let location = await Location.getCurrentPositionAsync({});
-    if (this._isMounted) {
-      this.setState({ locationResult: JSON.stringify(location) });
-      this._getLocationAsync();
-    }
+    this._getLocationAsync();
   };
 
   _getLocationAsync = async () => {
@@ -191,11 +183,7 @@ class Map extends React.Component {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
 
     if (this._isMounted) {
-      if (status !== 'granted') {
-        this.setState({
-          locationResult: 'Location Permissions Needed to proceed',
-        });
-      } else {
+      if (status === 'granted') {
         this.setState({ hasLocationPermissions: true });
       }
 
@@ -203,12 +191,10 @@ class Map extends React.Component {
         let location = await Location.getCurrentPositionAsync({});
         if (this._isMounted) {
           this.setState({
-            locationResult: JSON.stringify(location),
-            lat: location.coords.latitude,
-            long: location.coords.longitude,
+            locationResult: location,
             mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }
           });
-          this.sendMapData(this.state.lat, this.state.long)
+          this.sendMapData(location.coords.latitude , location.coords.longitude)
         }
         // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
         // The map computes two values, longitudeDelta/width and latitudeDelta/height, compares those 2 computed values, and takes the larger of the two.
@@ -242,11 +228,12 @@ class Map extends React.Component {
         }
       }).then((response) => {
         if (this._isMounted) {
-          console.log("COUNTER", response.data)
-          that.setState({
-            countFastFood: response.data.countRest,
-            countPark: response.data.countPark,
-          });
+          if(that.state.countFastFood !== response.data.countRest || that.state.countPark !== response.data.countPark){
+            that.setState({
+              countFastFood: response.data.countRest,
+              countPark: response.data.countPark,
+            });
+          }
         }
       }).catch((error) => {
         console.log(error);

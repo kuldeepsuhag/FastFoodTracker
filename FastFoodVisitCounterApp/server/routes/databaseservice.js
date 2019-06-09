@@ -132,7 +132,7 @@ async function updatingRest(prevtime, uid) {
     await firebase1.database().ref("users").child(uid).once("value", function (childSnapshot) {
         if (childSnapshot.hasChild('HistoryRest') == false) {
             console.log("FIRSTTT FUNCTION")
-            updateRestcounting();
+            updateRestcounting(prevtime, uid);
         }
         else {
             firebase1.database().ref("users").child(uid).child('HistoryRest').orderByKey().limitToLast(1).once('value', function (childSnapshot) {
@@ -183,7 +183,7 @@ async function updatingPark(prevtime, uid) {
     await firebase1.database().ref("users").child(uid).once("value", function (childSnapshot) {
         if (childSnapshot.hasChild('HistoryPark') == false) {
             console.log("FIRSTPark FUNCTION")
-            updateParkcounting();
+            updateParkcounting(prevtime, uid);
         }
         else {
             firebase1.database().ref("users").child(uid).child('HistoryPark').orderByKey().limitToLast(1).once('value', function (childSnapshot) {
@@ -204,7 +204,7 @@ async function updatingPark(prevtime, uid) {
                 console.log("Present TIme", diffDuration.minutes());
 
                 if (Math.abs(diffDuration.hours()) > 4) {
-                    updateParkcounting(prevtime);
+                    updateParkcounting(prevtime, uid);
                 }
 
             });
