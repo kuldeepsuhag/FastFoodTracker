@@ -3,7 +3,9 @@ import { View } from "react-native";
 import {connect} from 'react-redux'
 import {Dimensions} from 'react-native';
 import {BarChart} from 'react-native-chart-kit'
+
 class StepCounter extends React.Component {
+  
   state = {
     isPedometerAvailable: "checking",
     pastStepCount: 0,

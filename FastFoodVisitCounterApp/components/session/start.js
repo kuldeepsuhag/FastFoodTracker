@@ -5,7 +5,6 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { Location, TaskManager } from 'expo';
 import axios from "axios";
-const { width: WIDTH } = Dimensions.get('window')
 const { height: HEIGHT } = Dimensions.get('window')
 let history;
 

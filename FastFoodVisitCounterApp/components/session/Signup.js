@@ -2,7 +2,6 @@ import React from 'react';
 import { Text } from 'native-base';
 import { Button } from 'react-native-elements';
 import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, Keyboard, KeyboardAvoidingView, BackHandler } from 'react-native';
-import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
 import { connect } from 'react-redux'
 import image from '../../Images/back.jpg'

@@ -1,18 +1,17 @@
 import React from 'react';
-import { View, StyleSheet, BackHandler, Button, ImageBackground } from 'react-native';
 import { Pedometer } from 'expo';
+import { View, StyleSheet, BackHandler, Button, ImageBackground } from 'react-native';
+import { connect } from 'react-redux'
+import { Header } from 'react-native-elements'
+import axios from "axios";
+import AnimatedLoader from "react-native-animated-loader";
+import { ScrollView } from 'react-native-gesture-handler';
+import Toast, { DURATION } from 'react-native-easy-toast'
+import DialogInput from 'react-native-dialog-input';
 import AppFooter from '../footer/AppFooter'
 import StepCounter from '../step-counter/stepCounter';
 import DailyGoal from '../daily-goal/dailyGoal'
-import DialogInput from 'react-native-dialog-input';
-import image from '../../Images/back.jpg'
-import axios from "axios";
-import Toast, { DURATION } from 'react-native-easy-toast'
-import { connect } from 'react-redux'
 import { currentGoal } from '../../redux/actions/index'
-import { Header } from 'react-native-elements'
-import AnimatedLoader from "react-native-animated-loader";
-import { ScrollView } from 'react-native-gesture-handler';
 import { stepData } from '../../redux/actions/index'
 
 class Settings extends React.Component {
@@ -33,10 +32,10 @@ class Settings extends React.Component {
         if (this.props.currentGoal == null) {
             this.showGoalChangeDialog();
         }
-        if(this.props.stepData == undefined){
+        if (this.props.stepData == undefined) {
             this._getStepCounterData();
-        }else{
-            this.setState({loaded: false})
+        } else {
+            this.setState({ loaded: false })
         }
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
@@ -67,11 +66,9 @@ class Settings extends React.Component {
         let noOfSteps = []
         let weekDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
         for (let i = 6; i > 0; i--) {
-
             let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
             let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
             let dayString = weekDay[start.getDay()];
-
             Pedometer.getStepCountAsync(start, end).then(
                 result => {
                     noOfSteps.push(result.steps);
@@ -83,7 +80,6 @@ class Settings extends React.Component {
             );
             dayLabels.push(dayString)
         }
-
         setTimeout(function () {
             DataForGraph = {
                 labels: dayLabels,
@@ -108,9 +104,7 @@ class Settings extends React.Component {
             this.refs.toast.show('Enter a valid number')
         }
         else {
-            that.setState({
-                visible: true
-            })
+            that.setState({visible: true})
             axios.post("/updateValue", {
                 updateValue: stepGoal,
                 label: "currentGoal",
@@ -143,7 +137,7 @@ class Settings extends React.Component {
                     animationStyle={styles.lottie}
                     speed={1}
                 /> :
-                    <View style={{ flex: 1 }}> 
+                    <View style={{ flex: 1 }}>
                         <Header centerComponent={{
                             text: 'Analysis', style: {
                                 margin: 24,
@@ -165,7 +159,6 @@ class Settings extends React.Component {
                                 <View style={{ flex: 1 }}>
                                     <View>
                                         <StepCounter />
-                                        {/* <Text style={{ marginLeft: 130}}>Weekly Steps</Text> */}
                                     </View>
                                     <View style={{ flexDirection: "row" }}>
                                         <DailyGoal />

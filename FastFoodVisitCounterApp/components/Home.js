@@ -1,16 +1,13 @@
 import React from 'react';
+import { View} from 'react-native';
+import { Route, Switch } from 'react-router-native'
 import Map from './map/Map';
 import ViewProfile from './views/Profile';
 import Settings from './views/Settings';
 import Signup from './session/Signup';
 import SignIn from './session/SignIn';
 import Profile from "./session/Profile";
-import AppFooter from "./footer/AppFooter"
-import { View} from 'react-native';
-import { Route, Switch } from 'react-router-native'
 import Start from './session/start'
-
-
 
 class Home extends React.Component {
 

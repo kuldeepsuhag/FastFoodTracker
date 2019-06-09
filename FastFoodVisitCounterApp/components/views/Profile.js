@@ -1,17 +1,17 @@
 import React from 'react';
 import { View, StyleSheet, BackHandler, Image, ImageBackground, Keyboard, Dimensions, ScrollView, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Text } from 'native-base';
+import axios from "axios";
 import { Header } from 'react-native-elements'
-import AppFooter from '../footer/AppFooter'
 import { connect } from 'react-redux'
 import { TextField } from 'react-native-material-textfield'
 import DialogInput from 'react-native-dialog-input';
-import axios from "axios";
+import Toast from 'react-native-easy-toast'
 import AnimatedLoader from "react-native-animated-loader";
+import AppFooter from '../footer/AppFooter'
 import { setHeight, setWeight, setDoctorID, setPatientId } from '../../redux/actions/index'
-import Toast, { DURATION } from 'react-native-easy-toast'
-
 const { width: WIDTH } = Dimensions.get('window')
+
 class Profile extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -33,22 +33,23 @@ class Profile extends React.Component {
         this.signout = this.signout.bind(this);
         this.disable = this.disable.bind(this);
     }
-    showWeightDialog(close) {
-        if (close) { Keyboard.dismiss() }
+
+    showWeightDialog() {
         this.setState({ showWeightModal: !(this.state.showWeightModal) });
     }
-    showHeightDialog(close) {
-        if (close) { Keyboard.dismiss() }
+
+    showHeightDialog() {
         this.setState({ showHeightModal: !(this.state.showHeightModal) });
     }
-    showPatientDialog(close) {
-        if (close) { Keyboard.dismiss() }
+
+    showPatientDialog() {
         this.setState({ showPatientModal: !(this.state.showPatientModal) });
     }
-    showDoctorDialog(close) {
-        if (close) { Keyboard.dismiss() }
+
+    showDoctorDialog() {
         this.setState({ showDoctorModal: !(this.state.showDoctorModal) });
     }
+
     componentDidMount() {
         this.bmi(this.props.userDetails.height, this.props.userDetails.weight);
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
@@ -114,7 +115,6 @@ class Profile extends React.Component {
         }
     }
 
-
     updateValue(inputText, updateValue) {
         switch (updateValue) {
             case "height":
@@ -168,17 +168,12 @@ class Profile extends React.Component {
     }
 
     disable() {
-        this.setState({
-            visible: true
-        })
+        this.setState({visible: true})
         var that = this;
         axios.post("/disable", {
             userId: this.props.userDetails.userID
         }).then((response) => {
-            that.setState({
-                visible: false
-            })
-            //that.props.history.push("/");
+            that.setState({visible: false})
         }).catch((error) => {
             console.log("error", error)
             that.setState({
@@ -214,7 +209,6 @@ class Profile extends React.Component {
                                     'data:text/plain;base64,' + this.props.userDetails.image,
                             }}
                             /> : <Text></Text>}
-                        {/* <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Personal Details</Text> */}
                     </View>
                     <ScrollView>
                         <View style={{ flex: 1 }}>
@@ -320,7 +314,6 @@ class Profile extends React.Component {
                 <View style={{ height: 50, backgroundColor: '#ecf0f1' }}>
                     <AppFooter props={this.props} />
                 </View>
-
             </View >
 
         );
@@ -392,7 +385,6 @@ const styles = StyleSheet.create({
         width: WIDTH - 55,
         fontSize: 16,
         paddingLeft: 45,
-        // backgroundColor: 'rgb(151,214,240)',
         marginHorizontal: 25,
         marginBottom: '2%'
     },
