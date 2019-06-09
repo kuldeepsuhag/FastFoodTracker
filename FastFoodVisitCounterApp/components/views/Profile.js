@@ -11,7 +11,7 @@ import DialogInput from 'react-native-dialog-input';
 import ip from '../../config';
 import axios from "axios";
 import AnimatedLoader from "react-native-animated-loader";
-import { setHeight, setWeight, setDoctorID, setPatientID } from '../../redux/actions/index'
+import { setHeight, setWeight, setDoctorID, setPatientId } from '../../redux/actions/index'
 import Toast, { DURATION } from 'react-native-easy-toast'
 
 const { width: WIDTH } = Dimensions.get('window')
@@ -109,7 +109,7 @@ class Profile extends React.Component {
                 this.props.dispatch(setWeight(inputText))
                 break;
             case "patient":
-                this.props.dispatch(setPatientID(inputText))
+                this.props.dispatch(setPatientId(inputText))
                 break;
             case "doctor":
                 this.props.dispatch(setDoctorID(inputText))
@@ -239,11 +239,11 @@ class Profile extends React.Component {
                                 <TextField editable={false} label='Name' value={this.props.userDetails.name} />
                             </View>
                             <View style={{ marginLeft: 20 }}>
-                                <TextField editable={false} label='Email ID' value={this.props.userDetails.Email} />
+                                <TextField editable={false} label='Email ID' value={this.props.userDetails.email} />
                             </View>
                             <View style={{ flex: 1, flexDirection: "row", alignItems: 'flex-start' }}>
                                 <View style={styles.inputWrap}>
-                                    <TextField editable={false} label='Patient ID' value={this.props.userDetails.PatientID.toString()} />
+                                    <TextField editable={false} label='Patient ID' value={this.props.userDetails.patientId.toString()} />
                                 </View>
                                 <View style={styles.inputWrap}>
                                     <TouchableOpacity style={styles.updateBtn} onPress={this.showPatientDialog}>

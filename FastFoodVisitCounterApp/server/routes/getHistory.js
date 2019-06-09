@@ -20,7 +20,7 @@ async function getHistory(isPark, uid, res) {
 }
 
 async function isHistory(uid, isPark) {
-    let place = isPark ? 'HistoryPark' : 'HistoryRest'
+    let place = isPark ? 'historyPark' : 'historyRest'
     let isPresent
     await firebase1.database().ref("users").child(uid).on("value", function (snapshot) {
         if (snapshot.hasChild(place)) {
@@ -34,7 +34,7 @@ async function isHistory(uid, isPark) {
 
 async function getData(uid, isPark) {
     var history = []
-    let place = isPark ? 'HistoryPark' : 'HistoryRest'
+    let place = isPark ? 'historyPark' : 'historyRest'
     await user.child(uid).child(place).orderByKey().on('value', function (childSnapshot) {
         data = childSnapshot.val();
         for (var key in data) {

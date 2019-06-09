@@ -37,7 +37,7 @@ async function updateValue(uid, updateValue, label) {
             break;
         case "patient":
             await firebase1.database().ref('users').child(uid).update({
-                PatientID: updateValue
+                patientId: updateValue
             })
             break;
         case "doctor":

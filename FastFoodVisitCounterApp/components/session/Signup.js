@@ -1,14 +1,14 @@
 import React from 'react';
 import { Text } from 'native-base';
 import { Button } from 'react-native-elements';
-import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, Keyboard ,KeyboardAvoidingView, BackHandler} from 'react-native';
+import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, Keyboard, KeyboardAvoidingView, BackHandler } from 'react-native';
 import ValidateForm from "../validate/ValidateForm"
 import { addUser } from '../../redux/actions/index'
 import { connect } from 'react-redux'
 import image from '../../Images/back.jpg'
 
 import logo from '../../Images/logo.gif'
-const { width : WIDTH} = Dimensions.get('window')
+const { width: WIDTH } = Dimensions.get('window')
 import Toast, { DURATION } from 'react-native-easy-toast'
 class Signup extends React.Component {
     constructor(props, { }) {
@@ -98,64 +98,63 @@ class Signup extends React.Component {
 
     render() {
         return (
-            <ImageBackground source = {image} style={styles.backgroundcontainer}>
-            
-            <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-            <View style={styles.logocontainer}>
-                    <Image source={logo} style={styles.logo}/> 
-            </View>
-            <View style={styles.logocontainer}>
-                <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
-            </View>
-            <View style={styles.logocontainer}>
+            <ImageBackground source={image} style={styles.backgroundcontainer}>
+                <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+                    <View style={styles.logocontainer}>
+                        <Image source={logo} style={styles.logo} />
+                    </View>
+                    <View style={styles.logocontainer}>
+                        <Text style={styles.logotext}>FAST FOOD VISIT COUNTER</Text>
+                    </View>
+                    <View style={styles.logocontainer}>
                         <Text style={styles.logotext}>Create a New Account</Text>
-            </View>
-            {/* <View>
+                    </View>
+                    {/* <View>
                  <ValidateForm errors={this.state.errors} />
             </View> */}
-            <View style={{marginTop: '1%'}}>
-                    <TextInput 
-                         style={styles.input}
-                         placeholder={'Patient ID'}
-                         keyboardType="numeric"
-                         placeholderTextColor={'rgb(36,133,202)'}
-                         underlineColorAndroid='transparent'
-                         value={this.state.patient}
-                         onChange={this.handlePatientChange}
-                     />
-                </View>
-                <View>
-                    <TextInput 
-                         style={styles.input}
-                         placeholder={'Email'}
-                         placeholderTextColor={'rgb(36,133,202)'}
-                         underlineColorAndroid='transparent'
-                         value={this.state.email}
-                         onChange={this.handleEmailChange}
-                     />
-                </View>
-                <View>
-                    <TextInput 
-                         style={styles.input}
-                         placeholder={'Password'}
-                         placeholderTextColor={'rgb(36,133,202)'}
-                         underlineColorAndroid='transparent'
-                         value={this.state.password}
-                         onChange={this.handlePasswordChange}
-                         secureTextEntry={true}
-                     />
-                </View>
-                <View style={styles.action}>
+                    <View style={{ marginTop: '1%' }}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={'Patient ID'}
+                            keyboardType="numeric"
+                            placeholderTextColor={'rgb(36,133,202)'}
+                            underlineColorAndroid='transparent'
+                            value={this.state.patient}
+                            onChange={this.handlePatientChange}
+                        />
+                    </View>
+                    <View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={'Email'}
+                            placeholderTextColor={'rgb(36,133,202)'}
+                            underlineColorAndroid='transparent'
+                            value={this.state.email}
+                            onChange={this.handleEmailChange}
+                        />
+                    </View>
+                    <View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={'Password'}
+                            placeholderTextColor={'rgb(36,133,202)'}
+                            underlineColorAndroid='transparent'
+                            value={this.state.password}
+                            onChange={this.handlePasswordChange}
+                            secureTextEntry={true}
+                        />
+                    </View>
+                    <View style={styles.action}>
                         <Button title="Next" raised onPress={this.signupUser} buttonStyle={styles.nextButton}></Button>
-                {/* <TouchableOpacity style = {styles.btnlogin} onPress={this.signupUser}>
+                        {/* <TouchableOpacity style = {styles.btnlogin} onPress={this.signupUser}>
                     <Text style={styles.logintext}>Next</Text>
                 </TouchableOpacity> */}
-                </View>
-                {/* <View> */}
-                        <View style={styles.alternate}>
+                    </View>
+                    {/* <View> */}
+                    <View style={styles.alternate}>
                         <Button title="Already Have An Account" type="outline" onPress={this.login} style={styles.loginButton}></Button>
-                        </View>
-                {/* </View> */}
+                    </View>
+                    {/* </View> */}
                 </KeyboardAvoidingView >
                 <Toast ref="toast" textStyle={{ color: 'red' }} fadeOutDuration={1000} fadeInDuration={2500} />
             </ImageBackground>
@@ -164,7 +163,7 @@ class Signup extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    backgroundcontainer:{
+    backgroundcontainer: {
         flex: 1,
         width: null,
         height: null,
@@ -202,10 +201,10 @@ const styles = StyleSheet.create({
     },
     // tb5: {
     //     marginBottom: '2%',
-       
+
     //      borderColor: '#7a42f4',
     //   borderWidth: 1
-       
+
     // },
     input: {
         width: WIDTH - 55,
@@ -231,7 +230,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         opacity: 0.5
     },
-    logocontainer:{
+    logocontainer: {
         alignItems: 'center',
         // flexDirection: 'row'
     },
@@ -240,30 +239,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginLeft: 130
-        
-    },
-    // btnlogin: {
-    //     width: 100,
-    //     height: 45,
-    //     borderRadius: 45,
-    //     backgroundColor: 'rgb(36,133,202)',
-    //     justifyContent: 'center',
-    //     marginTop: 20,
-    //     marginBottom: '2%',
-    //     paddingBottom: 10
-    //     // marginLeft: 130
 
-    // },
-    // logintext:{
-    //     color: "rgb(245,245,245)",
-    //     fontSize: 16,
-    //     textAlign: 'center',
-    //     paddingBottom: 10
-    // },
-    nextButton: { 
-        backgroundColor: 'rgb(36,133,202)', 
-        borderRadius: 45, 
-        paddingLeft: 40, 
+    },
+    nextButton: {
+        backgroundColor: 'rgb(36,133,202)',
+        borderRadius: 45,
+        paddingLeft: 40,
         paddingRight: 40
     }
 });

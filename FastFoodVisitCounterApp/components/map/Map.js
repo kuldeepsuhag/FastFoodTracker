@@ -22,8 +22,8 @@ class Map extends React.Component {
       hasLocationPermissions: false,
       locationResult: null,
       isPedometerAvailable: "",
-      countFastFood: 0,
-      countPark: 0,
+      restaurantCount: 0,
+      parkCount: 0,
       visible: true,
       showRestModal: false,
       showParkModal: false,
@@ -228,10 +228,10 @@ class Map extends React.Component {
         }
       }).then((response) => {
         if (this._isMounted) {
-          if(that.state.countFastFood !== response.data.countRest || that.state.countPark !== response.data.countPark){
+          if(that.state.restaurantCount !== response.data.restaurantCount || that.state.parkCount !== response.data.parkCount){
             that.setState({
-              countFastFood: response.data.countRest,
-              countPark: response.data.countPark,
+              restaurantCount: response.data.restaurantCount,
+              parkCount: response.data.parkCount,
             });
           }
         }
@@ -306,7 +306,7 @@ class Map extends React.Component {
                       />
                     }
                     onPress={() => { this.getParkHistory(false) }}
-                    title={" " + this.state.countFastFood.toString()}
+                    title={" " + this.state.restaurantCount.toString()}
                   />
                 </View>
                 <View style={{ width: '50%' }}>
@@ -320,7 +320,7 @@ class Map extends React.Component {
                       />
                     }
                     onPress={() => { this.getParkHistory(true) }}
-                    title={" " + this.state.countPark.toString()}
+                    title={" " + this.state.parkCount.toString()}
                   />
                 </View>
               </View>

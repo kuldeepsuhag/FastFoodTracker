@@ -47,16 +47,16 @@ async function getImage(url, data, res, uid) {
 
   let perdata = {
     name: data.name,
-    Email: data.Email,
-    PatientID: data.PatientID,
+    email: data.email,
+    patientId: data.patientId,
     doctorId: data.doctorId,
     height: data.height,
     weight: data.weight,
     image: image,
     userID: uid,
     currentGoal: data.currentGoal,
-    rest: data.countRest,
-    park: data.countPark
+    restaurantCount: data.restaurantCount,
+    parkCount: data.parkCount
   }
   res.status(200).send(perdata);
 }

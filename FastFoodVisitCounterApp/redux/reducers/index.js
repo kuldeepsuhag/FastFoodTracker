@@ -34,7 +34,7 @@ export default (state, action) => {
         case "UPDATE_PATIENT":
             return {
                 ...state,
-                PatientID: action.payload.updatedPatientID
+                patientId: action.payload.updatedPatientId
             }
         case "UPDATE_DOCTOR":
             return {

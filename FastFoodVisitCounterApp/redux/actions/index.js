@@ -47,10 +47,10 @@ export const setWeight = (updatedWeight) => ({
     }
 })
 
-export const setPatientID = (updatedPatientID) => ({
+export const setPatientId = (updatedPatientId) => ({
     type: "UPDATE_PATIENT",
     payload: {
-        updatedPatientID
+        updatedPatientId
     }
 })
 
