@@ -125,44 +125,42 @@ class Map extends React.Component {
         console.log("Error with Pedometer: " + error)
       }
     );
-    
-    if(this.state.isPedometerAvailable){
-      let dataForServer = []
-      let today = new Date()
-      today = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
-      let nextRequiredDate = lastSavedStepDataDate
-      nextRequiredDate = nextRequiredDate.split("-")
-      nextRequiredDate = new Date(parseInt(nextRequiredDate[2]), parseInt(nextRequiredDate[1]) - 1, parseInt(nextRequiredDate[0]) + 1, 0, 0, 0, 0)
 
-      let numberOfDays = Math.round((today - nextRequiredDate) / (1000 * 60 * 60 * 24))
+    let dataForServer = []
+    let today = new Date()
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
+    let nextRequiredDate = lastSavedStepDataDate
+    nextRequiredDate = nextRequiredDate.split("-")
+    nextRequiredDate = new Date(parseInt(nextRequiredDate[2]), parseInt(nextRequiredDate[1]) - 1, parseInt(nextRequiredDate[0]) + 1, 0, 0, 0, 0)
 
-      for (let i = numberOfDays; i > 0; i--) {
-        let stepDataObject = {}
-        let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
-        let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
-        stepDataObject.date = start.getDate() + '-' + (start.getMonth() + 1) + '-' + start.getFullYear();
+    let numberOfDays = Math.round((today - nextRequiredDate) / (1000 * 60 * 60 * 24))
 
-        Pedometer.getStepCountAsync(start, end).then(
-          result => {
-            stepDataObject.step = result.steps
-          },
-          error => {
-            console.log("error")
-            stepDataObject.step = 0
-          }
-        );
-        dataForServer.push(stepDataObject);
-      }
-      setTimeout(function () {
-        that.sendDataToServer(dataForServer)
-      }, 2000);
+    for (let i = numberOfDays; i > 0; i--) {
+      let stepDataObject = {}
+      let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
+      let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
+      stepDataObject.date = start.getDate() + '-' + (start.getMonth() + 1) + '-' + start.getFullYear();
+
+      Pedometer.getStepCountAsync(start, end).then(
+        result => {
+          stepDataObject.step = result.steps
+        },
+        error => {
+          console.log("error")
+          stepDataObject.step = 0
+        }
+      );
+      dataForServer.push(stepDataObject);
     }
+    setTimeout(function () {
+      that.sendDataToServer(dataForServer)
+    }, 2000);
   }
 
   sendDataToServer = (stepDataForServer) => {
     axios.post("/updateSteps", {
-        stepData: stepDataForServer,
-        uid: this.props.userDetails.userID
+      stepData: stepDataForServer,
+      uid: this.props.userDetails.userID
     }).then((response) => {
     }).catch((error) => {
       console.log(error);
@@ -216,9 +214,9 @@ class Map extends React.Component {
     let that = this
     if (latitude != null && longitude != null && latitude != "" && longitude != "") {
       axios.post("/userLocation", {
-          latitude: latitude,
-          longitude: longitude,
-          uid: this.props.userDetails.userID
+        latitude: latitude,
+        longitude: longitude,
+        uid: this.props.userDetails.userID
       }).then((response) => {
         if (this.isComponentPresent) {
           if (that.state.restaurantCount !== response.data.restaurantCount || that.state.parkCount !== response.data.parkCount) {

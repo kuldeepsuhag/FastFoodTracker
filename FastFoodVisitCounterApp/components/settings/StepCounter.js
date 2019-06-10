@@ -9,12 +9,6 @@ import {BarChart} from 'react-native-chart-kit'
 
 class StepCounter extends React.Component {
   
-  state = {
-    isPedometerAvailable: "checking",
-    pastStepCount: 0,
-    currentStepCount: 0
-  };
-  
   render() {
     const data  = this.props.stepData
     const chartConfig = {
