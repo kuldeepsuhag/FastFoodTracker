@@ -6,7 +6,9 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Footer, FooterTab, Button, Icon } from 'native-base';
+
 export default class AppFooter extends React.Component {
+
     constructor(props, { }) {
         super(props);
         this.settings = this.settings.bind(this);

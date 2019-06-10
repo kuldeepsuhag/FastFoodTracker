@@ -9,9 +9,9 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { Location, TaskManager } from 'expo';
 import axios from "axios";
-
 let history;
 const { height: HEIGHT } = Dimensions.get('window')
+
 class Start extends React.Component {
     constructor(props, { }) {
         super(props);

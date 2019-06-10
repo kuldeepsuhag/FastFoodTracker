@@ -15,8 +15,8 @@ import { userData } from '../../redux/actions/index'
 import logo from '../../Images/logo.gif'
 import { Button } from 'react-native-elements';
 import AnimatedLoader from "react-native-animated-loader";
-
 const { width: WIDTH } = Dimensions.get('window')
+
 class Profile extends React.Component {
     constructor(props, { }) {
         super(props);

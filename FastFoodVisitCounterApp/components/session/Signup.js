@@ -10,9 +10,9 @@ import { connect } from 'react-redux'
 import image from '../../Images/back.jpg'
 import logo from '../../Images/logo.gif'
 import Toast, { DURATION } from 'react-native-easy-toast'
-
 const { width: WIDTH } = Dimensions.get('window')
-class Signup extends React.Component {
+
+class SignUp extends React.Component {
     constructor(props, { }) {
         super(props);
         this.state = {
@@ -252,4 +252,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default connect()(Signup)
+export default connect()(SignUp)
