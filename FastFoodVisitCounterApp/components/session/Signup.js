@@ -1,3 +1,6 @@
+/*
+  This is the main sign up page
+*/
 import React from 'react';
 import { Text } from 'native-base';
 import { Button } from 'react-native-elements';
@@ -5,10 +8,10 @@ import { View, StyleSheet, ImageBackground, Image, TextInput, Dimensions, Keyboa
 import { addUser } from '../../redux/actions/index'
 import { connect } from 'react-redux'
 import image from '../../Images/back.jpg'
-
 import logo from '../../Images/logo.gif'
-const { width: WIDTH } = Dimensions.get('window')
 import Toast, { DURATION } from 'react-native-easy-toast'
+
+const { width: WIDTH } = Dimensions.get('window')
 class Signup extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -16,7 +19,7 @@ class Signup extends React.Component {
             email: "",
             patient: "",
             password: "",
-            // confirmPassword: "",
+            confirmPassword: "",
             errors: ""
         };
         this.signupUser = this.signupUser.bind(this);
@@ -35,31 +38,31 @@ class Signup extends React.Component {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
+    // Binds 'go back' action to hardware back button press
     handleBackPress = () => {
         this.props.history.goBack();
         return true;
     }
 
-    validate() {
+    // Invoked to validate the users sign up credentials
+    validateCredentials() {
         let valid = false;
         if (!(this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i))) {
-            // this.setState({ errors: "Please enter a valid email" });
             this.refs.toast.show("Please enter a valid email")
             valid = true;
         }
         else if (this.state.password.length < 8) {
             this.refs.toast.show("Password should be at least of 8 characters")
-            // this.setState({ errors: "Password should be at least of 8 characters" });
             valid = true;
         }
-        // else if (this.state.password !== this.state.confirmPassword) {
-        //     this.refs.toast.show("Both the passwords don't match")
-        //     this.setState({ errors: "Both the passwords don't match" });
-        //     valid = true;
-        // }
+        else if (this.state.password !== this.state.confirmPassword) {
+            this.refs.toast.show("Both the passwords don't match")
+            valid = true;
+        }
         return valid;
     }
 
+    // Invoked to save user's credentials and redirect to profile page
     signupUser() {
         Keyboard.dismiss()
         if (!this.validate()) {
@@ -73,27 +76,36 @@ class Signup extends React.Component {
         }
     }
 
+    // Invoked to navigate to the Sign In Page
     login() {
         this.props.history.push({
             pathname: "/signin"
         })
     }
 
+    // Invoked to handle the user's email
     handleEmailChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({ email: processedData })
     }
 
+    // Invoked to handle the user's password
     handlePasswordChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({ password: processedData })
     }
 
+    // Invoked to handle the user's confirm password
+    handleConfirmPasswordChange(event) {
+        let processedData = event.nativeEvent.text;
+        this.setState({ password: processedData })
+    }
+
+    // Invoked to handle the user's patient id
     handlePatientChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({ patient: processedData })
     }
-
 
     render() {
         return (
@@ -108,9 +120,6 @@ class Signup extends React.Component {
                     <View style={styles.logocontainer}>
                         <Text style={styles.logotext}>Create a New Account</Text>
                     </View>
-                    {/* <View>
-                 <ValidateForm errors={this.state.errors} />
-            </View> */}
                     <View style={{ marginTop: '1%' }}>
                         <TextInput
                             style={styles.input}
@@ -143,17 +152,23 @@ class Signup extends React.Component {
                             secureTextEntry={true}
                         />
                     </View>
+                    <View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={'Confirm Password'}
+                            placeholderTextColor={'rgb(36,133,202)'}
+                            underlineColorAndroid='transparent'
+                            value={this.state.confirmPassword}
+                            onChange={this.handleConfirmPasswordChange}
+                            secureTextEntry={true}
+                        />
+                    </View>
                     <View style={styles.action}>
                         <Button title="Next" raised onPress={this.signupUser} buttonStyle={styles.nextButton}></Button>
-                        {/* <TouchableOpacity style = {styles.btnlogin} onPress={this.signupUser}>
-                    <Text style={styles.logintext}>Next</Text>
-                </TouchableOpacity> */}
                     </View>
-                    {/* <View> */}
                     <View style={styles.alternate}>
                         <Button title="Already Have An Account" type="outline" onPress={this.login} style={styles.loginButton}></Button>
                     </View>
-                    {/* </View> */}
                 </KeyboardAvoidingView >
                 <Toast ref="toast" textStyle={{ color: 'red' }} fadeOutDuration={1000} fadeInDuration={2500} />
             </ImageBackground>
@@ -173,8 +188,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'stretch',
-        // paddingTop: 40,
-        // backgroundColor: '#3066c9',
         height: '100%'
     },
     action: {
@@ -198,20 +211,12 @@ const styles = StyleSheet.create({
         marginRight: '5%',
         maxWidth: '100%'
     },
-    // tb5: {
-    //     marginBottom: '2%',
-
-    //      borderColor: '#7a42f4',
-    //   borderWidth: 1
-
-    // },
     input: {
         width: WIDTH - 55,
         height: 45,
         borderRadius: 45,
         fontSize: 16,
         paddingLeft: 45,
-        // backgroundColor: 'rgb(151,214,240)',
         backgroundColor: 'rgb(255,255,255)',
         color: 'rgb(36,133,202)',
         marginHorizontal: 25,
@@ -230,8 +235,7 @@ const styles = StyleSheet.create({
         opacity: 0.5
     },
     logocontainer: {
-        alignItems: 'center',
-        // flexDirection: 'row'
+        alignItems: 'center'
     },
     text: {
         justifyContent: 'center',

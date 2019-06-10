@@ -1,3 +1,6 @@
+/*
+    This is the component that is rendered to show the users daily step progress
+*/
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
@@ -27,7 +30,7 @@ class DailyGoal extends React.Component{
     }
 
     componentWillMount(){
-        this._subscribe();
+        this.getCurrentStepData();
         this.setState({
             goal: this.props.currentGoal
         })
@@ -38,7 +41,7 @@ class DailyGoal extends React.Component{
             this.setState({
                 goal: this.props.currentGoal
             }, () => {
-                this._subscribe();
+                this.getCurrentStepData();
             })
         }
     }
@@ -47,30 +50,32 @@ class DailyGoal extends React.Component{
         this._unsubscribe();
     }
 
-    _calculateFill(goal, steps){
+    // Invoked to calculate the percentage of the steps walked by the user
+    calculateFillPercentage(goal, steps){
         let percentCompleted = (steps/goal)*100;
         this.setState({
             fill: percentCompleted
         });
     }
 
-    _subscribe = () => {
+    // Invoked to calculate user's current step data
+    getCurrentStepData = () => {
         this._subscription = Pedometer.watchStepCount(result => {
             this.setState({
                 currentStepCount: result.steps
             });
-            this._calculateFill(this.state.goal, this.state.currentStepCount);
+            this.calculateFillPercentage(this.state.goal, this.state.currentStepCount);
         });
 
         // new Date(year, month, day, hours, minutes, seconds, milliseconds)
-        const temp = new Date();
-        const end = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), 0, 0, 0, 0);
-        const start = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate()-1, 0,0,0,0);
+        const today = new Date();
+        const end = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
+        const start = new Date(today.getFullYear(), today.getMonth(), today.getDate()-1, 0,0,0,0);
         
         Pedometer.getStepCountAsync(start, end).then(
             result => {
                 this.setState({ pastStepCount: result.steps });
-                this._calculateFill(this.state.goal, this.state.pastStepCount);
+                this.calculateFillPercentage(this.state.goal, this.state.pastStepCount);
             },
             error => {
                 this.setState({
@@ -80,6 +85,7 @@ class DailyGoal extends React.Component{
         );
     };
 
+    // Invoked when component unmounts
     _unsubscribe = () => {
         this._subscription && this._subscription.remove();
         this._subscription = null;

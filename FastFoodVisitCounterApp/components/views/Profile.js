@@ -1,3 +1,6 @@
+/*
+    This is the view profile page, where the user can see his details and his current BMI
+*/
 import React from 'react';
 import { View, StyleSheet, BackHandler, Image, ImageBackground, Keyboard, Dimensions, ScrollView, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Text } from 'native-base';
@@ -8,10 +11,10 @@ import { TextField } from 'react-native-material-textfield'
 import DialogInput from 'react-native-dialog-input';
 import Toast from 'react-native-easy-toast'
 import AnimatedLoader from "react-native-animated-loader";
-import AppFooter from '../footer/AppFooter'
+import AppFooter from '../footer/appFooter'
 import { setHeight, setWeight, setDoctorID, setPatientId } from '../../redux/actions/index'
-const { width: WIDTH } = Dimensions.get('window')
 
+const { width: WIDTH } = Dimensions.get('window')
 class Profile extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -31,27 +34,31 @@ class Profile extends React.Component {
         this.showDoctorDialog = this.showDoctorDialog.bind(this);
         this.bmi = this.bmi.bind(this);
         this.signout = this.signout.bind(this);
-        this.disable = this.disable.bind(this);
+        this.disableAccount = this.disableAccount.bind(this);
     }
 
+    // Invoked to show the Update Weight Dialog
     showWeightDialog() {
         this.setState({ showWeightModal: !(this.state.showWeightModal) });
     }
 
+    // Invoked to show the Update Height Dialog
     showHeightDialog() {
         this.setState({ showHeightModal: !(this.state.showHeightModal) });
     }
 
+    // Invoked to show the Update Patient ID Dialog
     showPatientDialog() {
         this.setState({ showPatientModal: !(this.state.showPatientModal) });
     }
 
+    // Invoked to show the Update Doctor's ID Dialog
     showDoctorDialog() {
         this.setState({ showDoctorModal: !(this.state.showDoctorModal) });
     }
 
     componentDidMount() {
-        this.bmi(this.props.userDetails.height, this.props.userDetails.weight);
+        this.calculateBMI(this.props.userDetails.height, this.props.userDetails.weight);
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
 
@@ -61,22 +68,18 @@ class Profile extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.userDetails.height != this.props.userDetails.height || prevProps.userDetails.weight != this.props.userDetails.weight) {
-            this.bmi(this.props.userDetails.height, this.props.userDetails.weight);
+            this.calculateBMI(this.props.userDetails.height, this.props.userDetails.weight);
         }
     }
 
+    // Binds 'go back' action to hardware back button press
     handleBackPress = () => {
         this.props.history.goBack();
         return true;
     }
 
-    editdetails() {
-        this.props.history.push({
-            pathname: ""
-        })
-    }
-
-    bmi(height, weight) {
+    // Invoked to calculate the BMI and set his BMI color 
+    calculateBMI(height, weight) {
         if (height > 0 && weight > 0) {
             var bmi = 10000 * (weight / ((height) * (height)));
             var bmiString, bmiColor;
@@ -98,6 +101,7 @@ class Profile extends React.Component {
         }
     }
 
+    // Invoked to update the user details after update operation
     updateRedux(inputText, updateValue) {
         switch (updateValue) {
             case "height":
@@ -115,6 +119,7 @@ class Profile extends React.Component {
         }
     }
 
+    // Invoked to update the respective entry in the database
     updateValue(inputText, updateValue) {
         switch (updateValue) {
             case "height":
@@ -153,6 +158,7 @@ class Profile extends React.Component {
         }
     }
 
+    // Invoked to signout from the app and clear local storage
     signout() {
         this.setState({ visible: true })
         var that = this;
@@ -167,13 +173,15 @@ class Profile extends React.Component {
 
     }
 
-    disable() {
+    // Invoked to deactivate a user's account
+    disableAccount() {
         this.setState({visible: true})
         var that = this;
         axios.post("/disable", {
             userId: this.props.userDetails.userID
         }).then((response) => {
             that.setState({visible: false})
+            that.props.history.push("/");
         }).catch((error) => {
             console.log("error", error)
             that.setState({
@@ -302,7 +310,7 @@ class Profile extends React.Component {
                                 </TouchableOpacity>
                             </View>
                             <View>
-                                <TouchableOpacity style={styles.actionBtn} onPress={this.disable}>
+                                <TouchableOpacity style={styles.actionBtn} onPress={this.disableAccount}>
                                     <Text style={styles.buttonText}> Deactivate Account </Text>
                                 </TouchableOpacity>
                             </View>

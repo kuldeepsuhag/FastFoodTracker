@@ -1,3 +1,8 @@
+/*
+    This is the analytics page
+    This contains the users steep data chart for the previous six days and
+    the daily step goal progress.
+*/
 import React from 'react';
 import { Pedometer } from 'expo';
 import { View, StyleSheet, BackHandler, Button, ImageBackground } from 'react-native';
@@ -8,9 +13,9 @@ import AnimatedLoader from "react-native-animated-loader";
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast, { DURATION } from 'react-native-easy-toast'
 import DialogInput from 'react-native-dialog-input';
-import AppFooter from '../footer/AppFooter'
-import StepCounter from '../step-counter/stepCounter';
-import DailyGoal from '../daily-goal/dailyGoal'
+import AppFooter from '../footer/appFooter'
+import StepCounter from '../settings/stepCounter';
+import DailyGoal from '../settings/dailyGoal'
 import { currentGoal } from '../../redux/actions/index'
 import { stepData } from '../../redux/actions/index'
 
@@ -25,7 +30,7 @@ class Settings extends React.Component {
             isPedometerAvailable: null
         };
         this.showGoalChangeDialog = this.showGoalChangeDialog.bind(this);
-        this._getStepCounterData = this._getStepCounterData.bind(this);
+        this.getStepCounterData = this.getStepCounterData.bind(this);
     }
 
     componentDidMount() {
@@ -33,7 +38,7 @@ class Settings extends React.Component {
             this.showGoalChangeDialog();
         }
         if (this.props.stepData == undefined) {
-            this._getStepCounterData();
+            this.getStepCounterData();
         } else {
             this.setState({ loaded: false })
         }
@@ -44,63 +49,68 @@ class Settings extends React.Component {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
-    _getStepCounterData = async () => {
+    // Invoked to get the past weeks step count data for the graph
+    getStepCounterData = async () => {
         Pedometer.isAvailableAsync().then(
             result => {
                 this.setState({
-                    isPedometerAvailable: String(result)
+                    isPedometerAvailable: true
                 });
             },
             error => {
                 this.setState({
-                    isPedometerAvailable: "Could not get is PedometerAvailable: " + error
+                    isPedometerAvailable: false
                 });
                 console.log("Error with Pedometer: " + error)
             }
         );
-        //Creating the data step data for the last week
-        const today = new Date();
-        let that = this;
-        let DataForGraph = {}
-        let dayLabels = []
-        let noOfSteps = []
-        let weekDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-        for (let i = 6; i > 0; i--) {
-            let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
-            let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
-            let dayString = weekDay[start.getDay()];
-            Pedometer.getStepCountAsync(start, end).then(
-                result => {
-                    noOfSteps.push(result.steps);
-                },
-                error => {
-                    noOfSteps.push(0);
-                    console.log("Step Data Not Available");
-                }
-            );
-            dayLabels.push(dayString)
-        }
-        setTimeout(function () {
-            DataForGraph = {
-                labels: dayLabels,
-                datasets: [{
-                    data: noOfSteps
-                }]
+
+        if(this.state.isPedometerAvailable){
+            const today = new Date();
+            let that = this;
+            let DataForGraph = {}
+            let dayLabels = []
+            let noOfSteps = []
+            let weekDay = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+            for (let i = 6; i > 0; i--) {
+                let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
+                let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
+                let dayString = weekDay[start.getDay()];
+                Pedometer.getStepCountAsync(start, end).then(
+                    result => {
+                        noOfSteps.push(result.steps);
+                    },
+                    error => {
+                        noOfSteps.push(0);
+                        console.log("Step Data Not Available");
+                    }
+                );
+                dayLabels.push(dayString)
             }
-            that.props.dispatch(stepData(DataForGraph));
-            that.setState({ loaded: false })
-        }, 2000);
+            setTimeout(function () {
+                DataForGraph = {
+                    labels: dayLabels,
+                    datasets: [{
+                        data: noOfSteps
+                    }]
+                }
+                that.props.dispatch(stepData(DataForGraph));
+                that.setState({ loaded: false })
+            }, 2000);
+        }
     }
 
+    // Invoked to show the modal to update daily step goal
     showGoalChangeDialog() {
         this.setState({ showGoalModal: !(this.state.showGoalModal) });
     }
 
-    sendInput(inputText) {
-        let stepGoal = parseInt(inputText, 10)
+    // Invoked to send the new step goal to the server
+    sendNewStepGoalToTheServer(newGoal) {
+        let stepGoal = parseInt(newGoal, 10)
         let that = this
         this.setState({ showGoalModal: !(this.state.showGoalModal) });
-        if (isNaN(parseInt(inputText, 10))) {
+        if (isNaN(parseInt(newGoal, 10))) {
             this.refs.toast.show('Enter a valid number')
         }
         else {
@@ -122,6 +132,7 @@ class Settings extends React.Component {
         }
     }
 
+    // Binds 'go back' action to hardware back button press
     handleBackPress = () => {
         this.props.history.goBack();
         return true;
@@ -169,7 +180,7 @@ class Settings extends React.Component {
                                             title={"Change Daily Step Goal"}
                                             message={"Enter the new goal"}
                                             hintInput={"Eg. 5000"}
-                                            submitInput={(inputText) => { this.sendInput(inputText) }}
+                                            submitInput={(inputText) => { this.sendNewStepGoalToTheServer(inputText) }}
                                             closeDialog={() => { this.showGoalChangeDialog() }}>
                                         </DialogInput>
                                     </View>

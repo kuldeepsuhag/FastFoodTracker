@@ -1,7 +1,12 @@
+/* 
+  This is the main landing page
+  The user will be redirected here after Login or Sign Up
+  It contains the counters for both the parks and restaurants
+*/
 import React from 'react';
 import { Constants, MapView, Location, Permissions, Pedometer } from 'expo';
 import { StyleSheet, View, Alert, BackHandler, ImageBackground, FlatList } from 'react-native';
-import AppFooter from '../footer/AppFooter'
+import AppFooter from '../footer/appFooter'
 import { Card, CardItem, Text } from 'native-base';
 import { Button, ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -13,14 +18,14 @@ import Modal from "react-native-modal";
 import moment from "moment";
 
 class Map extends React.Component {
-  _isMounted = false;
+  isMounted = false;
   constructor(props, { }) {
     super(props);
     this.state = {
       mapRegion: null,
       hasLocationPermissions: false,
       locationResult: null,
-      isPedometerAvailable: "",
+      isPedometerAvailable: null,
       restaurantCount: 0,
       parkCount: 0,
       visible: true,
@@ -32,14 +37,14 @@ class Map extends React.Component {
   }
 
   componentDidMount() {
-    this._isMounted = true;
-    this._getLocationAsync();
-    this.getLastSavedData();
+    this.isMounted = true;
+    this.getUsersLocation();
+    this.getLastSavedStepDateFromServer();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
   }
 
   componentWillUnmount() {
-    this._isMounted = false;
+    this.isMounted = false;
   }
 
   componentWillMount() {
@@ -51,11 +56,13 @@ class Map extends React.Component {
     }, 5000);
   }
 
+  // Binds 'go back' action to hardware back button press
   handleBackPress = () => {
     this.props.history.goBack();
     return true;
   }
 
+  // Formats the Park/Restaurant History data as required for displaying.
   formatDataForModal(historyData) {
     for (let i = 0; i < historyData.length; i++) {
       historyData[i].index = i;
@@ -66,7 +73,8 @@ class Map extends React.Component {
     return historyData
   }
 
-  getParkHistory = (isPark) => {
+  // Created to get History of Park or Restaurant from the Server
+  getHistoryFromServer = (isPark) => {
     let historyData = []
     axios.post("/getHistory", {
       history: isPark,
@@ -90,66 +98,69 @@ class Map extends React.Component {
     });
   }
 
-  getLastSavedData() {
-    axios.post("/step-date", {
+  // Created to get the last saved Date of Step Data from the Server
+  getLastSavedStepDateFromServer() {
+    axios.post("/getDate", {
       uid: this.props.userDetails.userID
     }).then((response) => {
-      this.getDataForServer(response.data);
+      this.getStepDataFromPedometerForServer(response.data);
     }).catch((error) => {
       console.log(error);
     });
   }
 
-  async getDataForServer(lastStepDataDate) {
+  // Created to get the Required Step Data from the Pedometer
+  async getStepDataFromPedometerForServer(lastSavedStepDataDate) {
     let that = this
     Pedometer.isAvailableAsync().then(
       result => {
         this.setState({
-          isPedometerAvailable: String(result)
+          isPedometerAvailable: true
         });
       },
       error => {
         this.setState({
-          isPedometerAvailable: "Could not get is PedometerAvailable: " + error
+          isPedometerAvailable: false
         });
         console.log("Error with Pedometer: " + error)
       }
     );
+    
+    if(this.state.isPedometerAvailable){
+      let dataForServer = []
+      let today = new Date()
+      today = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
+      let nextRequiredDate = lastSavedStepDataDate
+      nextRequiredDate = nextRequiredDate.split("-")
+      nextRequiredDate = new Date(parseInt(nextRequiredDate[2]), parseInt(nextRequiredDate[1]) - 1, parseInt(nextRequiredDate[0]) + 1, 0, 0, 0, 0)
 
-    let dataForServer = []
-    let today = new Date()
-    today = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
-    let nextRequiredDate = lastStepDataDate
-    nextRequiredDate = nextRequiredDate.split("-")
-    nextRequiredDate = new Date(parseInt(nextRequiredDate[2]), parseInt(nextRequiredDate[1]) - 1, parseInt(nextRequiredDate[0]) + 1, 0, 0, 0, 0)
+      let numberOfDays = Math.round((today - nextRequiredDate) / (1000 * 60 * 60 * 24))
 
-    let numberOfDays = Math.round((today - nextRequiredDate) / (1000 * 60 * 60 * 24))
+      for (let i = numberOfDays; i > 0; i--) {
+        let stepDataObject = {}
+        let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
+        let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
+        stepDataObject.date = start.getDate() + '-' + (start.getMonth() + 1) + '-' + start.getFullYear();
 
-    for (let i = numberOfDays; i > 0; i--) {
-      let stepDataObject = {}
-      let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i, 0, 0, 0, 0)
-      let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i + 1, 0, 0, 0, 0)
-      stepDataObject.date = start.getDate() + '-' + (start.getMonth() + 1) + '-' + start.getFullYear();
-
-      Pedometer.getStepCountAsync(start, end).then(
-        result => {
-          stepDataObject.step = result.steps
-        },
-        error => {
-          console.log("error")
-          stepDataObject.step = 0
-        }
-      );
-      dataForServer.push(stepDataObject);
+        Pedometer.getStepCountAsync(start, end).then(
+          result => {
+            stepDataObject.step = result.steps
+          },
+          error => {
+            console.log("error")
+            stepDataObject.step = 0
+          }
+        );
+        dataForServer.push(stepDataObject);
+      }
+      setTimeout(function () {
+        that.sendDataToServer(dataForServer)
+      }, 2000);
     }
-    setTimeout(function () {
-      that._sendDataToServer(dataForServer)
-    }, 2000);
-
   }
 
-  _sendDataToServer = (stepDataForServer) => {
-    axios.post("/step-data", {
+  sendDataToServer = (stepDataForServer) => {
+    axios.post("/updateSteps", {
         stepData: stepDataForServer,
         uid: this.props.userDetails.userID
     }).then((response) => {
@@ -158,27 +169,29 @@ class Map extends React.Component {
     });
   }
 
-  _handleMapRegionChange = async () => {
-    this._getLocationAsync();
+  // Called when the user's position changes on the map
+  handleMapRegionChange = async () => {
+    this.getUsersLocation();
   };
 
-  _getLocationAsync = async () => {
+  // Created to get the user's current position using GPS
+  getUsersLocation = async () => {
     let isGPSOn = await Location.hasServicesEnabledAsync();
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
 
-    if (this._isMounted) {
+    if (this.isMounted) {
       if (status === 'granted') {
         this.setState({ hasLocationPermissions: true });
       }
 
       if (isGPSOn) {
         let location = await Location.getCurrentPositionAsync({});
-        if (this._isMounted) {
+        if (this.isMounted) {
           this.setState({
             locationResult: location,
             mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }
           });
-          this.sendMapData(location.coords.latitude, location.coords.longitude)
+          this.sendUsersLocationToServer(location.coords.latitude, location.coords.longitude)
         }
         // The map is sized according to the width and height specified in the styles and/or calculated by react-native.
         // The map computes two values, longitudeDelta/width and latitudeDelta/height, compares those 2 computed values, and takes the larger of the two.
@@ -198,15 +211,16 @@ class Map extends React.Component {
     }
   };
 
-  sendMapData(lat, lon) {
+  // Created to send the user's position to the Server
+  sendUsersLocationToServer(latitude, longitude) {
     let that = this
-    if (lat != null && lon != null && lat != "" && lon != "") {
-      axios.post("/map-data", {
-          latitude: lat,
-          longitude: lon,
+    if (latitude != null && longitude != null && latitude != "" && longitude != "") {
+      axios.post("/userLocation", {
+          latitude: latitude,
+          longitude: longitude,
           uid: this.props.userDetails.userID
       }).then((response) => {
-        if (this._isMounted) {
+        if (this.isMounted) {
           if (that.state.restaurantCount !== response.data.restaurantCount || that.state.parkCount !== response.data.parkCount) {
             that.setState({
               restaurantCount: response.data.restaurantCount,
@@ -220,6 +234,7 @@ class Map extends React.Component {
     }
   }
 
+  // Used to render the details for the park or restaurant history
   renderRow({ item }) {
     return (
       <ListItem
@@ -230,7 +245,6 @@ class Map extends React.Component {
   }
 
   render() {
-
     return (
       <>
         <View style={{ flex: 1 }}>
@@ -268,11 +282,9 @@ class Map extends React.Component {
                         zoomLevel={20}
                         provider="google"
                         onRegionChange={region => this.state.mapRegion = region}
-                        onUserLocationChange={location => this._handleMapRegionChange(location)}
+                        onUserLocationChange={location => this.handleMapRegionChange(location)}
                       />
               }
-              {/* <Card style={styles.card} transparent> */}
-              {/* <CardItem> */}
               <View style={{ flex: 1, flexDirection: "row", alignItems: 'center', marginTop: '2%' }}>
                 <View style={{ width: '50%' }}>
                   <Button
@@ -284,7 +296,7 @@ class Map extends React.Component {
                         color="white"
                       />
                     }
-                    onPress={() => { this.getParkHistory(false) }}
+                    onPress={() => { this.getHistoryFromServer(false) }}
                     title={" " + this.state.restaurantCount.toString()}
                   />
                 </View>
@@ -298,7 +310,7 @@ class Map extends React.Component {
                         color="white"
                       />
                     }
-                    onPress={() => { this.getParkHistory(true) }}
+                    onPress={() => { this.getHistoryFromServer(true) }}
                     title={" " + this.state.parkCount.toString()}
                   />
                 </View>
@@ -311,14 +323,11 @@ class Map extends React.Component {
                 <Text>Restaurant History</Text>
               </CardItem>
               <CardItem>
-                {/* <List> */}
                 <FlatList
-                  // data={dataRest}
                   data={this.state.restData}
                   renderItem={this.renderRow}
                   keyExtractor={item => item.index.toString()}
                 />
-                {/* </List> */}
               </CardItem>
               <CardItem>
                 <Button title="Hide" onPress={() => { this.setState({ showRestModal: false }) }} />
@@ -331,14 +340,11 @@ class Map extends React.Component {
                 <Text>Park History</Text>
               </CardItem>
               <CardItem>
-                {/* <List> */}
                 <FlatList
                   data={this.state.parkData}
-                  // data={dataPark}
                   renderItem={this.renderRow}
                   keyExtractor={item => item.index.toString()}
                 />
-                {/* </List> */}
               </CardItem>
               <CardItem>
                 <Button title="Hide" onPress={() => { this.setState({ showParkModal: false }) }} />

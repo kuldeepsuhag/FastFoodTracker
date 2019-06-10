@@ -1,3 +1,7 @@
+/*
+  This is the landing page when user starts the app
+  The user has the option to pick between signing up or signing in
+*/
 import { View, StyleSheet, ImageBackground, Image, Dimensions, TouchableOpacity, AppState, AsyncStorage } from 'react-native';
 import { Text } from 'native-base';
 import doc from '../../Images/doc.gif'
@@ -5,9 +9,9 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { Location, TaskManager } from 'expo';
 import axios from "axios";
-const { height: HEIGHT } = Dimensions.get('window')
-let history;
 
+let history;
+const { height: HEIGHT } = Dimensions.get('window')
 class Start extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -22,18 +26,19 @@ class Start extends React.Component {
         });
     }
 
+    // Called to navigate to the Sign Up Page
     signup() {
         this.props.history.push({
-            pathname: "/signup"
+            pathname: "/signUp"
         })
     }
 
+    // Called to navigate to the Sign In Page
     signin() {
         this.props.history.push({
-            pathname: "/signin"
+            pathname: "/signIn"
         })
     }
-
 
     render() {
         return (
@@ -89,13 +94,14 @@ const styles = StyleSheet.create({
     }
 });
 
+// Invoked to check if the user is currently logged in
 async function checkUser(locations) {
     const uid = await AsyncStorage.getItem('@uid')
     let path = history.location.pathname.slice(1);
     if (uid !== null) {
         if ((AppState.currentState === 'background' && uid !== "none") ||
             (AppState.currentState === 'active' && (path === 'settings' || path === 'viewProfile'))) {
-            axios.post("/map-data", {
+            axios.post("/userLocation", {
                     latitude: locations[0].coords.latitude,
                     longitude: locations[0].coords.longitude,
                     uid: uid
@@ -107,6 +113,7 @@ async function checkUser(locations) {
 
 }
 
+// Invoked to check users location in the background
 TaskManager.defineTask('location', ({ data, error }) => {
     if (error) {
         console.log(error.message)
