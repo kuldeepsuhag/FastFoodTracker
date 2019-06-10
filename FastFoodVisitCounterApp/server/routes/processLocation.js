@@ -53,7 +53,7 @@ async function inKFCorPark(userID, userlatitude, userLongtitude, res) {
             var park = child.val();
             if ((Math.abs(userlatitude.toFixed(4) - park.lat.toFixed(4)) <= 0.005) && (Math.abs(userLongtitude.toFixed(4) - park.long.toFixed(4)) <= 0.002)) {
                 category = "Parks"
-                place = data.place
+                place = park.place
                 timeSpentValidation(uid)
             }
         });
@@ -153,17 +153,18 @@ async function compareParkPlaceTime(vistedTime, uid) {
         }
         else {
             firebaseInstance.database().ref("users").child(uid).child('historyPark').orderByKey().limitToLast(1).once('value', function (childSnapshot) {
-                data = childSnapshot.val();
+                var data = childSnapshot.val();
                 var visitedTimeStamp;
+                var lastVisitedPlace;
                 for (var key in data) {
-                    visitedTimeStamp = parseInt(key);
+                    visitedTimeStamp = key;
                     lastVisitedPlace = data[key]["place"]
                 }
-                historyTime = moment(visitedTimeStamp);
+                var historyTime = moment(visitedTimeStamp);
                 var calledTime = moment(visitTime);
                 const diff = historyTime.diff(calledTime);
                 const diffDuration = moment.duration(diff);
-                if ((Math.abs(diffDuration.hours()) > 4) || lastVisitedPlace !== place) {
+                if ((Math.abs(diffDuration.hours()) > 4)) {
                     updateParkCount(vistedTime, uid);
                 }
             });
