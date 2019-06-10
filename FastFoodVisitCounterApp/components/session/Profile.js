@@ -126,7 +126,7 @@ class Profile extends React.Component {
         Keyboard.dismiss()
         this.setState({visible:true})
         let that = this
-        axios.post("/signup", {
+        axios.post("/signUp", {
                 email: this.props.userData.email,
                 password: this.props.userData.password,
                 patientId: this.props.userData.id,

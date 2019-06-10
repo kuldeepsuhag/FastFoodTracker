@@ -100,7 +100,7 @@ class SignIn extends React.Component {
         Keyboard.dismiss()
         this.setState({visible: true})
         let that = this
-        axios.post("/signin", {
+        axios.post("/signIn", {
             email: stored ? username : this.state.email,
             password: stored ? password : this.state.password
         }).then((response) => {

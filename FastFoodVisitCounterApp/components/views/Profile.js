@@ -11,7 +11,7 @@ import { TextField } from 'react-native-material-textfield'
 import DialogInput from 'react-native-dialog-input';
 import Toast from 'react-native-easy-toast'
 import AnimatedLoader from "react-native-animated-loader";
-import AppFooter from '../footer/appFooter'
+import AppFooter from '../footer/AppFooter'
 import { setHeight, setWeight, setDoctorID, setPatientId } from '../../redux/actions/index'
 
 const { width: WIDTH } = Dimensions.get('window')
@@ -162,7 +162,7 @@ class Profile extends React.Component {
     signout() {
         this.setState({ visible: true })
         var that = this;
-        axios.post("/signout", {}).then((response) => {
+        axios.post("/signOut", {}).then((response) => {
             that.setState({ visible: false })
             AsyncStorage.clear();
             that.props.history.push("/");

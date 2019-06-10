@@ -6,7 +6,7 @@
 import React from 'react';
 import { Constants, MapView, Location, Permissions, Pedometer } from 'expo';
 import { StyleSheet, View, Alert, BackHandler, ImageBackground, FlatList } from 'react-native';
-import AppFooter from '../footer/appFooter'
+import AppFooter from '../footer/AppFooter'
 import { Card, CardItem, Text } from 'native-base';
 import { Button, ListItem } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';

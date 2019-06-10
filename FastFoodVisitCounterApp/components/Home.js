@@ -4,7 +4,7 @@
 import React from 'react';
 import { View} from 'react-native';
 import { Route, Switch } from 'react-router-native'
-import Map from './map/map';
+import Map from './views/Map';
 import ViewProfile from './views/profile';
 import Settings from './views/settings';
 import Signup from './session/signUp';
