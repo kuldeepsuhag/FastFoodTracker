@@ -10,7 +10,8 @@ import Home from './components/Home';
 export default class App extends React.Component {
 
   componentDidMount() {
-    axios.defaults.baseURL = 'http://10.12.177.71:5000';
+    console.disableYellowBox = true;
+    axios.defaults.baseURL = 'http://10.1.1.37:5000';
   }
 
   render() {
