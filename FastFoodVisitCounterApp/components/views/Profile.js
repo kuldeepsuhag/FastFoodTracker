@@ -1,18 +1,18 @@
+/*
+    This is the view profile page, where the user can see his details and his current BMI
+*/
 import React from 'react';
 import { View, StyleSheet, BackHandler, Image, ImageBackground, Keyboard, Dimensions, ScrollView, TouchableOpacity, AsyncStorage } from 'react-native';
-import { Card, Text } from 'native-base';
-import { Header, Button } from 'react-native-elements'
-import AppFooter from '../footer/AppFooter'
+import { Text } from 'native-base';
+import axios from "axios";
+import { Header } from 'react-native-elements'
 import { connect } from 'react-redux'
-// import { Route, Switch } from 'react-router-native'
-import StepCounter from '../step-counter/stepCounter';
 import { TextField } from 'react-native-material-textfield'
 import DialogInput from 'react-native-dialog-input';
-import ip from '../../config';
-import axios from "axios";
+import Toast from 'react-native-easy-toast'
 import AnimatedLoader from "react-native-animated-loader";
-import { setHeight, setWeight, setDoctorID, setPatientID } from '../../redux/actions/index'
-import Toast, { DURATION } from 'react-native-easy-toast'
+import AppFooter from '../footer/AppFooter'
+import { setHeight, setWeight, setDoctorID, setPatientId } from '../../redux/actions/index'
 
 const { width: WIDTH } = Dimensions.get('window')
 class Profile extends React.Component {
@@ -32,27 +32,33 @@ class Profile extends React.Component {
         this.showHeightDialog = this.showHeightDialog.bind(this);
         this.showPatientDialog = this.showPatientDialog.bind(this);
         this.showDoctorDialog = this.showDoctorDialog.bind(this);
-        this.bmi = this.bmi.bind(this);
+        this.calculateBMI = this.calculateBMI.bind(this);
         this.signout = this.signout.bind(this);
+        this.disableAccount = this.disableAccount.bind(this);
     }
-    showWeightDialog(close) {
-        if (close) { Keyboard.dismiss() }
+
+    // Invoked to show the Update Weight Dialog
+    showWeightDialog() {
         this.setState({ showWeightModal: !(this.state.showWeightModal) });
     }
-    showHeightDialog(close) {
-        if (close) { Keyboard.dismiss() }
+
+    // Invoked to show the Update Height Dialog
+    showHeightDialog() {
         this.setState({ showHeightModal: !(this.state.showHeightModal) });
     }
-    showPatientDialog(close) {
-        if (close) { Keyboard.dismiss() }
+
+    // Invoked to show the Update Patient ID Dialog
+    showPatientDialog() {
         this.setState({ showPatientModal: !(this.state.showPatientModal) });
     }
-    showDoctorDialog(close) {
-        if (close) { Keyboard.dismiss() }
+
+    // Invoked to show the Update Doctor's ID Dialog
+    showDoctorDialog() {
         this.setState({ showDoctorModal: !(this.state.showDoctorModal) });
     }
+
     componentDidMount() {
-        this.bmi(this.props.userDetails.height, this.props.userDetails.weight);
+        this.calculateBMI(this.props.userDetails.height, this.props.userDetails.weight);
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     }
 
@@ -62,22 +68,18 @@ class Profile extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.userDetails.height != this.props.userDetails.height || prevProps.userDetails.weight != this.props.userDetails.weight) {
-            this.bmi(this.props.userDetails.height, this.props.userDetails.weight);
+            this.calculateBMI(this.props.userDetails.height, this.props.userDetails.weight);
         }
     }
 
+    // Binds 'go back' action to hardware back button press
     handleBackPress = () => {
         this.props.history.goBack();
         return true;
     }
 
-    editdetails() {
-        this.props.history.push({
-            pathname: ""
-        })
-    }
-
-    bmi(height, weight) {
+    // Invoked to calculate the BMI and set his BMI color 
+    calculateBMI(height, weight) {
         if (height > 0 && weight > 0) {
             var bmi = 10000 * (weight / ((height) * (height)));
             var bmiString, bmiColor;
@@ -99,6 +101,7 @@ class Profile extends React.Component {
         }
     }
 
+    // Invoked to update the user details after update operation
     updateRedux(inputText, updateValue) {
         switch (updateValue) {
             case "height":
@@ -108,7 +111,7 @@ class Profile extends React.Component {
                 this.props.dispatch(setWeight(inputText))
                 break;
             case "patient":
-                this.props.dispatch(setPatientID(inputText))
+                this.props.dispatch(setPatientId(inputText))
                 break;
             case "doctor":
                 this.props.dispatch(setDoctorID(inputText))
@@ -116,7 +119,7 @@ class Profile extends React.Component {
         }
     }
 
-
+    // Invoked to update the respective entry in the database
     updateValue(inputText, updateValue) {
         switch (updateValue) {
             case "height":
@@ -141,18 +144,13 @@ class Profile extends React.Component {
         else {
             this.setState({ visible: true })
             let that = this
-            var url = ip.ip.address;
-            axios({
-                method: 'post',
-                url: url + "/updateValue",
-                data: {
-                    updateValue: inputText,
-                    label: updateValue
-                }
+            axios.post("/updateValue", {
+                updateValue: inputText,
+                label: updateValue,
+                userId: this.props.userDetails.userID
             }).then((response) => {
                 that.setState({ visible: false })
                 this.updateRedux(inputText, updateValue)
-                console.log(response.data);
             }).catch((error) => {
                 that.setState({ visible: false })
                 console.log(error);
@@ -160,16 +158,11 @@ class Profile extends React.Component {
         }
     }
 
+    // Invoked to signout from the app and clear local storage
     signout() {
         this.setState({ visible: true })
-        var url = ip.ip.address;
         var that = this;
-        console.log("signout")
-        axios({
-            method: 'post',
-            url: url + "/signout",
-        }).then((response) => {
-            console.log(response.data)
+        axios.post("/signOut", {}).then((response) => {
             that.setState({ visible: false })
             AsyncStorage.clear();
             that.props.history.push("/");
@@ -180,22 +173,15 @@ class Profile extends React.Component {
 
     }
 
-    disable() {
-        this.setState({
-            visible: true
-        })
-        var url = ip.ip.address;
+    // Invoked to deactivate a user's account
+    disableAccount() {
+        this.setState({visible: true})
         var that = this;
-        console.log("Test")
-        axios({
-            method: 'post',
-            url: url + "/disable",
+        axios.post("/disable", {
+            userId: this.props.userDetails.userID
         }).then((response) => {
-            console.log(response.data)
-            that.setState({
-                visible: false
-            })
-            //that.props.history.push("/");
+            that.setState({visible: false})
+            that.props.history.push("/");
         }).catch((error) => {
             console.log("error", error)
             that.setState({
@@ -231,7 +217,6 @@ class Profile extends React.Component {
                                     'data:text/plain;base64,' + this.props.userDetails.image,
                             }}
                             /> : <Text></Text>}
-                        {/* <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Personal Details</Text> */}
                     </View>
                     <ScrollView>
                         <View style={{ flex: 1 }}>
@@ -239,11 +224,11 @@ class Profile extends React.Component {
                                 <TextField editable={false} label='Name' value={this.props.userDetails.name} />
                             </View>
                             <View style={{ marginLeft: 20 }}>
-                                <TextField editable={false} label='Email ID' value={this.props.userDetails.Email} />
+                                <TextField editable={false} label='Email ID' value={this.props.userDetails.email} />
                             </View>
                             <View style={{ flex: 1, flexDirection: "row", alignItems: 'flex-start' }}>
                                 <View style={styles.inputWrap}>
-                                    <TextField editable={false} label='Patient ID' value={this.props.userDetails.PatientID.toString()} />
+                                    <TextField editable={false} label='Patient ID' value={this.props.userDetails.patientId.toString()} />
                                 </View>
                                 <View style={styles.inputWrap}>
                                     <TouchableOpacity style={styles.updateBtn} onPress={this.showPatientDialog}>
@@ -325,7 +310,7 @@ class Profile extends React.Component {
                                 </TouchableOpacity>
                             </View>
                             <View>
-                                <TouchableOpacity style={styles.actionBtn} onPress={this.disable}>
+                                <TouchableOpacity style={styles.actionBtn} onPress={this.disableAccount}>
                                     <Text style={styles.buttonText}> Deactivate Account </Text>
                                 </TouchableOpacity>
                             </View>
@@ -337,7 +322,6 @@ class Profile extends React.Component {
                 <View style={{ height: 50, backgroundColor: '#ecf0f1' }}>
                     <AppFooter props={this.props} />
                 </View>
-
             </View >
 
         );
@@ -409,7 +393,6 @@ const styles = StyleSheet.create({
         width: WIDTH - 55,
         fontSize: 16,
         paddingLeft: 45,
-        // backgroundColor: 'rgb(151,214,240)',
         marginHorizontal: 25,
         marginBottom: '2%'
     },

@@ -1,3 +1,7 @@
+/* 
+  This is the page that the user will be redirecred to from signup
+  This page will collect the details from the user and send it to server
+*/
 import React from 'react';
 import { Label, Text } from 'native-base';
 import {
@@ -5,7 +9,6 @@ import {
     Keyboard, ScrollView, BackHandler, KeyboardAvoidingView, Alert
 } from 'react-native';
 import { ImagePicker, Permissions } from 'expo';
-import ip from '../../config';
 import axios from "axios";
 import { connect } from 'react-redux'
 import { userData } from '../../redux/actions/index'
@@ -13,6 +16,7 @@ import logo from '../../Images/logo.gif'
 import { Button } from 'react-native-elements';
 import AnimatedLoader from "react-native-animated-loader";
 const { width: WIDTH } = Dimensions.get('window')
+
 class Profile extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -29,7 +33,7 @@ class Profile extends React.Component {
         this.height = this.height.bind(this);
         this.bmi = this.bmi.bind(this);
         this.weight = this.weight.bind(this);
-        this.submitProfile = this.submitProfile.bind(this);
+        this.submitUserDataToTheServer = this.submitUserDataToTheServer.bind(this);
         this.handleFullNameChange = this.handleFullNameChange.bind(this);
         this.handleDocIDChange = this.handleDocIDChange.bind(this);
         this.handleHeightChange = this.handleHeightChange.bind(this);
@@ -45,11 +49,13 @@ class Profile extends React.Component {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
+    // Binds 'go back' action to hardware back button press
     handleBackPress = () => {
         this.props.history.goBack();
         return true;
     }
 
+    // This method will be invoked when the user enters the user's height
     height(e) {
         this.setState({ height: e.nativeEvent.text }, function () {
             this.bmi();
@@ -57,12 +63,14 @@ class Profile extends React.Component {
 
     }
 
+    // This method will be invoked when the user enters the user's weight
     weight(e) {
         this.setState({ weight: e.nativeEvent.text }, function () {
             this.bmi();
         });
     }
 
+    // This method will be invoked to calculate the BMI
     bmi(height, weight) {
         if (height > 0 && weight > 0) {
             var bmi = 10000 * (weight / ((height) * (height)));
@@ -71,60 +79,54 @@ class Profile extends React.Component {
         }
     }
 
+    // This method will be invoked when the user enters his/her name
     handleFullNameChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({ name: processedData })
     }
 
+    // This method will be invoked when the user enters his/her doctor's id
     handleDocIDChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({ doctor: processedData })
     }
 
+    // This method will be invoked when the user enters the user's height
     handleHeightChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({ height: processedData })
         this.bmi(processedData, this.state.weight);
     }
 
+    // This method will be invoked when the user enters the user's weight
     handleWeighttChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({ weight: processedData })
         this.bmi(this.state.height, processedData);
     }
 
-    storeData = async () => {
-        console.log("savingg");
+    // This method will be invoked to store user's credentials in the App Storage for automatic login
+    storeUserDataForLogin = async () => {
         var that = this;
-        const isLoggedIn = await AsyncStorage.getItem('@loggedIn')
-        if(!isLoggedIn){
-            const isLoggedIn = ["@loggedIn", "true"]
-            await AsyncStorage.multiSet([isLoggedIn])
-        }
+
         try {
-            console.log(this.props.userData.email)
             const username = ["@username", this.props.userData.email]
             const password = ["@password", this.props.userData.password]
-            await AsyncStorage.multiSet([username, password], function () {
-                console.log("Saved");
-               //  that.props.dispatch(loggedIn(true));
+            const userId = ["@uid" , this.props.userData.userID]
+            await AsyncStorage.multiSet([username, password, userId], function () {
                 that.props.history.push("/map");
             })
-            console.log(akshay);
         } catch (e) {
             // saving error
         }
     }
 
-    submitProfile() {
+    // This is used to submit the user's details to the server
+    submitUserDataToTheServer() {
         Keyboard.dismiss()
         this.setState({visible:true})
         let that = this
-        var url = ip.ip.address;
-        axios({
-            method: 'post',
-            url: url + "/signup",
-            data: {
+        axios.post("/signUp", {
                 email: this.props.userData.email,
                 password: this.props.userData.password,
                 patientId: this.props.userData.id,
@@ -133,26 +135,25 @@ class Profile extends React.Component {
                 height: this.state.height,
                 weight: this.state.weight,
                 image: this.state.base64
-            }
         }).then((response) => {
-            console.log("SIGN UP DONE !!")
             that.setState({visible: false})
-            console.log(response.data);
             that.props.dispatch(userData(response.data));
-            this.storeData();
+            this.storeUserDataForLogin();
         }).catch((error) => {
             that.setState({visible: false})
             console.log(error);
         });
     }
 
-    setImage(result){
+    // This is invoked to set the Firebase Storage URI of the image
+    setImageURI(result){
         if (!result.cancelled) {
             this.setState({ base64: result.base64.replace(/(?:\r\n|\r|\n)/g, '') })
             this.setState({ image: result.uri });
         }
     }
 
+    // This is invoked to pick the image from camera or gallery and upload to Firebase Storage
     getImage = async (camera) => {
         if (camera) {
             let { camera } = await Permissions.askAsync(Permissions.CAMERA);
@@ -161,7 +162,7 @@ class Profile extends React.Component {
                 aspect: [4, 3],
                 base64: true
             });
-            this.setImage(result)
+            this.setImageURI(result)
         } else {
             let { camera_roll } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
             let result = await ImagePicker.launchImageLibraryAsync({
@@ -169,10 +170,11 @@ class Profile extends React.Component {
                 aspect: [4, 3],
                 base64: true
             });
-            this.setImage(result)
+            this.setImageURI(result)
         }
     }
 
+    // Invoked to raise the modal that allows user to pick an image from gallery or use camera
     _pickImage = async () => {
         Alert.alert(
             'Choose an Image Source',
@@ -189,7 +191,6 @@ class Profile extends React.Component {
     };
 
     render() {
-        //  console.log(this.state.email);
         return (
             <ImageBackground source={require('../../Images/back.jpg')} style={styles.backgroundcontainer}>
                 <AnimatedLoader
@@ -266,7 +267,7 @@ class Profile extends React.Component {
                                 <Text style={{ marginLeft: 30 }}>{this.state.bmi}</Text>
                             </View>
                             <View style={styles.action}>
-                                <Button title="Submit" raised onPress={this.submitProfile} buttonStyle={styles.nextButton}></Button>
+                                <Button title="Submit" raised onPress={this.submitUserDataToTheServer} buttonStyle={styles.nextButton}></Button>
                             </View>
                         </View >
                     </ScrollView>
@@ -295,8 +296,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'stretch',
-        // paddingTop: 40,
-        // backgroundColor: '#3066c9',
         height: '100%',
         marginBottom: 30,
         marginTop: 10
@@ -307,7 +306,6 @@ const styles = StyleSheet.create({
         borderRadius: 45,
         fontSize: 16,
         paddingLeft: 45,
-        // backgroundColor: 'rgb(151,214,240)',
         backgroundColor: 'rgb(255,255,255)',
         color: 'rgb(36,133,202)',
         marginHorizontal: 25,
@@ -351,9 +349,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgb(36,133,202)',
         justifyContent: 'center',
         marginTop: 20,
-        marginBottom: '2%',
-        // marginLeft: 100
-
+        marginBottom: '2%'
     },
     btnsubmit: {
         width: 100,
