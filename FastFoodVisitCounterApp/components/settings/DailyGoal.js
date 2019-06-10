@@ -85,7 +85,7 @@ class DailyGoal extends React.Component{
         );
     };
 
-    // Invoked when component unmounts
+    // Invoked when component unmounts 
     _unsubscribe = () => {
         this._subscription && this._subscription.remove();
         this._subscription = null;

@@ -5,12 +5,12 @@ import React from 'react';
 import { View} from 'react-native';
 import { Route, Switch } from 'react-router-native'
 import Map from './views/Map';
-import ViewProfile from './views/profile';
-import Settings from './views/settings';
-import Signup from './session/signUp';
-import SignIn from './session/signIn';
-import Profile from "./session/profile";
-import Start from './session/start'
+import ViewProfile from './views/Profile';
+import Settings from './views/Settings';
+import Signup from './session/SignUp';
+import SignIn from './session/SignIn';
+import Profile from "./session/Profile";
+import Start from './session/Start'
 
 class Home extends React.Component {
 
