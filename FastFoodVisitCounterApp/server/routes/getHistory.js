@@ -30,7 +30,7 @@ async function getHistory(isPark, uid, res) {
 async function isHistory(uid, isPark) {
     let place = isPark ? 'historyPark' : 'historyRest'
     let isPresent
-    await firebase1.database().ref("users").child(uid).on("value", function (snapshot) {
+    await firebase.database().ref("users").child(uid).on("value", function (snapshot) {
         if (snapshot.hasChild(place)) {
             isPresent = true;
         } else {

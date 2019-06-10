@@ -104,7 +104,7 @@ async function timeSpentValidation(uid) {
 /*This function will call respective function based on the category i.e restaurant or park */
 function updateValues(vistedTime, uid) {
     switch (category) {
-        case "Parks": compareParkPlaceTime(vistedTime, uid);
+        case "Parks": compareRestaurantPlaceTime(vistedTime, uid);
             break;
 
         case "Rest": compareParkPlaceTime(vistedTime, uid);
@@ -115,10 +115,10 @@ function updateValues(vistedTime, uid) {
 /* This function will compare the last visited restaurant time and update only if there is 20 mins extra or
 an hour change in previous and current time. This is done to make sure multiple counter are not increased for 
 same restaurant (every 5 mins) */
-async function compareParkPlaceTime(vistedTime, uid) {
+async function compareRestaurantPlaceTime(vistedTime, uid) {
     await firebaseInstance.database().ref("users").child(uid).once("value", function (childSnapshot) {
         if (childSnapshot.hasChild('historyRest') == false) {
-            updateRestcounting(vistedTime, uid);
+            updateRestaurantCount(vistedTime, uid);
         }
         else {
             firebaseInstance.database().ref("users").child(uid).child('historyRest').orderByKey().limitToLast(1).once('value', function (childSnapshot) {
@@ -134,14 +134,10 @@ async function compareParkPlaceTime(vistedTime, uid) {
                 const diff = historyTime.diff(calledTime);
                 const diffDuration = moment.duration(diff);
 
-                if (Math.abs(diffDuration.minutes()) >= 20 && (diffDuration.hours()) == 0) {
-                    updateRestcounting(vistedTime, uid);
-                }
-                if (diffDuration.hours > 0) {
-                    updateRestcounting(vistedTime, uid)
-                }
-                if (lastVisitedPlace != place) {
-                    updateRestcounting(vistedTime, uid)
+                if ((Math.abs(diffDuration.minutes()) >= 20 && (diffDuration.hours()) == 0)
+                    || diffDuration.hours > 0 || lastVisitedPlace != place)
+                 {
+                    updateRestaurantCount(vistedTime, uid);
                 }
             });
         }
@@ -153,7 +149,7 @@ in the same day */
 async function compareParkPlaceTime(vistedTime, uid) {
     await firebaseInstance.database().ref("users").child(uid).once("value", function (childSnapshot) {
         if (childSnapshot.hasChild('historyPark') == false) {
-            updateParkcounting(vistedTime, uid);
+            updateParkCount(vistedTime, uid);
         }
         else {
             firebaseInstance.database().ref("users").child(uid).child('historyPark').orderByKey().limitToLast(1).once('value', function (childSnapshot) {
@@ -168,7 +164,7 @@ async function compareParkPlaceTime(vistedTime, uid) {
                 const diff = historyTime.diff(calledTime);
                 const diffDuration = moment.duration(diff);
                 if (Math.abs(diffDuration.hours()) > 4) {
-                    updateParkcounting(vistedTime, uid);
+                    updateParkCount(vistedTime, uid);
                 }
             });
         }
@@ -177,7 +173,7 @@ async function compareParkPlaceTime(vistedTime, uid) {
 
 /* This function will update the count as well as the place for a Restaurant and set previous place and time
 to default values  */
-async function updateRestcounting(vistedTime, uid) {
+async function updateRestaurantCount(vistedTime, uid) {
     let count = await getCount(uid , true)
     var updateCount = firebaseInstance.database().ref("users");
     count = count + 1;
@@ -189,7 +185,7 @@ async function updateRestcounting(vistedTime, uid) {
 
 /* This function will update the count as well as the place for a Park and set previous place and time
 to default values */
-async function updateParkcounting(vistedTime, uid) {
+async function updateParkCount(vistedTime, uid) {
     let count = await getCount(uid, false)
     var updateCount = firebaseInstance.database().ref("users");
     count = count + 1;
