@@ -1,3 +1,6 @@
+/*
+  This is the main sign in page
+*/
 import React from 'react';
 import { Text } from 'native-base';
 import { Button } from 'react-native-elements';
@@ -8,9 +11,10 @@ import { userData } from '../../redux/actions/index'
 import { connect } from 'react-redux'
 import image from '../../Images/back.jpg' 
 import logo from '../../Images/logo.gif'
-const { width : WIDTH} = Dimensions.get('window')
 import Toast from 'react-native-easy-toast'
 import AnimatedLoader from "react-native-animated-loader";
+
+const { width: WIDTH } = Dimensions.get('window')
 class SignIn extends React.Component {
     constructor(props, { }) {
         super(props);
@@ -19,10 +23,9 @@ class SignIn extends React.Component {
             password: "",
             errors: "",
             visible: false
-            // base64: null
         };
         this.signinUser = this.signinUser.bind(this);
-        this.validate = this.validate.bind(this);
+        this.validateCredentials = this.validateCredentials.bind(this);
         this.signup = this.signup.bind(this);
         this.handleEmailChange = this.handleEmailChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
@@ -48,28 +51,29 @@ class SignIn extends React.Component {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
     }
 
+    // Binds 'go back' action to hardware back button press
     handleBackPress = () => {
         this.props.history.goBack();
         return true;
     }
 
-    validate() {
+    // Invoked to validate the user's email and password
+    validateCredentials() {
         Keyboard.dismiss();
         this.setState({ errors: "" });
         let valid = false;
         if (!(this.state.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i))) {
             this.refs.toast.show("Please enter a valid email")
-            // this.setState({ errors: "Please enter a valid email" });
         }
         else if (this.state.password.length < 8) {
-            // this.setState({ errors: "Password should be at least of 8 characters" });
             this.refs.toast.show("Password should be at least of 8 characters")
         } else {
             this.signinUser();
         }
     }
 
-    setDetail = async (response) => {
+    // Invoked to store user's credentials in the App Storage for automatic login
+    setUserDetail = async (response) => {
         const username = await AsyncStorage.getItem('@username')
         const password = await AsyncStorage.getItem('@password')
         const userId = await AsyncStorage.getItem('@uid');
@@ -91,15 +95,16 @@ class SignIn extends React.Component {
         }    
     }
 
+    // Invoked to send user's data to the server for logging in
     signinUser(stored, username, password)  {
         Keyboard.dismiss()
         this.setState({visible: true})
         let that = this
-        axios.post("/signin", {
+        axios.post("/signIn", {
             email: stored ? username : this.state.email,
             password: stored ? password : this.state.password
         }).then((response) => {
-            this.setDetail(response);
+            this.setUserDetail(response);
         }).catch((error) => {
             console.log("error")
             that.setState({ visible: false })
@@ -108,22 +113,24 @@ class SignIn extends React.Component {
         });
     }
 
+    // Invoked to navigate to the Sign Up Page
     signup() {
         this.props.history.push({
             pathname: "/signup"
         })
     }
 
+    // Invoked to handle the user's email
     handleEmailChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({ email: processedData })
     }
 
+    // Invoked to handle the user's password
     handlePasswordChange(event) {
         let processedData = event.nativeEvent.text;
         this.setState({ password: processedData })
     }
-
 
     render() {
         return (
@@ -145,9 +152,6 @@ class SignIn extends React.Component {
                     <View style={styles.logocontainer}>
                         <Text style={styles.logotext}>Sign In</Text>
                     </View>
-                {/* <View>
-                <ValidateForm errors={this.state.errors} />
-                </View> */}
                     <View>
                         <TextInput 
                             style={styles.input}
@@ -170,10 +174,7 @@ class SignIn extends React.Component {
                             />
                     </View>
                     <View style={styles.action}>
-                        <Button title="Login" raised onPress={this.validate} buttonStyle={styles.nextButton}></Button>
-                        {/* <TouchableOpacity onPress={this.validate} style={styles.btnlogin}>
-                            <Text style={styles.text}>Login</Text>
-                        </TouchableOpacity> */}
+                        <Button title="Login" raised onPress={this.validateCredentials} buttonStyle={styles.nextButton}></Button>
                     </View>
                     <View style={styles.alternate}>
                         <Button title="New User" type="outline" onPress={this.signup}></Button>
