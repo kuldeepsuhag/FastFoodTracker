@@ -30,7 +30,6 @@ module.exports = (req, res) => {
           if (err.code == 'auth/email-already-in-use') {
             res.status(400).send(err);
           }
-          console.log(err.code);
         })
     }
   }), timeOut);
@@ -59,7 +58,6 @@ function setUser(req, res, uid) {
     });
     if (req.body.image != null) {
       firebaseStorage.child(uid).putString(req.body.image, 'raw', metadata).then(function () {
-        console.log('Uploaded a data_url string!');
       });
     }
     userData.image =  bleach.sanitize(req.body.image);

@@ -104,10 +104,10 @@ async function timeSpentValidation(uid) {
 /*This function will call respective function based on the category i.e restaurant or park */
 function updateValues(vistedTime, uid) {
     switch (category) {
-        case "Parks": compareRestaurantPlaceTime(vistedTime, uid);
+        case "Parks": compareParkPlaceTime(vistedTime, uid);
             break;
 
-        case "Rest": compareParkPlaceTime(vistedTime, uid);
+        case "Rest": compareRestaurantPlaceTime(vistedTime, uid);
             break
     }
 }
@@ -135,7 +135,7 @@ async function compareRestaurantPlaceTime(vistedTime, uid) {
                 const diffDuration = moment.duration(diff);
 
                 if ((Math.abs(diffDuration.minutes()) >= 20 && (diffDuration.hours()) == 0)
-                    || diffDuration.hours > 0 || lastVisitedPlace != place)
+                    || diffDuration.hours > 0 || lastVisitedPlace !== place)
                  {
                     updateRestaurantCount(vistedTime, uid);
                 }
@@ -163,7 +163,7 @@ async function compareParkPlaceTime(vistedTime, uid) {
                 var calledTime = moment(visitTime);
                 const diff = historyTime.diff(calledTime);
                 const diffDuration = moment.duration(diff);
-                if (Math.abs(diffDuration.hours()) > 4) {
+                if ((Math.abs(diffDuration.hours()) > 4) || lastVisitedPlace !== place) {
                     updateParkCount(vistedTime, uid);
                 }
             });
