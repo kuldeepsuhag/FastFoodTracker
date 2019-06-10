@@ -23,11 +23,12 @@ class SignUp extends React.Component {
             errors: ""
         };
         this.signupUser = this.signupUser.bind(this);
-        this.validate = this.validate.bind(this);
+        this.validateCredentials = this.validateCredentials.bind(this);
         this.login = this.login.bind(this);
         this.handleEmailChange = this.handleEmailChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handlePatientChange = this.handlePatientChange.bind(this);
+        this.handleConfirmPasswordChange = this.handleConfirmPasswordChange.bind(this);
     }
 
     componentDidMount() {
@@ -65,7 +66,7 @@ class SignUp extends React.Component {
     // Invoked to save user's credentials and redirect to profile page
     signupUser() {
         Keyboard.dismiss()
-        if (!this.validate()) {
+        if (!this.validateCredentials()) {
             var data = {
                 id: this.state.patient,
                 email: this.state.email,
@@ -98,7 +99,7 @@ class SignUp extends React.Component {
     // Invoked to handle the user's confirm password
     handleConfirmPasswordChange(event) {
         let processedData = event.nativeEvent.text;
-        this.setState({ password: processedData })
+        this.setState({ confirmPassword: processedData })
     }
 
     // Invoked to handle the user's patient id

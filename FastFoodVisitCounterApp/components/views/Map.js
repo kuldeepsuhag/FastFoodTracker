@@ -18,7 +18,7 @@ import Modal from "react-native-modal";
 import moment from "moment";
 
 class Map extends React.Component {
-  isMounted = false;
+  isComponentPresent = false;
   constructor(props, { }) {
     super(props);
     this.state = {
@@ -37,14 +37,14 @@ class Map extends React.Component {
   }
 
   componentDidMount() {
-    this.isMounted = true;
+    this.isComponentPresent = true;
     this.getUsersLocation();
     this.getLastSavedStepDateFromServer();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
   }
 
   componentWillUnmount() {
-    this.isMounted = false;
+    this.isComponentPresent = false;
   }
 
   componentWillMount() {
@@ -179,14 +179,14 @@ class Map extends React.Component {
     let isGPSOn = await Location.hasServicesEnabledAsync();
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
 
-    if (this.isMounted) {
+    if (this.isComponentPresent) {
       if (status === 'granted') {
         this.setState({ hasLocationPermissions: true });
       }
 
       if (isGPSOn) {
         let location = await Location.getCurrentPositionAsync({});
-        if (this.isMounted) {
+        if (this.isComponentPresent) {
           this.setState({
             locationResult: location,
             mapRegion: { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }
@@ -220,7 +220,7 @@ class Map extends React.Component {
           longitude: longitude,
           uid: this.props.userDetails.userID
       }).then((response) => {
-        if (this.isMounted) {
+        if (this.isComponentPresent) {
           if (that.state.restaurantCount !== response.data.restaurantCount || that.state.parkCount !== response.data.parkCount) {
             that.setState({
               restaurantCount: response.data.restaurantCount,

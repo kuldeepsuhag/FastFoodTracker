@@ -14,8 +14,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Toast, { DURATION } from 'react-native-easy-toast'
 import DialogInput from 'react-native-dialog-input';
 import AppFooter from '../footer/AppFooter'
-import StepCounter from '../settings/stepCounter';
-import DailyGoal from '../settings/dailyGoal'
+import StepCounter from '../settings/StepCounter'
+import DailyGoal from '../settings/DailyGoal'
 import { currentGoal } from '../../redux/actions/index'
 import { stepData } from '../../redux/actions/index'
 

@@ -32,7 +32,7 @@ class Profile extends React.Component {
         this.showHeightDialog = this.showHeightDialog.bind(this);
         this.showPatientDialog = this.showPatientDialog.bind(this);
         this.showDoctorDialog = this.showDoctorDialog.bind(this);
-        this.bmi = this.bmi.bind(this);
+        this.calculateBMI = this.calculateBMI.bind(this);
         this.signout = this.signout.bind(this);
         this.disableAccount = this.disableAccount.bind(this);
     }
