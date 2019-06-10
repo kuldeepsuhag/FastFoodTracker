@@ -11,7 +11,7 @@ export default class App extends React.Component {
 
   componentDidMount() {
     console.disableYellowBox = true;
-    axios.defaults.baseURL = 'http://10.1.1.37:5000';
+    axios.defaults.baseURL = 'http://43.240.98.141:5000';
   }
 
   render() {
