@@ -1,29 +1,31 @@
+/* This file is the entry point of server. It contains how each request is handled. 
+Also each input from client is santized to secure it from xss attacks */
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
 const bodyParser = require("body-parser");
-var moment = require('moment-timezone')
-var authen = require('./routes/firebaseconfig')
+const moment = require('moment-timezone')
+const authentication = require('./firebaseconfig')
 firebase = require('firebase/app');
-exports.firebaseApp = firebase.initializeApp(authen.config);
+
+exports.firebaseApp = firebase.initializeApp(authentication.config);
 moment.tz.setDefault("Australia/Melbourne");
-//Route setup
-// 
+
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(bodyParser.json({ limit: '50mb', extended: true }));
+/* All of them are post because they contains user id being posted to them and to make it more secure */
+app.post("/signUp", require("./routes/signUp"));
+app.post("/signIn", require("./routes/signIn"));
+app.post("/userLocation", require("./routes/processLocation"));
 
-app.post("/signup", require("./routes/signup"));
-app.post("/signin", require("./routes/signin"));
-app.post("/map-data", require("./routes/databaseservice"));
-app.post("/step-date", require("./routes/getDate"));
-app.post("/step-data", require("./routes/stepservicepost"));
-app.post("/updateValue", require("./routes/updateValue"));
-app.post("/signout", require("./routes/signout"));
-app.post("/disable", require("./routes/disableaccount"));
+app.post("/getDate", require("./routes/getDate"));
 app.post("/getHistory", require("./routes/getHistory"));
 
+app.post("/updateSteps", require("./routes/updateSteps"));
+app.post("/updateValue", require("./routes/updateValue"));
+app.post("/signOut", require("./routes/signOut"));
+app.post("/disable", require("./routes/disableAccount"));
+
 app.listen(port, (req, res) => {
-
-console.log(`server listening on port: ${port}`)
-
+    console.log(`server listening on port: ${port}`)
  });

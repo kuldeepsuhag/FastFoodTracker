@@ -1,3 +1,10 @@
+/*
+Developed by : Akshay Nakra
+Kuldeep Suhag
+Rohit Ajith Kumar
+*/
+
+/* This file is for SignIn and for sending the user details to the user */
 require('firebase/auth')
 require('firebase/database')
 require('firebase/firestore');
@@ -7,28 +14,29 @@ var fire = require('../server');
 var firebaseStorage = firebase.storage().ref();
 var bleach = require('bleach');
 
+/* This function will signin the user and get the image of the user from firebase storage if present */
 module.exports = (req, res) => {
   const timeOut = 500;
   setTimeout((function () {
     if (req.body) {
       var email = bleach.sanitize(req.body.email)
       var password = bleach.sanitize(req.body.password)
+
       fire.firebaseApp.auth().signInWithEmailAndPassword(email, password)
         .then(function (user) {
-            if (user) {
-              var loggedInUser = user.user
-              var ref = firebase.database().ref('users');
-              ref.child(loggedInUser.uid).once("value", function (childSnapshot) {
-                var data = childSnapshot.val();
-                firebaseStorage.child(loggedInUser.uid).getDownloadURL().then(function (url) {
-                  getImage(url, data, res, loggedInUser.uid);
-                }).catch(function (error) {
-                  console.log(error);
-                  getImage(null, data, res, loggedInUser.uid);
-                });
-              });
+          if (user) {
+            var loggedInUser = user.user
+            var ref = firebase.database().ref('users');
+            ref.child(loggedInUser.uid).once("value", function (childSnapshot) {
+              var data = childSnapshot.val();
 
-            }
+              firebaseStorage.child(loggedInUser.uid).getDownloadURL().then(function (url) {
+                sendUserData(url, data, res, loggedInUser.uid);
+              }).catch(function (error) {
+                sendUserData(null, data, res, loggedInUser.uid);
+              });
+            });
+          }
         }).catch(function (error) {
           console.log(error);
           res.status(400).send(error);
@@ -37,15 +45,15 @@ module.exports = (req, res) => {
   }), timeOut);
 };
 
-async function getImage(url, data, res, uid) {
-  if(url != null){
+/* This function will create a object containing the details of user and send it back */
+async function sendUserData(url, data, res, uid) {
+  if (url != null) {
     var urlFirebase = await fetch(url);
     var image = await urlFirebase.text();
-  }else{
+  } else {
     var image = null;
   }
-
-  let perdata = {
+  let userDetails = {
     name: data.name,
     email: data.email,
     patientId: data.patientId,
@@ -58,5 +66,5 @@ async function getImage(url, data, res, uid) {
     restaurantCount: data.restaurantCount,
     parkCount: data.parkCount
   }
-  res.status(200).send(perdata);
+  res.status(200).send(userDetails);
 }

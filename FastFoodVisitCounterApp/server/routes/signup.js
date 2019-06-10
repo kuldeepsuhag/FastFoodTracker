@@ -1,17 +1,27 @@
+/*
+Developed by : Akshay Nakra
+Kuldeep Suhag
+Rohit Ajith Kumar
+*/
+
+/* This file is written to signup a user. The user is added to authentication as well as user details are added
+in database */
 require('firebase/auth')
 require('firebase/database')
 require('firebase/firestore');
 require('firebase/storage');
+var firebaseApp = require('../server');
 var bleach = require('bleach');
 global.XMLHttpRequest = require("xhr2");
-var firebaseApp = require('../server');
 
+/* This function will send the email and password to authentication and get a user id back */
 module.exports = (req, res) => {
   const timeOut = 500;
   setTimeout((function () {
     if (req.body) {
       var email = bleach.sanitize(req.body.email)
       var password = bleach.sanitize(req.body.password)
+
       firebaseApp.firebaseApp.auth().createUserWithEmailAndPassword(email, password)
         .then(function (user) {
           setUser(req, res, user.user.uid)
@@ -25,6 +35,9 @@ module.exports = (req, res) => {
     }
   }), timeOut);
 }
+
+/* This function will set all the details of user in the database and send back the details as well to store in
+redux */
 
 function setUser(req, res, uid) {
   var firebaseStorage = firebase.storage().ref();
@@ -54,6 +67,6 @@ function setUser(req, res, uid) {
     res.status(200).send(userData);
   }
   else {
-    res.status(400).send(error);
+    res.status(400).send("No user found");
   }
 }

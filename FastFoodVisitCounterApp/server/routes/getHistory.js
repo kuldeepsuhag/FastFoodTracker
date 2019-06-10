@@ -1,3 +1,10 @@
+/*
+Developed by : Akshay Nakra
+Kuldeep Suhag
+Rohit Ajith Kumar
+*/
+
+/* This file is used for getting the history of restaurant /park visited by a user */
 require('firebase/database');
 require('firebase/auth');
 var bleach = require('bleach');
@@ -19,6 +26,7 @@ async function getHistory(isPark, uid, res) {
     }
 }
 
+/* This function checks if the user has history for the restaurant or park */
 async function isHistory(uid, isPark) {
     let place = isPark ? 'historyPark' : 'historyRest'
     let isPresent
@@ -32,6 +40,7 @@ async function isHistory(uid, isPark) {
     return isPresent;
 }
 
+/*This function will get the history from firebase if present */
 async function getData(uid, isPark) {
     var history = []
     let place = isPark ? 'historyPark' : 'historyRest'
