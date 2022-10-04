@@ -9,7 +9,7 @@
   "proxy": "http://localhost:5000",
   "dependencies": {
     "axios": "^0.18.0",
-    "expo": "^32.0.0",
+    "expo": "^46.0.14",
     "moment": "^2.24.0",
     "native-base": "^2.12.1",
     "nodejs-mobile-react-native": "^0.4.0",
